@@ -686,7 +686,7 @@ function applyBannerToRearWindow(texture) {
     polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1
   });
   // Rear window slopes away from viewer — match the angle of the BMW rear glass (~65°)
-  rearBannerPlane = new THREE.Mesh(makeBannerGeo(0.76, 0.115, 0.038), mat);
+  rearBannerPlane = new THREE.Mesh(makeBannerGeo(0.76, 0.115, -0.038), mat);
   rearBannerPlane.position.set(0, 0.479, -0.85);
   rearBannerPlane.rotation.x = THREE.MathUtils.degToRad(65);
   rearBannerPlane.renderOrder = 999;
