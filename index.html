@@ -689,6 +689,7 @@ function applyBannerToRearWindow(texture) {
   rearBannerPlane = new THREE.Mesh(makeBannerGeo(0.76, 0.115, 0.038), mat);
   rearBannerPlane.position.set(0, 0.479, -0.95);
   rearBannerPlane.rotation.x = THREE.MathUtils.degToRad(65);
+  rearBannerPlane.rotation.z = THREE.MathUtils.degToRad(180);
   rearBannerPlane.renderOrder = 999;
   scene.add(rearBannerPlane);
 }
