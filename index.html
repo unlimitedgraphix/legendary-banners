@@ -665,7 +665,7 @@ function applyBannerToWindshield(texture) {
   texture.flipY=false; texture.repeat.set(1,1); texture.offset.set(0,0);
   texture.wrapS=THREE.ClampToEdgeWrapping; texture.wrapT=THREE.ClampToEdgeWrapping; texture.needsUpdate=true;
   const mat = new THREE.MeshBasicMaterial({ map:texture, transparent:true, opacity:0.92, depthWrite:false, side:THREE.DoubleSide, polygonOffset:true, polygonOffsetFactor:-1, polygonOffsetUnits:-1 });
-  bannerPlane = new THREE.Mesh(makeBannerGeo(0.90, 0.127, 0.042), mat);
+  bannerPlane = new THREE.Mesh(makeBannerGeo(0.90, 0.127, 0.075), mat);
   bannerPlane.position.set(0, 0.457, 0.259);
   bannerPlane.rotation.x = THREE.MathUtils.degToRad(-64);
   scene.add(bannerPlane);
