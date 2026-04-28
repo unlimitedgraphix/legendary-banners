@@ -72,8 +72,8 @@ body {
 
 .right-canvas {
   width: 100%;
-  height: 70vh;
-  min-height: 420px;
+  height: 82vh;
+  min-height: 520px;
   position: relative;
 }
 #canvas3d {
@@ -473,41 +473,14 @@ renderer.setClearColor(0x050010, 1);
 
 const scene = new THREE.Scene();
 
-// ── BACKGROUND — set as CSS on canvas container ──
-// To use a custom PNG: replace the URL below with your hosted image
+// ── BACKGROUND — PNG loaded as scene.background so it moves with camera tilt ──
 const BG_URL = 'https://green-night-47f9.karlitojemal.workers.dev/miami-bg.png';
-(function(){
-  const container = document.getElementById('canvas3d').parentElement;
-  if(BG_URL) {
-    container.style.background = `url(${BG_URL}) center/cover no-repeat`;
-  } else {
-    // Generated Miami sunset fallback
-    const skyCanvas2D = document.createElement('canvas');
-    skyCanvas2D.width = 1024; skyCanvas2D.height = 1024;
-    const sCtx = skyCanvas2D.getContext('2d');
-    const sGrad = sCtx.createLinearGradient(0, 0, 0, 1024);
-    sGrad.addColorStop(0.0,  '#050010');
-    sGrad.addColorStop(0.25, '#1a0035');
-    sGrad.addColorStop(0.45, '#4a0050');
-    sGrad.addColorStop(0.58, '#8b0060');
-    sGrad.addColorStop(0.68, '#cc1040');
-    sGrad.addColorStop(0.76, '#ee4010');
-    sGrad.addColorStop(0.85, '#ff8800');
-    sGrad.addColorStop(0.92, '#ffcc00');
-    sGrad.addColorStop(1.0,  '#111008');
-    sCtx.fillStyle = sGrad; sCtx.fillRect(0, 0, 1024, 1024);
-    for(let i=0;i<600;i++){
-      const x=Math.random()*1024, y=Math.random()*400, size=Math.random()<0.8?0.5:1.2, b=0.3+Math.random()*0.7;
-      sCtx.beginPath(); sCtx.arc(x,y,size,0,Math.PI*2); sCtx.fillStyle=`rgba(255,255,255,${b})`; sCtx.fill();
-    }
-    const sg=sCtx.createRadialGradient(512,870,0,512,870,300);
-    sg.addColorStop(0,'rgba(255,220,50,0.7)'); sg.addColorStop(0.3,'rgba(255,100,0,0.3)'); sg.addColorStop(1,'rgba(0,0,0,0)');
-    sCtx.fillStyle=sg; sCtx.fillRect(0,0,1024,1024);
-    container.style.background = `url(${skyCanvas2D.toDataURL()}) center/cover no-repeat`;
-  }
-})();
-renderer.setClearColor(0x000000, 0);
+renderer.setClearColor(0x050010, 1);
 scene.background = null;
+new THREE.TextureLoader().load(BG_URL, tex => {
+  tex.encoding = THREE.sRGBEncoding;
+  scene.background = tex;
+});
 
 const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.01, 100);
 
@@ -659,51 +632,7 @@ function buildMiamiScene() {
   scene.add(floorMesh);
 
   // Car reflection — flipped ghost of car under the floor
-  // We'll render a faked reflection using a clone rendered upside down
-  window._floorY = 0; // store floor Y for model positioning
-
-  // City silhouette
-  const cityC=document.createElement('canvas'); cityC.width=2048; cityC.height=400;
-  const cCtx=cityC.getContext('2d');
-  const buildings=[[0,220,60,180],[70,200,50,200],[130,170,90,230],[230,190,45,210],[285,150,70,250],[365,165,55,235],[430,140,85,260],[525,170,45,230],[580,120,65,280],[655,155,75,245],[740,135,55,265],[805,160,80,240],[895,150,60,250],[965,125,70,275],[1045,160,55,240],[1110,140,85,260],[1205,130,60,270],[1275,155,90,245],[1375,145,65,255],[1450,120,75,280],[1535,160,55,240],[1600,135,80,265],[1690,150,60,250],[1760,125,70,275],[1840,160,55,240],[1905,140,80,260],[1995,130,50,270]];
-  cCtx.fillStyle='#09000f';
-  buildings.forEach(([x,y,w,h])=>{
-    cCtx.fillRect(x,400-h,w,h);
-    // Windows
-    for(let wx=x+6;wx<x+w-6;wx+=12){
-      for(let wy=400-h+10;wy<388;wy+=16){
-        if(Math.random()>0.45){
-          const wCol=Math.random()<0.3?'rgba(255,200,80,0.6)':'rgba(200,150,255,0.4)';
-          cCtx.fillStyle=wCol; cCtx.fillRect(wx,wy,6,8);
-        }
-      }
-    }
-    cCtx.fillStyle='#09000f';
-  });
-  // Neon glow on buildings
-  cCtx.shadowColor='#ff0080'; cCtx.shadowBlur=30;
-  cCtx.strokeStyle='rgba(255,0,128,0.6)'; cCtx.lineWidth=2;
-  [[100,200,160,200],[800,155,865,155]].forEach(([x1,y1,x2,y2])=>{ cCtx.beginPath(); cCtx.moveTo(x1,y1); cCtx.lineTo(x2,y2); cCtx.stroke(); });
-  const cityTex=new THREE.CanvasTexture(cityC);
-  const city=new THREE.Mesh(new THREE.PlaneGeometry(30,5.5),new THREE.MeshBasicMaterial({map:cityTex,transparent:true,opacity:0.88,depthWrite:false,side:THREE.DoubleSide}));
-  city.position.set(0,0.8,-12); scene.add(city);
-
-  // Palm trees
-  function makePalm(x,z,scale){
-    const pC=document.createElement('canvas'); pC.width=160; pC.height=320;
-    const pCtx=pC.getContext('2d');
-    pCtx.strokeStyle='#1a0828'; pCtx.lineWidth=7;
-    pCtx.beginPath(); pCtx.moveTo(80,320); pCtx.bezierCurveTo(84,240,76,180,88,100); pCtx.stroke();
-    pCtx.lineWidth=3;
-    [[88,100,-80,-50],[88,100,75,-55],[88,100,-95,15],[88,100,90,10],[88,100,-40,-70],[88,100,35,-72],[88,100,0,-80]].forEach(([sx,sy,ex,ey])=>{
-      pCtx.strokeStyle='#0d1f08'; pCtx.shadowColor='#1a3010'; pCtx.shadowBlur=4;
-      pCtx.beginPath(); pCtx.moveTo(sx,sy); pCtx.quadraticCurveTo(sx+ex*0.5,sy+ey*0.5,sx+ex,sy+ey); pCtx.stroke();
-    });
-    const pt=new THREE.CanvasTexture(pC);
-    const pm=new THREE.Mesh(new THREE.PlaneGeometry(1.4*scale,2.8*scale),new THREE.MeshBasicMaterial({map:pt,transparent:true,opacity:0.9,depthWrite:false,side:THREE.DoubleSide}));
-    pm.position.set(x,0.9*scale,z); scene.add(pm);
-  }
-  makePalm(-7,-7,1.4); makePalm(7.5,-8,1.1); makePalm(-10,-10,1.6); makePalm(11,-9,1.2); makePalm(-5,-11,1.0);
+  window._floorY = 0;
 }
 buildMiamiScene();
 
@@ -728,7 +657,7 @@ function loadModel() {
     // Sit car exactly on floor (y=0)
     const box2=new THREE.Box3().setFromObject(model);
     model.position.y -= box2.min.y;
-    scene.environment=null;
+    // Keep scene.background (PNG texture loaded earlier)
     model.traverse(child=>{
       if(child.isMesh){
         child.castShadow=true; child.receiveShadow=true;
