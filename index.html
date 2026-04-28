@@ -35,14 +35,7 @@ body {
   overflow-x: hidden;
 }
 
-/* ── NAVBAR ── */
-.nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-  padding: 16px 40px;
-  display: flex; align-items: center; justify-content: space-between;
-  background: linear-gradient(180deg, rgba(0,0,10,0.95) 0%, transparent 100%);
-  backdrop-filter: blur(10px);
-}
+.nav { display: none; }
 .nav-logo {
   font-family: var(--font-display);
   font-size: 28px; letter-spacing: 4px;
@@ -88,7 +81,7 @@ body {
   z-index: 10;
   display: flex;
   flex-direction: column;
-  padding: 100px 24px 24px;
+  padding: 24px 24px 24px;
   position: relative;
   overflow-y: auto;
   max-height: 100vh;
@@ -327,6 +320,10 @@ body {
 
   <!-- LEFT PANEL -->
   <div class="left-panel">
+    <div style="margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border);">
+      <div style="font-family:var(--font-display);font-size:26px;letter-spacing:4px;color:#fff;text-shadow:0 0 30px var(--pink),0 0 60px rgba(255,0,128,0.4);">LEGENDARY</div>
+      <div style="font-family:var(--font-body);font-size:10px;letter-spacing:6px;color:var(--pink);text-shadow:0 0 15px var(--pink);">BANNERS</div>
+    </div>
     <div class="configurator-title"><span>3D</span> BANNER<br>CONFIGURATOR</div>
     <div class="configurator-sub">Choose. Preview. Perfect.</div>
 
@@ -454,7 +451,7 @@ function setCarColour(btn) {
 
 // ── THREE SETUP ──
 const canvas = document.getElementById('canvas3d');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -464,40 +461,37 @@ renderer.setClearColor(0x050010, 1);
 
 const scene = new THREE.Scene();
 
-// ── MIAMI SUNSET SKY ──
-const skyCanvas = document.createElement('canvas');
-skyCanvas.width = 1024; skyCanvas.height = 1024;
-const skyCtx = skyCanvas.getContext('2d');
-const skyGrad = skyCtx.createLinearGradient(0, 0, 0, 1024);
-skyGrad.addColorStop(0.0,  '#050010');
-skyGrad.addColorStop(0.25, '#1a0035');
-skyGrad.addColorStop(0.45, '#4a0050');
-skyGrad.addColorStop(0.58, '#8b0060');
-skyGrad.addColorStop(0.68, '#cc1040');
-skyGrad.addColorStop(0.76, '#ee4010');
-skyGrad.addColorStop(0.85, '#ff8800');
-skyGrad.addColorStop(0.92, '#ffcc00');
-skyGrad.addColorStop(1.0,  '#111008');
-skyCtx.fillStyle = skyGrad;
-skyCtx.fillRect(0, 0, 1024, 1024);
-// Stars in upper portion
-for (let i = 0; i < 600; i++) {
-  const x = Math.random()*1024, y = Math.random()*400;
-  const size = Math.random() < 0.8 ? 0.5 : 1.2;
-  const b = 0.3 + Math.random()*0.7;
-  skyCtx.beginPath(); skyCtx.arc(x, y, size, 0, Math.PI*2);
-  skyCtx.fillStyle = `rgba(255,255,255,${b})`; skyCtx.fill();
-}
-// Sun glow at horizon
-const sunGlow = skyCtx.createRadialGradient(512, 870, 0, 512, 870, 300);
-sunGlow.addColorStop(0, 'rgba(255,220,50,0.7)');
-sunGlow.addColorStop(0.3, 'rgba(255,100,0,0.3)');
-sunGlow.addColorStop(1, 'rgba(0,0,0,0)');
-skyCtx.fillStyle = sunGlow;
-skyCtx.fillRect(0, 0, 1024, 1024);
-const skyTex = new THREE.CanvasTexture(skyCanvas);
-skyTex.needsUpdate = true;
-scene.background = skyTex;
+// ── MIAMI SUNSET SKY — CSS background (stays fixed, doesn't rotate with camera) ──
+(function(){
+  const skyCanvas2D = document.createElement('canvas');
+  skyCanvas2D.width = 1024; skyCanvas2D.height = 1024;
+  const sCtx = skyCanvas2D.getContext('2d');
+  const sGrad = sCtx.createLinearGradient(0, 0, 0, 1024);
+  sGrad.addColorStop(0.0,  '#050010');
+  sGrad.addColorStop(0.25, '#1a0035');
+  sGrad.addColorStop(0.45, '#4a0050');
+  sGrad.addColorStop(0.58, '#8b0060');
+  sGrad.addColorStop(0.68, '#cc1040');
+  sGrad.addColorStop(0.76, '#ee4010');
+  sGrad.addColorStop(0.85, '#ff8800');
+  sGrad.addColorStop(0.92, '#ffcc00');
+  sGrad.addColorStop(1.0,  '#111008');
+  sCtx.fillStyle = sGrad; sCtx.fillRect(0, 0, 1024, 1024);
+  // Stars
+  for(let i=0;i<600;i++){
+    const x=Math.random()*1024, y=Math.random()*400, size=Math.random()<0.8?0.5:1.2, b=0.3+Math.random()*0.7;
+    sCtx.beginPath(); sCtx.arc(x,y,size,0,Math.PI*2); sCtx.fillStyle=`rgba(255,255,255,${b})`; sCtx.fill();
+  }
+  // Sun glow
+  const sg=sCtx.createRadialGradient(512,870,0,512,870,300);
+  sg.addColorStop(0,'rgba(255,220,50,0.7)'); sg.addColorStop(0.3,'rgba(255,100,0,0.3)'); sg.addColorStop(1,'rgba(0,0,0,0)');
+  sCtx.fillStyle=sg; sCtx.fillRect(0,0,1024,1024);
+  document.getElementById('canvas3d').parentElement.style.background = `url(${skyCanvas2D.toDataURL()}) center/cover no-repeat`;
+})();
+// scene.background stays null — renderer clears to transparent
+renderer.setClearColor(0x000000, 0);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+scene.background = null;
 
 const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.01, 100);
 
@@ -619,7 +613,7 @@ function buildMiamiScene() {
   });
   const floorTex=new THREE.CanvasTexture(floorC);
   const floor=new THREE.Mesh(new THREE.PlaneGeometry(24,14),new THREE.MeshBasicMaterial({map:floorTex,transparent:true,opacity:0.85,depthWrite:false}));
-  floor.rotation.x=-Math.PI/2; floor.position.set(0,-0.05,-2); scene.add(floor);
+  floor.rotation.x=-Math.PI/2; floor.position.set(0,-0.52,-2); scene.add(floor);
 
   // City silhouette
   const cityC=document.createElement('canvas'); cityC.width=2048; cityC.height=400;
@@ -685,8 +679,7 @@ function loadModel() {
     model.scale.setScalar(scale);
     model.position.sub(centre.multiplyScalar(scale));
     model.position.y+=0.01;
-    scene.environment=null; scene.background=skyTex;
-    renderer.setClearColor(0x050010,1);
+    scene.environment=null;
     model.traverse(child=>{
       if(child.isMesh){
         child.castShadow=true; child.receiveShadow=true;
