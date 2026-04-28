@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Legendary Banners — Custom Windshield Vinyl</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black: #000000;
+  --surface: #0a0a0a;
+  --surface2: #111111;
+  --border: #1c1c1c;
+  --border2: #282828;
+  --text: #f0f0f0;
+  --muted: #666;
+  --faint: #333;
+  --green: #22c55e;
+  --green-glow: rgba(34,197,94,0.25);
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'Barlow Condensed', sans-serif;
+  --font-text: 'Barlow', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--black);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── NAVBAR ── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 16px 40px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, transparent 100%);
+  backdrop-filter: blur(8px);
+}
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 26px; letter-spacing: 3px;
+  background: linear-gradient(90deg, #fff 50%, #666);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.nav-logo span { color: var(--green); -webkit-text-fill-color: var(--green); }
+.nav-links { display: flex; align-items: center; gap: 32px; }
+.nav-link { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+.nav-link:hover { color: #fff; }
+.nav-cta {
+  background: var(--green); color: #000;
+  padding: 8px 20px; border-radius: 4px;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  text-decoration: none; transition: opacity 0.2s;
+}
+.nav-cta:hover { opacity: 0.85; }
+
+/* ── HERO ── */
+.hero {
+  position: relative; width: 100%; height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 40%, #0d1a0d 0%, #000 70%);
+}
+.hero-tagline {
+  position: relative; z-index: 2;
+  font-family: var(--font-display);
+  font-size: clamp(48px, 10vw, 120px);
+  letter-spacing: 6px; text-align: center;
+  line-height: 0.9;
+  background: linear-gradient(180deg, #fff 0%, #555 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  animation: fadeUp 1s ease both;
+}
+.hero-tagline span { -webkit-text-fill-color: var(--green); color: var(--green); }
+.hero-sub {
+  position: relative; z-index: 2;
+  font-size: 13px; letter-spacing: 5px; text-transform: uppercase; color: var(--muted);
+  margin-top: 16px; text-align: center;
+  animation: fadeUp 1s 0.2s ease both;
+}
+.hero-scroll {
+  position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+  z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 8px;
+  animation: fadeUp 1s 0.5s ease both;
+}
+.hero-scroll span { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); }
+.scroll-line {
+  width: 1px; height: 40px;
+  background: linear-gradient(180deg, var(--green), transparent);
+  animation: scrollPulse 2s ease infinite;
+}
+@keyframes scrollPulse { 0%,100%{opacity:0.4;transform:scaleY(1)} 50%{opacity:1;transform:scaleY(1.2)} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── VISUALIZER SECTION ── */
+.viz-section {
+  padding: 0 0 80px;
+  background: var(--black);
+}
+
+.viz-container {
+  max-width: 1200px; margin: 0 auto; padding: 0 24px;
+}
+
+.section-eyebrow {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 20px; padding-top: 60px;
+}
+.section-eyebrow .line { flex: 1; height: 1px; background: var(--border); }
+.section-eyebrow .label {
+  font-size: 10px; letter-spacing: 5px; text-transform: uppercase; color: var(--green);
+}
+
+/* 3D Viewer Card */
+.viewer-card {
+  position: relative; border-radius: 20px; overflow: hidden;
+  background: #050505; border: 1px solid var(--border);
+  box-shadow: 0 0 80px rgba(34,197,94,0.08), 0 40px 80px rgba(0,0,0,0.8);
+  transition: box-shadow 0.4s ease;
+  margin-bottom: 2px;
+}
+#canvas3d {
+  width: 100%; height: 520px; display: block;
+  cursor: grab; outline: none;
+}
+#canvas3d:active { cursor: grabbing; }
+
+.loading-screen {
+  position: absolute; inset: 0; background: #050505;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+  z-index: 10; transition: opacity 0.6s;
+}
+.loading-screen.hidden { opacity: 0; pointer-events: none; }
+.spinner {
+  width: 44px; height: 44px;
+  border: 2px solid var(--border2); border-top-color: var(--green);
+  border-radius: 50%; animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-pct { font-family: var(--font-display); font-size: 36px; color: #fff; }
+.loading-label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); }
+
+.controls-hint {
+  position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(12px);
+  border: 1px solid var(--border); border-radius: 20px;
+  padding: 6px 18px; font-size: 10px; color: #555;
+  letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; pointer-events: none;
+}
+
+/* Info bar */
+.info-bar {
+  padding: 16px 28px; background: #050505;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.info-left { display: flex; align-items: center; gap: 14px; }
+.mini-swatch { width: 64px; height: 22px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border2); flex-shrink: 0; }
+.mini-swatch img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.info-name { font-size: 16px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.info-sub { font-size: 10px; color: var(--muted); letter-spacing: 2px; margin-top: 2px; }
+.live-indicator { display: flex; align-items: center; gap: 8px; }
+.live-text { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 2s ease infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+/* ── PANEL TABS ── */
+.panel-tabs {
+  display: flex; border-bottom: 1px solid var(--border);
+  background: #050505; border-radius: 0 0 20px 20px;
+  overflow: hidden; margin-bottom: 24px;
+  border: 1px solid var(--border); border-top: none;
+}
+.panel-tab {
+  flex: 1; padding: 14px; cursor: pointer;
+  font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+  border: none; background: transparent; color: var(--muted);
+  border-bottom: 3px solid transparent; transition: all 0.2s;
+  font-family: var(--font-body);
+}
+.panel-tab.active { color: #fff; border-bottom-color: var(--green); background: rgba(34,197,94,0.04); }
+
+/* ── BANNER GRID ── */
+.selector-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+}
+.selector-title { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); }
+.selector-line { flex: 1; height: 1px; background: var(--border); }
+.selector-count { font-size: 11px; color: var(--faint); letter-spacing: 1px; }
+
+.banner-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 24px;
+}
+.banner-card {
+  cursor: pointer; border-radius: 10px; border: 1.5px solid var(--border);
+  background: var(--surface); padding: 12px; position: relative;
+  transition: all 0.2s;
+}
+.banner-card:hover { border-color: var(--border2); }
+.banner-card.active { background: #0a1a0a; border-color: var(--green); box-shadow: 0 0 20px rgba(34,197,94,0.2); }
+.swatch-preview { height: 38px; border-radius: 6px; overflow: hidden; margin-bottom: 10px; border: 1px solid var(--border); background: #111; }
+.swatch-preview img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+.card-name { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); transition: color 0.2s; margin-bottom: 2px; }
+.banner-card.active .card-name { color: #fff; }
+.card-price { font-size: 11px; font-weight: 600; color: var(--faint); transition: color 0.2s; }
+.banner-card.active .card-price { color: var(--green); }
+.card-check {
+  position: absolute; bottom: 10px; right: 10px;
+  width: 20px; height: 20px; border-radius: 50%; background: var(--green);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.2s;
+}
+.banner-card.active .card-check { opacity: 1; }
+
+/* ── CTA BAR ── */
+.cta-bar {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px 24px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  margin-bottom: 12px;
+}
+.cta-info {}
+.cta-name { font-family: var(--font-display); font-size: 24px; letter-spacing: 2px; text-transform: uppercase; }
+.cta-sub { font-size: 11px; color: var(--muted); margin-top: 3px; letter-spacing: 1px; font-family: var(--font-text); }
+.cta-right { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+.cta-price { font-family: var(--font-display); font-size: 32px; letter-spacing: 1px; }
+.cta-btn {
+  background: var(--green); color: #000;
+  border: none; border-radius: 8px;
+  padding: 14px 28px; font-size: 12px; font-weight: 800;
+  letter-spacing: 3px; text-transform: uppercase;
+  cursor: pointer; transition: all 0.2s;
+  min-width: 160px; font-family: var(--font-body);
+  text-decoration: none; display: inline-flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 24px rgba(34,197,94,0.35);
+}
+.cta-btn:hover { transform: translateY(-2px); box-shadow: 0 0 32px rgba(34,197,94,0.5); }
+.cta-btn:active { transform: translateY(0); }
+
+/* ── FEATURES STRIP ── */
+.features {
+  border-top: 1px solid var(--border);
+  padding: 40px 0;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+  background: var(--border);
+  margin-top: 60px;
+}
+.feature {
+  background: var(--black); padding: 32px 24px;
+  text-align: center;
+}
+.feature-icon { font-size: 28px; margin-bottom: 12px; }
+.feature-title { font-family: var(--font-display); font-size: 18px; letter-spacing: 2px; margin-bottom: 6px; }
+.feature-text { font-size: 12px; color: var(--muted); line-height: 1.6; font-family: var(--font-text); }
+
+/* ── FOOTER ── */
+.footer {
+  padding: 40px; text-align: center;
+  border-top: 1px solid var(--border);
+}
+.footer-logo { font-family: var(--font-display); font-size: 20px; letter-spacing: 4px; color: var(--muted); margin-bottom: 8px; }
+.footer-text { font-size: 11px; color: var(--faint); letter-spacing: 2px; font-family: var(--font-text); }
+.footer-links { display: flex; gap: 24px; justify-content: center; margin-top: 16px; }
+.footer-link { font-size: 10px; color: var(--faint); letter-spacing: 2px; text-transform: uppercase; text-decoration: none; }
+.footer-link:hover { color: var(--muted); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 700px) {
+  .nav { padding: 14px 16px; }
+  .nav-links { display: none; }
+  .hero-tagline { font-size: clamp(36px, 12vw, 80px); }
+  #canvas3d { height: 340px; }
+  .banner-grid { grid-template-columns: repeat(1, 1fr); }
+  .cta-bar { flex-direction: column; align-items: flex-start; }
+  .cta-right { width: 100%; justify-content: space-between; }
+  .features { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">LEGENDARY<span>.</span></div>
+  <div class="nav-links">
+    <a href="#visualizer" class="nav-link">Visualizer</a>
+    <a href="#features" class="nav-link">Features</a>
+    <a href="https://unlimitedgraphix.com.au" class="nav-link" target="_blank">UG Studio</a>
+    <a href="#visualizer" class="nav-cta">SHOP NOW</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-tagline">LEGENDARY<br><span>BANNERS</span></div>
+  <div class="hero-sub">Custom Windshield Vinyl · Perth, Australia · Est. 2010</div>
+  <div class="hero-scroll">
+    <span>Explore</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- VISUALIZER -->
+<section class="viz-section" id="visualizer">
+  <div class="viz-container">
+
+    <div class="section-eyebrow">
+      <div class="line"></div>
+      <div class="label">3D Live Configurator</div>
+      <div class="line"></div>
+    </div>
+
+    <!-- 3D Viewer -->
+    <div class="viewer-card" id="vizCard">
+      <div class="loading-screen" id="loadingScreen">
+        <div class="spinner"></div>
+        <div class="loading-pct" id="loadingPct">0%</div>
+        <div class="loading-label">Loading 3D Model</div>
+      </div>
+      <canvas id="canvas3d"></canvas>
+      <div class="controls-hint">Drag to rotate &nbsp;·&nbsp; Scroll to zoom &nbsp;·&nbsp; Two-finger pan</div>
+      <div class="info-bar">
+        <div class="info-left">
+          <div class="mini-swatch"><img id="miniImg" src="" alt=""/></div>
+          <div>
+            <div class="info-name" id="infoName">—</div>
+            <div class="info-sub">WINDSHIELD BANNER VINYL</div>
+          </div>
+        </div>
+        <div class="live-indicator">
+          <div class="live-text">Live Preview</div>
+          <div class="live-dot" id="liveDot"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="panel-tabs">
+      <button class="panel-tab active" id="tabFront" onclick="switchPanel('front')">🔵 &nbsp;Front Windshield</button>
+      <button class="panel-tab" id="tabRear" onclick="switchPanel('rear')">🔴 &nbsp;Rear Window</button>
+    </div>
+
+    <!-- Front Panel -->
+    <div id="panelFront">
+      <div class="selector-header">
+        <div class="selector-title">Select Your Design</div>
+        <div class="selector-line"></div>
+        <div class="selector-count" id="frontCount">3 designs</div>
+      </div>
+      <div class="banner-grid" id="bannerGrid"></div>
+      <div class="cta-bar">
+        <div class="cta-info">
+          <div class="cta-name" id="ctaName">—</div>
+          <div class="cta-sub">Front Windshield · High-Gloss Vinyl · UV Resistant · 5-Year Outdoor Rated</div>
+        </div>
+        <div class="cta-right">
+          <div class="cta-price" id="ctaPrice">$99.90</div>
+          <a class="cta-btn" id="ctaBtn" href="#" target="_blank">BUY NOW →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rear Panel -->
+    <div id="panelRear" style="display:none;">
+      <div class="selector-header">
+        <div class="selector-title">Select Your Design</div>
+        <div class="selector-line"></div>
+        <div class="selector-count">3 designs</div>
+      </div>
+      <div class="banner-grid" id="rearBannerGrid"></div>
+      <div class="cta-bar">
+        <div class="cta-info">
+          <div class="cta-name" id="rearCtaName">— Select a rear banner —</div>
+          <div class="cta-sub">Rear Window · High-Gloss Vinyl · UV Resistant · 5-Year Outdoor Rated</div>
+        </div>
+        <div class="cta-right">
+          <div class="cta-price">$99.90</div>
+          <a class="cta-btn" id="rearCtaBtn" href="#" onclick="handleRearBuy(event)">BUY NOW →</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="feature">
+    <div class="feature-icon">🎨</div>
+    <div class="feature-title">100+ Designs</div>
+    <div class="feature-text">From JDM to anime, street art to motorsport — there's a Legendary Banner for every build.</div>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">💎</div>
+    <div class="feature-title">Premium Vinyl</div>
+    <div class="feature-text">High-gloss cast vinyl with UV-resistant inks. Built to last 5+ years outdoors.</div>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">🚗</div>
+    <div class="feature-title">Perfect Fit</div>
+    <div class="feature-text">Precision cut to fit the top of any windshield. No bubbles, no hassle — DIY friendly.</div>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">📍</div>
+    <div class="feature-title">Perth Made</div>
+    <div class="feature-text">Designed and fulfilled in Perth, WA by Unlimited Graphix — 15 years in the wrap game.</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-logo">LEGENDARY BANNERS</div>
+  <div class="footer-text">By Unlimited Graphix · Perth, Western Australia</div>
+  <div class="footer-links">
+    <a href="https://unlimitedgraphix.com.au/privacy-policy" class="footer-link" target="_blank">Privacy Policy</a>
+    <a href="https://unlimitedgraphix.com.au/terms-and-conditions" class="footer-link" target="_blank">Terms & Conditions</a>
+    <a href="https://unlimitedgraphix.com.au" class="footer-link" target="_blank">UG Studio</a>
+  </div>
+  <div style="margin-top:16px;font-size:10px;color:#222;letter-spacing:1px;">© 2026 Legendary Banners · All Rights Reserved</div>
+</footer>
+
+<!-- THREE.JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ── BANNER DATA ── UPDATE THESE WITH YOUR SHOPIFY VARIANT URLS
+const SHOPIFY_BASE = 'https://legendary-banners.myshopify.com/products/legendary-banners-windshield-banner?variant=';
+const BANNERS = [
+  {
+    id:1, name:"Akatsuki", price:"$99.90",
+    img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/AKATSUKI.jpg/:/rs=w:1280,h:192",
+    variantId:"52125011378459"
+  },
+  {
+    id:2, name:"AMG", price:"$99.90",
+    img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/AMG.jpg/:/rs=w:1280,h:197",
+    variantId:"52125011411227"
+  },
+  {
+    id:3, name:"Blessed", price:"$99.90",
+    img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/BLESSED.jpg/:/cr=t:0%25,l:0%25,w:100%25,h:100%25/rs=w:1280,h:195",
+    variantId:"52125011443995"
+  }
+];
+
+function cartURL(variantId) {
+  return SHOPIFY_BASE + variantId;
+}
+
+// ── THREE.JS SETUP ──
+const canvas = document.getElementById('canvas3d');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+renderer.shadowMap.enabled = true;
+renderer.setClearColor(0x000000, 1);
+
+const scene = new THREE.Scene();
+
+// Miami sunset sky gradient
+const skyCanvas = document.createElement('canvas');
+skyCanvas.width = 2; skyCanvas.height = 512;
+const skyCtx = skyCanvas.getContext('2d');
+const skyGrad = skyCtx.createLinearGradient(0, 0, 0, 512);
+skyGrad.addColorStop(0.0,  '#0a0015');  // deep purple top
+skyGrad.addColorStop(0.3,  '#1a0535');  // purple
+skyGrad.addColorStop(0.5,  '#6b0f6e');  // magenta
+skyGrad.addColorStop(0.65, '#c4294b');  // hot pink/red
+skyGrad.addColorStop(0.78, '#ff6b2b');  // orange
+skyGrad.addColorStop(0.88, '#ffaa00');  // amber
+skyGrad.addColorStop(1.0,  '#111118');  // dark ground
+skyCtx.fillStyle = skyGrad;
+skyCtx.fillRect(0, 0, 2, 512);
+const skyTex = new THREE.CanvasTexture(skyCanvas);
+scene.background = skyTex;
+
+const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.01, 100);
+
+// ── LIGHTING ──
+scene.add(new THREE.AmbientLight(0xff9966, 0.4));
+const keyLight = new THREE.DirectionalLight(0xff8833, 2.2);
+keyLight.position.set(5, 8, 5); keyLight.castShadow = true; scene.add(keyLight);
+const fillLight = new THREE.DirectionalLight(0xff44aa, 0.6);
+fillLight.position.set(-5, 3, -3); scene.add(fillLight);
+const rimLight = new THREE.DirectionalLight(0x00ccff, 0.5);
+rimLight.position.set(0, 5, -8); scene.add(rimLight);
+scene.add(new THREE.HemisphereLight(0x111122, 0x443322, 0.5));
+
+// ── ORBIT CONTROLS ──
+let isDragging = false, isRightDragging = false;
+let prevMouse = { x:0, y:0 };
+let spherical = { theta: 0.3, phi: Math.PI / 3.8, radius: 2.2 };
+let target = new THREE.Vector3(0, 0.45, 0);
+let autoRotate = true;
+let autoRotateTimeout;
+
+function updateCamera() {
+  camera.position.x = target.x + spherical.radius * Math.sin(spherical.phi) * Math.sin(spherical.theta);
+  camera.position.y = target.y + spherical.radius * Math.cos(spherical.phi);
+  camera.position.z = target.z + spherical.radius * Math.sin(spherical.phi) * Math.cos(spherical.theta);
+  camera.lookAt(target);
+}
+
+canvas.addEventListener('mousedown', e => {
+  if (e.button === 2) isRightDragging = true; else isDragging = true;
+  autoRotate = false; clearTimeout(autoRotateTimeout);
+  prevMouse = { x: e.clientX, y: e.clientY };
+});
+canvas.addEventListener('mousemove', e => {
+  if (!isDragging && !isRightDragging) return;
+  const dx = e.clientX - prevMouse.x, dy = e.clientY - prevMouse.y;
+  if (isDragging) {
+    spherical.theta -= dx * 0.008;
+    spherical.phi = Math.max(0.2, Math.min(Math.PI * 0.85, spherical.phi - dy * 0.006));
+  }
+  if (isRightDragging) {
+    const right = new THREE.Vector3();
+    camera.getWorldDirection(right); right.cross(camera.up).normalize();
+    target.addScaledVector(right, -dx * 0.004);
+    target.addScaledVector(camera.up, dy * 0.004);
+  }
+  prevMouse = { x: e.clientX, y: e.clientY };
+  updateCamera();
+});
+window.addEventListener('mouseup', () => {
+  isDragging = false; isRightDragging = false;
+  autoRotateTimeout = setTimeout(() => { autoRotate = true; }, 4000);
+});
+canvas.addEventListener('wheel', e => {
+  spherical.radius = Math.max(0.5, Math.min(12, spherical.radius + e.deltaY * 0.005));
+  autoRotate = false; clearTimeout(autoRotateTimeout);
+  autoRotateTimeout = setTimeout(() => { autoRotate = true; }, 3000);
+  updateCamera(); e.preventDefault();
+}, { passive: false });
+canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+// Touch
+let lastTouch = null, lastPinchDist = null;
+canvas.addEventListener('touchstart', e => {
+  autoRotate = false; clearTimeout(autoRotateTimeout);
+  if (e.touches.length === 1) lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  if (e.touches.length === 2) lastPinchDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+  e.preventDefault();
+}, { passive: false });
+canvas.addEventListener('touchmove', e => {
+  if (e.touches.length === 1 && lastTouch) {
+    const dx = e.touches[0].clientX - lastTouch.x, dy = e.touches[0].clientY - lastTouch.y;
+    spherical.theta -= dx * 0.01;
+    spherical.phi = Math.max(0.2, Math.min(Math.PI * 0.85, spherical.phi - dy * 0.008));
+    lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    updateCamera();
+  }
+  if (e.touches.length === 2) {
+    const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+    const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+    const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+    if (lastPinchDist) spherical.radius = Math.max(0.5, Math.min(12, spherical.radius - (dist - lastPinchDist) * 0.015));
+    if (lastTouch) {
+      const panDX = midX - lastTouch.x, panDY = midY - lastTouch.y;
+      const right = new THREE.Vector3(); camera.getWorldDirection(right); right.cross(camera.up).normalize();
+      target.addScaledVector(right, -panDX * 0.004);
+      target.addScaledVector(camera.up, panDY * 0.004);
+    }
+    lastPinchDist = dist; lastTouch = { x: midX, y: midY }; updateCamera();
+  }
+  e.preventDefault();
+}, { passive: false });
+canvas.addEventListener('touchend', () => {
+  lastTouch = null; lastPinchDist = null;
+  autoRotateTimeout = setTimeout(() => { autoRotate = true; }, 4000);
+});
+
+// ── BANNER TEXTURES ──
+let bannerPlane = null, rearBannerPlane = null, currentRearBanner = null, bannerTexture = null;
+
+function loadBannerTexture(url, callback) {
+  const loader = new THREE.TextureLoader();
+  loader.crossOrigin = 'anonymous';
+  loader.load(url, tex => { tex.encoding = THREE.sRGBEncoding; callback(tex); });
+}
+
+function makeBannerGeoFlipped(W, H, curveDrop) {
+  const segsX = 40, segsY = 4;
+  const positions = [], uvs = [], indices = [];
+  for (let iy = 0; iy <= segsY; iy++) {
+    for (let ix = 0; ix <= segsX; ix++) {
+      const u = ix/segsX, v = iy/segsY;
+      const x = (u-0.5)*W, y = (v-0.5)*H;
+      const z = curveDrop*(1-4*u*(1-u)); // Z flipped for rear window
+      const yArc = curveDrop*0.8*(4*u*(1-u)); // yArc flipped for rear window
+      positions.push(x, y+yArc, z);
+      uvs.push(u, 1-v);
+    }
+  }
+  for (let iy = 0; iy < segsY; iy++) {
+    for (let ix = 0; ix < segsX; ix++) {
+      const a=iy*(segsX+1)+ix, b=a+1, c=a+segsX+1, d=c+1;
+      indices.push(a,c,b); indices.push(b,c,d);
+    }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions,3));
+  geo.setAttribute('uv', new THREE.Float32BufferAttribute(uvs,2));
+  geo.setIndex(indices); geo.computeVertexNormals();
+  return geo;
+}
+
+function makeBannerGeo(W, H, curveDrop) {
+  const segsX = 40, segsY = 4;
+  const positions = [], uvs = [], indices = [];
+  for (let iy = 0; iy <= segsY; iy++) {
+    for (let ix = 0; ix <= segsX; ix++) {
+      const u = ix/segsX, v = iy/segsY;
+      const x = (u-0.5)*W, y = (v-0.5)*H;
+      const z = -curveDrop*(1-4*u*(1-u));
+      const yArc = -curveDrop*0.8*(4*u*(1-u));
+      positions.push(x, y+yArc, z);
+      uvs.push(u, 1-v);
+    }
+  }
+  for (let iy = 0; iy < segsY; iy++) {
+    for (let ix = 0; ix < segsX; ix++) {
+      const a=iy*(segsX+1)+ix, b=a+1, c=a+segsX+1, d=c+1;
+      indices.push(a,c,b); indices.push(b,c,d);
+    }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions,3));
+  geo.setAttribute('uv', new THREE.Float32BufferAttribute(uvs,2));
+  geo.setIndex(indices); geo.computeVertexNormals();
+  return geo;
+}
+
+function applyBannerToWindshield(texture) {
+  if (bannerPlane) { scene.remove(bannerPlane); bannerPlane.geometry.dispose(); bannerPlane.material.dispose(); bannerPlane=null; }
+  texture.flipY=false; texture.repeat.set(1,1); texture.offset.set(0,0);
+  texture.wrapS=THREE.ClampToEdgeWrapping; texture.wrapT=THREE.ClampToEdgeWrapping; texture.needsUpdate=true;
+  const mat = new THREE.MeshBasicMaterial({ map:texture, transparent:true, opacity:0.92, depthWrite:false, side:THREE.DoubleSide, polygonOffset:true, polygonOffsetFactor:-1, polygonOffsetUnits:-1 });
+  bannerPlane = new THREE.Mesh(makeBannerGeo(0.90, 0.127, 0.042), mat);
+  bannerPlane.position.set(0, 0.457, 0.259);
+  bannerPlane.rotation.x = THREE.MathUtils.degToRad(-64);
+  scene.add(bannerPlane);
+}
+
+function applyBannerToRearWindow(texture) {
+  if (rearBannerPlane) { scene.remove(rearBannerPlane); rearBannerPlane.geometry.dispose(); rearBannerPlane.material.dispose(); rearBannerPlane=null; }
+  if (!texture) return;
+  texture.flipY=true;
+  texture.needsUpdate=true;
+  const mat = new THREE.MeshBasicMaterial({ map:texture, transparent:false, opacity:1.0, side:THREE.DoubleSide, depthTest:false, depthWrite:false });
+  rearBannerPlane = new THREE.Mesh(makeBannerGeoFlipped(0.744, 0.12, 0.042), mat);
+  rearBannerPlane.position.set(0, 0.441, -0.80);
+  rearBannerPlane.rotation.x = THREE.MathUtils.degToRad(62);
+  rearBannerPlane.renderOrder = 999;
+  rearBannerPlane.rotation.z = Math.PI; // 180 degree rotation
+  scene.add(rearBannerPlane);
+}
+
+// ── LOAD MODEL ──
+function loadGLTFLoader(callback) {
+  const s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
+  s.onload = callback; document.head.appendChild(s);
+}
+
+function loadModel() {
+  const MODEL_URL = '/2020_bmw_m340i_xdrive.glb';
+  const loader = new THREE.GLTFLoader();
+  loader.load(MODEL_URL, gltf => {
+    const model = gltf.scene;
+    const box = new THREE.Box3().setFromObject(model);
+    const centre = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+    const scale = 3.5 / Math.max(size.x, size.y, size.z);
+    model.scale.setScalar(scale);
+    model.position.sub(centre.multiplyScalar(scale));
+    model.position.y += 0.01;
+
+    scene.environment = null;
+    scene.background = new THREE.Color(0x000000);
+    renderer.setClearColor(0x000000, 1);
+
+    model.traverse(child => {
+      if (child.isMesh) {
+        child.castShadow = true; child.receiveShadow = true;
+        const mats = Array.isArray(child.material) ? child.material : [child.material];
+        mats.forEach(mat => {
+          if (mat.envMap) { mat.envMap = null; mat.needsUpdate = true; }
+          if (mat.name === 'Kuzov_Main_color') { mat.color = new THREE.Color(0x0d0d14); mat.roughness=0.15; mat.metalness=0.9; mat.needsUpdate=true; }
+          if (mat.name === 'Glass_Windows' || mat.name === 'Glass_backlights' || mat.name === 'glass_light') { mat.color=new THREE.Color(0x0a1015); mat.roughness=0.05; mat.transparent=true; mat.opacity=0.6; mat.depthWrite=false; mat.needsUpdate=true; }
+        });
+      }
+    });
+
+    const box2 = new THREE.Box3().setFromObject(model);
+    const centre2 = box2.getCenter(new THREE.Vector3());
+    model.position.y -= centre2.y * 0.5;
+    scene.add(model);
+
+    loadBannerTexture(BANNERS[0].img, tex => applyBannerToWindshield(tex));
+
+    document.getElementById('loadingScreen').classList.add('hidden');
+    setTimeout(() => document.getElementById('loadingScreen').style.display='none', 600);
+  },
+  progress => {
+    if (progress.total > 0) document.getElementById('loadingPct').textContent = Math.round(progress.loaded/progress.total*100) + '%';
+  },
+  err => { console.error(err); document.getElementById('loadingPct').textContent = '⚠'; });
+}
+
+// ── MIAMI SUNSET SCENE ──────────────────────────────────────────────────────
+function createMiamiScene() {
+  // Sun disc
+  const sunGeo = new THREE.CircleGeometry(0.8, 64);
+  const sunMat = new THREE.MeshBasicMaterial({ color: 0xffcc00, transparent: true, opacity: 0.95 });
+  const sun = new THREE.Mesh(sunGeo, sunMat);
+  sun.position.set(0, 2.2, -12);
+  scene.add(sun);
+
+  // Sun glow rings
+  [1.1, 1.4, 1.8].forEach((r, i) => {
+    const gGeo = new THREE.RingGeometry(r*0.8, r, 64);
+    const gMat = new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.12 - i*0.03, side: THREE.DoubleSide });
+    const glow = new THREE.Mesh(gGeo, gMat);
+    glow.position.set(0, 2.2, -12);
+    scene.add(glow);
+  });
+
+  // City silhouette canvas
+  const cityCanvas = document.createElement('canvas');
+  cityCanvas.width = 2048; cityCanvas.height = 300;
+  const cCtx = cityCanvas.getContext('2d');
+  cCtx.fillStyle = '#050008';
+
+  // Draw buildings
+  const buildings = [
+    [0,180,80,120], [90,160,60,140], [160,140,100,160], [270,170,50,130],
+    [330,120,80,180], [420,150,60,150], [490,130,90,170], [590,160,50,140],
+    [650,110,70,190], [730,140,80,160], [820,120,60,180], [890,150,90,150],
+    [990,160,70,140], [1070,130,50,170], [1130,145,80,155], [1220,120,60,180],
+    [1290,155,90,145], [1390,135,70,165], [1470,150,80,150], [1560,125,60,175],
+    [1630,160,90,140], [1730,140,70,160], [1810,120,80,180], [1900,150,60,150],
+    [1970,135,70,165],
+  ];
+  buildings.forEach(([x,y,w,h]) => {
+    cCtx.fillRect(x, 300-h, w, h);
+    // Windows
+    cCtx.fillStyle = 'rgba(255,180,50,0.4)';
+    for(let wx=x+8; wx<x+w-8; wx+=14) {
+      for(let wy=300-h+10; wy<290; wy+=18) {
+        if(Math.random()>0.4) cCtx.fillRect(wx, wy, 7, 9);
+      }
+    }
+    cCtx.fillStyle = '#050008';
+  });
+
+  const cityTex = new THREE.CanvasTexture(cityCanvas);
+  const cityMesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(28, 4.2),
+    new THREE.MeshBasicMaterial({ map: cityTex, transparent: true, opacity: 0.92, depthWrite: false })
+  );
+  cityMesh.position.set(0, 0.5, -11);
+  scene.add(cityMesh);
+
+  // Ground reflection — glowing road
+  const roadCanvas = document.createElement('canvas');
+  roadCanvas.width = 512; roadCanvas.height = 256;
+  const rCtx = roadCanvas.getContext('2d');
+  const roadGrad = rCtx.createLinearGradient(0, 0, 0, 256);
+  roadGrad.addColorStop(0, 'rgba(180,30,80,0.5)');
+  roadGrad.addColorStop(0.5, 'rgba(100,10,40,0.3)');
+  roadGrad.addColorStop(1, 'rgba(0,0,0,0)');
+  rCtx.fillStyle = roadGrad;
+  rCtx.fillRect(0, 0, 512, 256);
+  // Neon road lines
+  ['rgba(255,0,180,0.6)', 'rgba(0,200,255,0.4)'].forEach((col, i) => {
+    rCtx.strokeStyle = col;
+    rCtx.lineWidth = 3;
+    rCtx.beginPath();
+    rCtx.moveTo(256, 0); rCtx.lineTo(i===0?100:412, 256);
+    rCtx.stroke();
+  });
+  const roadTex = new THREE.CanvasTexture(roadCanvas);
+  const road = new THREE.Mesh(
+    new THREE.PlaneGeometry(20, 10),
+    new THREE.MeshBasicMaterial({ map: roadTex, transparent: true, opacity: 0.7, depthWrite: false })
+  );
+  road.rotation.x = -Math.PI/2;
+  road.position.set(0, -0.05, -2);
+  scene.add(road);
+
+  // Palm tree silhouettes
+  function makePalm(x, z, scale) {
+    const palmCanvas = document.createElement('canvas');
+    palmCanvas.width = 128; palmCanvas.height = 256;
+    const pCtx = palmCanvas.getContext('2d');
+    pCtx.strokeStyle = '#020005';
+    pCtx.lineWidth = 6;
+    // Trunk
+    pCtx.beginPath(); pCtx.moveTo(64,256); pCtx.bezierCurveTo(68,200,60,150,70,80); pCtx.stroke();
+    // Fronds
+    pCtx.lineWidth = 3;
+    [[70,80,-60,-40],[70,80,60,-40],[70,80,-90,10],[70,80,90,10],[70,80,0,-60]].forEach(([sx,sy,ex,ey]) => {
+      pCtx.beginPath(); pCtx.moveTo(sx,sy); pCtx.quadraticCurveTo(sx+ex*0.5,sy+ey*0.5,sx+ex,sy+ey); pCtx.stroke();
+    });
+    const pt = new THREE.CanvasTexture(palmCanvas);
+    const pm = new THREE.Mesh(
+      new THREE.PlaneGeometry(1.2*scale, 2.4*scale),
+      new THREE.MeshBasicMaterial({ map:pt, transparent:true, opacity:0.85, depthWrite:false, side:THREE.DoubleSide })
+    );
+    pm.position.set(x, 0.8*scale, z);
+    scene.add(pm);
+  }
+  makePalm(-6, -6, 1.2);
+  makePalm(6.5, -7, 1.0);
+  makePalm(-9, -9, 1.4);
+  makePalm(10, -8, 1.1);
+}
+createMiamiScene();
+
+// ── NEON SKYLINE ──
+function createNeonSkyline() {
+  const canvas2 = document.createElement('canvas');
+  canvas2.width = 2048; canvas2.height = 512;
+  const ctx = canvas2.getContext('2d');
+  ctx.clearRect(0,0,2048,512);
+  const text = 'CHOOSE YOUR BANNER';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.font = `900 160px 'Arial Black', Impact, sans-serif`;
+  ctx.shadowColor='#ff0080'; ctx.shadowBlur=80; ctx.fillStyle='rgba(255,0,128,0.15)';
+  for(let i=0;i<3;i++) ctx.fillText(text,1024,256);
+  ctx.shadowColor='#ff6600'; ctx.shadowBlur=40; ctx.fillStyle='rgba(255,102,0,0.3)';
+  for(let i=0;i<2;i++) ctx.fillText(text,1024,256);
+  ctx.shadowColor='#fff'; ctx.shadowBlur=15; ctx.fillStyle='rgba(255,255,255,0.7)'; ctx.fillText(text,1024,256);
+  ctx.shadowBlur=0; ctx.fillStyle='#fff'; ctx.fillText(text,1024,256);
+  const neonColors=['#ff00ff','#00ffff','#ff6600','#00ff88'];
+  for(let d=0;d<8;d++){
+    const x=200+(d*230)+Math.random()*80, startY=256+80, dripLen=20+Math.random()*60;
+    const color=neonColors[d%neonColors.length];
+    ctx.strokeStyle=color; ctx.lineWidth=2+Math.random()*3; ctx.shadowColor=color; ctx.shadowBlur=10;
+    ctx.beginPath(); ctx.moveTo(x,startY); ctx.bezierCurveTo(x+5,startY+dripLen*0.4,x-3,startY+dripLen*0.7,x+2,startY+dripLen); ctx.stroke();
+  }
+  const tex = new THREE.CanvasTexture(canvas2);
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(12,3), new THREE.MeshBasicMaterial({map:tex,transparent:true,opacity:0.85,depthWrite:false,side:THREE.DoubleSide}));
+  mesh.position.set(0,3.5,-8); scene.add(mesh);
+  let t=0;
+  return () => { t+=0.05; mesh.material.opacity=0.75+Math.sin(t*3.7)*0.08+Math.sin(t*11.3)*0.04; };
+}
+const tickNeon = createNeonSkyline();
+
+// ── RESIZE ──
+function onResize() {
+  const w=canvas.clientWidth, h=canvas.clientHeight;
+  renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', onResize); onResize(); updateCamera();
+
+// ── RENDER LOOP ──
+function animate() {
+  requestAnimationFrame(animate);
+  if (autoRotate) { spherical.theta += 0.003; updateCamera(); }
+  tickNeon();
+  renderer.render(scene, camera);
+}
+
+// ── UI ──
+function updateVisuals(banner) {
+  if (!banner) return;
+  document.getElementById('miniImg').src = banner.img;
+  document.getElementById('infoName').textContent = banner.name;
+  document.getElementById('ctaName').textContent = banner.name;
+  document.getElementById('ctaPrice').textContent = banner.price;
+  const btn = document.getElementById('ctaBtn');
+  btn.href = cartURL(banner.variantId);
+
+  document.querySelectorAll('#bannerGrid .banner-card').forEach(card => {
+    const b = BANNERS.find(x => x.id === parseInt(card.dataset.id));
+    if (!b) return;
+    if (b.id === banner.id) {
+      card.classList.add('active');
+    } else {
+      card.classList.remove('active');
+    }
+  });
+
+  loadBannerTexture(banner.img, tex => applyBannerToWindshield(tex));
+}
+
+function handleRearBuy(e) {
+  e.preventDefault();
+  if (!currentRearBanner) { alert('Please select a rear window banner first!'); return; }
+  window.open(cartURL(currentRearBanner.variantId), '_blank');
+}
+
+function switchPanel(panel) {
+  const isFront = panel === 'front';
+  document.getElementById('panelFront').style.display = isFront ? 'block' : 'none';
+  document.getElementById('panelRear').style.display = isFront ? 'none' : 'block';
+  document.getElementById('tabFront').classList.toggle('active', isFront);
+  document.getElementById('tabRear').classList.toggle('active', !isFront);
+}
+
+function buildGrid() {
+  const grid = document.getElementById('bannerGrid');
+  BANNERS.forEach(banner => {
+    const card = document.createElement('div');
+    card.className = 'banner-card'; card.dataset.id = banner.id;
+    card.innerHTML = `
+      <div class="swatch-preview"><img src="${banner.img}" alt="${banner.name}"/></div>
+      <div class="card-name">${banner.name}</div>
+      <div class="card-price">${banner.price}</div>
+      <div class="card-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
+    card.addEventListener('click', () => updateVisuals(banner));
+    grid.appendChild(card);
+  });
+}
+
+function buildRearGrid() {
+  const grid = document.getElementById('rearBannerGrid');
+  BANNERS.forEach(banner => {
+    const card = document.createElement('div');
+    card.className = 'banner-card'; card.dataset.id = 'rear-' + banner.id;
+    card.innerHTML = `
+      <div class="swatch-preview"><img src="${banner.img}" alt="${banner.name}"/></div>
+      <div class="card-name">${banner.name}</div>
+      <div class="card-price">${banner.price}</div>
+      <div class="card-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
+    card.addEventListener('click', () => {
+      currentRearBanner = banner;
+      document.querySelectorAll('#rearBannerGrid .banner-card').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+      document.getElementById('rearCtaName').textContent = banner.name + ' (Rear Window)';
+      loadBannerTexture(banner.img, tex => applyBannerToRearWindow(tex));
+    });
+    grid.appendChild(card);
+  });
+}
+
+loadGLTFLoader(() => { loadModel(); animate(); });
+buildGrid();
+buildRearGrid();
+updateVisuals(BANNERS[0]);
+</script>
+</body>
+</html>
