@@ -10,15 +10,17 @@
 
 :root {
   --black: #000000;
-  --surface: #0a0a0a;
-  --surface2: #111111;
-  --border: #1c1c1c;
-  --border2: #282828;
+  --surface: rgba(10,5,20,0.85);
+  --surface2: rgba(15,8,30,0.9);
+  --border: rgba(255,0,160,0.2);
+  --border2: rgba(255,0,160,0.4);
   --text: #f0f0f0;
-  --muted: #666;
-  --faint: #333;
-  --green: #22c55e;
-  --green-glow: rgba(34,197,94,0.25);
+  --muted: #aaa;
+  --faint: #555;
+  --pink: #ff0080;
+  --pink-glow: rgba(255,0,128,0.3);
+  --cyan: #00eeff;
+  --orange: #ff6600;
   --font-display: 'Bebas Neue', sans-serif;
   --font-body: 'Barlow Condensed', sans-serif;
   --font-text: 'Barlow', sans-serif;
@@ -26,7 +28,7 @@
 
 html { scroll-behavior: smooth; }
 body {
-  background: var(--black);
+  background: #0a0010;
   color: var(--text);
   font-family: var(--font-body);
   min-height: 100vh;
@@ -35,272 +37,270 @@ body {
 
 /* ── NAVBAR ── */
 .nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
   padding: 16px 40px;
   display: flex; align-items: center; justify-content: space-between;
-  background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, transparent 100%);
-  backdrop-filter: blur(8px);
+  background: linear-gradient(180deg, rgba(0,0,10,0.95) 0%, transparent 100%);
+  backdrop-filter: blur(10px);
 }
 .nav-logo {
   font-family: var(--font-display);
-  font-size: 26px; letter-spacing: 3px;
-  background: linear-gradient(90deg, #fff 50%, #666);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  font-size: 28px; letter-spacing: 4px;
+  color: #fff;
+  text-shadow: 0 0 30px var(--pink), 0 0 60px rgba(255,0,128,0.4);
 }
-.nav-logo span { color: var(--green); -webkit-text-fill-color: var(--green); }
+.nav-logo-sub {
+  font-family: var(--font-body);
+  font-size: 11px; letter-spacing: 6px; color: var(--pink);
+  margin-top: -4px; display: block;
+  text-shadow: 0 0 15px var(--pink);
+}
 .nav-links { display: flex; align-items: center; gap: 32px; }
-.nav-link { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s; }
-.nav-link:hover { color: #fff; }
-.nav-cta {
-  background: var(--green); color: #000;
-  padding: 8px 20px; border-radius: 4px;
-  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-  text-decoration: none; transition: opacity 0.2s;
+.nav-link {
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.2s;
 }
-.nav-cta:hover { opacity: 0.85; }
+.nav-link:hover { color: #fff; text-shadow: 0 0 10px var(--pink); }
+.nav-cta {
+  background: var(--pink); color: #fff;
+  padding: 8px 22px; border-radius: 4px;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  text-decoration: none; transition: all 0.2s;
+  box-shadow: 0 0 20px var(--pink-glow);
+}
+.nav-cta:hover { box-shadow: 0 0 35px var(--pink-glow); transform: translateY(-1px); }
 
-/* ── HERO ── */
-.hero {
-  position: relative; width: 100%; height: 100vh;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
+/* ── MAIN LAYOUT ── */
+.main-layout {
+  min-height: 100vh;
+  display: flex;
+  position: relative;
   overflow: hidden;
 }
-.hero-bg {
-  position: absolute; inset: 0;
-  background: radial-gradient(ellipse at 50% 40%, #0d1a0d 0%, #000 70%);
-}
-.hero-tagline {
-  position: relative; z-index: 2;
-  font-family: var(--font-display);
-  font-size: clamp(48px, 10vw, 120px);
-  letter-spacing: 6px; text-align: center;
-  line-height: 0.9;
-  background: linear-gradient(180deg, #fff 0%, #555 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  animation: fadeUp 1s ease both;
-}
-.hero-tagline span { -webkit-text-fill-color: var(--green); color: var(--green); }
-.hero-sub {
-  position: relative; z-index: 2;
-  font-size: 13px; letter-spacing: 5px; text-transform: uppercase; color: var(--muted);
-  margin-top: 16px; text-align: center;
-  animation: fadeUp 1s 0.2s ease both;
-}
-.hero-scroll {
-  position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
-  z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 8px;
-  animation: fadeUp 1s 0.5s ease both;
-}
-.hero-scroll span { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); }
-.scroll-line {
-  width: 1px; height: 40px;
-  background: linear-gradient(180deg, var(--green), transparent);
-  animation: scrollPulse 2s ease infinite;
-}
-@keyframes scrollPulse { 0%,100%{opacity:0.4;transform:scaleY(1)} 50%{opacity:1;transform:scaleY(1.2)} }
-@keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
 
-/* ── VISUALIZER SECTION ── */
-.viz-section {
-  padding: 0 0 80px;
-  background: var(--black);
+/* Left panel */
+.left-panel {
+  width: 340px;
+  min-width: 340px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  padding: 100px 24px 24px;
+  position: relative;
+  overflow-y: auto;
+  max-height: 100vh;
+}
+.left-panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--pink), transparent);
 }
 
-.viz-container {
-  max-width: 1200px; margin: 0 auto; padding: 0 24px;
-}
-
-.section-eyebrow {
-  display: flex; align-items: center; gap: 12px;
-  margin-bottom: 20px; padding-top: 60px;
-}
-.section-eyebrow .line { flex: 1; height: 1px; background: var(--border); }
-.section-eyebrow .label {
-  font-size: 10px; letter-spacing: 5px; text-transform: uppercase; color: var(--green);
-}
-
-/* 3D Viewer Card */
-.viewer-card {
-  position: relative; border-radius: 20px; overflow: hidden;
-  background: #050505; border: 1px solid var(--border);
-  box-shadow: 0 0 80px rgba(34,197,94,0.08), 0 40px 80px rgba(0,0,0,0.8);
-  transition: box-shadow 0.4s ease;
-  margin-bottom: 2px;
+/* Right — 3D canvas */
+.right-canvas {
+  flex: 1;
+  position: relative;
+  min-height: 100vh;
 }
 #canvas3d {
-  width: 100%; height: 520px; display: block;
+  width: 100%; height: 100vh; display: block;
   cursor: grab; outline: none;
 }
 #canvas3d:active { cursor: grabbing; }
 
+/* Loading */
 .loading-screen {
-  position: absolute; inset: 0; background: #050505;
+  position: absolute; inset: 0;
+  background: #050010;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
   z-index: 10; transition: opacity 0.6s;
 }
 .loading-screen.hidden { opacity: 0; pointer-events: none; }
 .spinner {
   width: 44px; height: 44px;
-  border: 2px solid var(--border2); border-top-color: var(--green);
+  border: 2px solid rgba(255,0,128,0.2); border-top-color: var(--pink);
   border-radius: 50%; animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-.loading-pct { font-family: var(--font-display); font-size: 36px; color: #fff; }
+.loading-pct { font-family: var(--font-display); font-size: 36px; color: #fff; text-shadow: 0 0 20px var(--pink); }
 .loading-label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); }
 
 .controls-hint {
-  position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
-  background: rgba(0,0,0,0.7); backdrop-filter: blur(12px);
+  position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(12px);
   border: 1px solid var(--border); border-radius: 20px;
-  padding: 6px 18px; font-size: 10px; color: #555;
+  padding: 6px 18px; font-size: 10px; color: #888;
   letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; pointer-events: none;
 }
 
-/* Info bar */
-.info-bar {
-  padding: 16px 28px; background: #050505;
-  border-top: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
+/* ── LEFT PANEL CONTENT ── */
+.configurator-title {
+  font-family: var(--font-display);
+  font-size: 28px; letter-spacing: 2px; color: #fff;
+  margin-bottom: 4px;
 }
-.info-left { display: flex; align-items: center; gap: 14px; }
-.mini-swatch { width: 64px; height: 22px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border2); flex-shrink: 0; }
-.mini-swatch img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.info-name { font-size: 16px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-.info-sub { font-size: 10px; color: var(--muted); letter-spacing: 2px; margin-top: 2px; }
-.live-indicator { display: flex; align-items: center; gap: 8px; }
-.live-text { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
-.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 2s ease infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+.configurator-title span { color: var(--pink); }
+.configurator-sub {
+  font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 28px;
+}
 
-/* ── PANEL TABS ── */
+/* Section label */
+.section-label {
+  font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--pink); margin-bottom: 12px; margin-top: 20px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-label::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, var(--border), transparent);
+}
+
+/* Panel tabs */
 .panel-tabs {
-  display: flex; border-bottom: 1px solid var(--border);
-  background: #050505; border-radius: 0 0 20px 20px;
-  overflow: hidden; margin-bottom: 24px;
-  border: 1px solid var(--border); border-top: none;
+  display: flex; gap: 8px; margin-bottom: 14px;
 }
 .panel-tab {
-  flex: 1; padding: 14px; cursor: pointer;
-  font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
-  border: none; background: transparent; color: var(--muted);
-  border-bottom: 3px solid transparent; transition: all 0.2s;
-  font-family: var(--font-body);
+  flex: 1; padding: 10px 8px; cursor: pointer;
+  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  border: 1px solid var(--border); background: transparent; color: var(--muted);
+  border-radius: 6px; transition: all 0.2s; font-family: var(--font-body);
 }
-.panel-tab.active { color: #fff; border-bottom-color: var(--green); background: rgba(34,197,94,0.04); }
-
-/* ── BANNER GRID ── */
-.selector-header {
-  display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+.panel-tab.active {
+  color: #fff; border-color: var(--pink);
+  background: rgba(255,0,128,0.1);
+  box-shadow: 0 0 12px var(--pink-glow);
 }
-.selector-title { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); }
-.selector-line { flex: 1; height: 1px; background: var(--border); }
-.selector-count { font-size: 11px; color: var(--faint); letter-spacing: 1px; }
 
+/* Banner grid */
 .banner-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 24px;
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px;
 }
 .banner-card {
-  cursor: pointer; border-radius: 10px; border: 1.5px solid var(--border);
-  background: var(--surface); padding: 12px; position: relative;
+  cursor: pointer; border-radius: 8px; border: 1.5px solid var(--border);
+  background: rgba(255,255,255,0.03); padding: 10px; position: relative;
   transition: all 0.2s;
 }
-.banner-card:hover { border-color: var(--border2); }
-.banner-card.active { background: #0a1a0a; border-color: var(--green); box-shadow: 0 0 20px rgba(34,197,94,0.2); }
-.swatch-preview { height: 38px; border-radius: 6px; overflow: hidden; margin-bottom: 10px; border: 1px solid var(--border); background: #111; }
-.swatch-preview img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
-.card-name { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); transition: color 0.2s; margin-bottom: 2px; }
+.banner-card:hover { border-color: rgba(255,0,128,0.4); }
+.banner-card.active {
+  border-color: var(--pink);
+  background: rgba(255,0,128,0.08);
+  box-shadow: 0 0 16px var(--pink-glow);
+}
+.swatch-preview {
+  height: 32px; border-radius: 4px; overflow: hidden;
+  margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.1); background: #111;
+}
+.swatch-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card-name { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); transition: color 0.2s; margin-bottom: 1px; }
 .banner-card.active .card-name { color: #fff; }
-.card-price { font-size: 11px; font-weight: 600; color: var(--faint); transition: color 0.2s; }
-.banner-card.active .card-price { color: var(--green); }
+.card-price { font-size: 10px; color: var(--faint); transition: color 0.2s; }
+.banner-card.active .card-price { color: var(--pink); }
 .card-check {
-  position: absolute; bottom: 10px; right: 10px;
-  width: 20px; height: 20px; border-radius: 50%; background: var(--green);
+  position: absolute; top: 8px; right: 8px;
+  width: 16px; height: 16px; border-radius: 50%; background: var(--pink);
   display: flex; align-items: center; justify-content: center;
   opacity: 0; transition: opacity 0.2s;
 }
 .banner-card.active .card-check { opacity: 1; }
 
-/* ── COLOUR BAR ── */
-.colour-bar {
-  display: flex; align-items: center; gap: 14px;
-  padding: 12px 16px;
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 10px; margin-bottom: 14px;
-}
-.colour-label { font-size: 10px; letter-spacing: 2px; color: var(--muted); white-space: nowrap; }
-.colour-swatches { display: flex; gap: 8px; flex-wrap: wrap; }
+/* Car colour */
+.colour-swatches { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
 .swatch {
-  width: 24px; height: 24px; border-radius: 50%;
+  width: 26px; height: 26px; border-radius: 50%;
   border: 2px solid transparent; cursor: pointer;
   transition: all 0.2s; outline: none;
 }
 .swatch:hover { transform: scale(1.15); }
-.swatch.active { border-color: var(--green); box-shadow: 0 0 8px rgba(34,197,94,0.5); transform: scale(1.15); }
-.colour-name { font-size: 10px; letter-spacing: 1px; color: var(--green); white-space: nowrap; }
+.swatch.active { border-color: var(--pink); box-shadow: 0 0 10px var(--pink-glow); transform: scale(1.15); }
+.colour-name { font-size: 10px; letter-spacing: 1px; color: var(--pink); margin-top: 6px; }
 
-/* ── CTA BAR ── */
-.cta-bar {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 14px; padding: 20px 24px;
-  display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  margin-bottom: 12px;
+/* CTA */
+.cta-block {
+  margin-top: auto; padding-top: 20px;
+  border-top: 1px solid var(--border);
 }
-.cta-info {}
-.cta-name { font-family: var(--font-display); font-size: 24px; letter-spacing: 2px; text-transform: uppercase; }
-.cta-sub { font-size: 11px; color: var(--muted); margin-top: 3px; letter-spacing: 1px; font-family: var(--font-text); }
-.cta-right { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
-.cta-price { font-family: var(--font-display); font-size: 32px; letter-spacing: 1px; }
+.cta-banner-name {
+  font-family: var(--font-display);
+  font-size: 26px; letter-spacing: 2px; text-transform: uppercase; color: #fff;
+  margin-bottom: 2px;
+}
+.cta-banner-sub {
+  font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-bottom: 16px;
+  font-family: var(--font-text);
+}
+.cta-price-row {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+}
+.cta-price {
+  font-family: var(--font-display); font-size: 36px; letter-spacing: 1px; color: #fff;
+}
+.cta-price span { font-size: 14px; color: var(--muted); }
 .cta-btn {
-  background: var(--green); color: #000;
+  width: 100%; background: var(--pink); color: #fff;
   border: none; border-radius: 8px;
-  padding: 14px 28px; font-size: 12px; font-weight: 800;
-  letter-spacing: 3px; text-transform: uppercase;
+  padding: 16px; font-size: 13px; font-weight: 800;
+  letter-spacing: 4px; text-transform: uppercase;
   cursor: pointer; transition: all 0.2s;
-  min-width: 160px; font-family: var(--font-body);
-  text-decoration: none; display: inline-flex; align-items: center; justify-content: center;
-  box-shadow: 0 0 24px rgba(34,197,94,0.35);
+  font-family: var(--font-body);
+  text-decoration: none; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 30px var(--pink-glow), 0 4px 20px rgba(255,0,128,0.4);
 }
-.cta-btn:hover { transform: translateY(-2px); box-shadow: 0 0 32px rgba(34,197,94,0.5); }
-.cta-btn:active { transform: translateY(0); }
+.cta-btn:hover { transform: translateY(-2px); box-shadow: 0 0 50px var(--pink-glow), 0 8px 30px rgba(255,0,128,0.5); }
 
-/* ── FEATURES STRIP ── */
-.features {
-  border-top: 1px solid var(--border);
-  padding: 40px 0;
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
-  background: var(--border);
-  margin-top: 60px;
+/* Features bar */
+.features-bar {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid rgba(255,0,128,0.15);
+  background: rgba(0,0,10,0.95);
 }
-.feature {
-  background: var(--black); padding: 32px 24px;
-  text-align: center;
+.feature-item {
+  padding: 28px 20px; text-align: center;
+  border-right: 1px solid rgba(255,0,128,0.1);
 }
-.feature-icon { font-size: 28px; margin-bottom: 12px; }
-.feature-title { font-family: var(--font-display); font-size: 18px; letter-spacing: 2px; margin-bottom: 6px; }
-.feature-text { font-size: 12px; color: var(--muted); line-height: 1.6; font-family: var(--font-text); }
+.feature-item:last-child { border-right: none; }
+.feature-icon { font-size: 24px; margin-bottom: 8px; }
+.feature-title {
+  font-family: var(--font-display); font-size: 15px; letter-spacing: 2px; margin-bottom: 4px;
+  color: #fff;
+}
+.feature-text { font-size: 11px; color: var(--muted); line-height: 1.5; font-family: var(--font-text); }
 
-/* ── FOOTER ── */
+/* Footer */
 .footer {
-  padding: 40px; text-align: center;
-  border-top: 1px solid var(--border);
+  padding: 28px 40px; text-align: center;
+  border-top: 1px solid rgba(255,0,128,0.1);
+  background: #000;
 }
-.footer-logo { font-family: var(--font-display); font-size: 20px; letter-spacing: 4px; color: var(--muted); margin-bottom: 8px; }
-.footer-text { font-size: 11px; color: var(--faint); letter-spacing: 2px; font-family: var(--font-text); }
-.footer-links { display: flex; gap: 24px; justify-content: center; margin-top: 16px; }
+.footer-logo {
+  font-family: var(--font-display); font-size: 18px; letter-spacing: 4px;
+  color: var(--pink); margin-bottom: 6px;
+  text-shadow: 0 0 20px var(--pink-glow);
+}
+.footer-text { font-size: 10px; color: var(--faint); letter-spacing: 2px; }
+.footer-links { display: flex; gap: 24px; justify-content: center; margin-top: 12px; }
 .footer-link { font-size: 10px; color: var(--faint); letter-spacing: 2px; text-transform: uppercase; text-decoration: none; }
-.footer-link:hover { color: var(--muted); }
+.footer-link:hover { color: var(--pink); }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--pink); box-shadow: 0 0 8px var(--pink); animation: pulse 2s ease infinite; display: inline-block; margin-left: 6px; }
 
 /* ── RESPONSIVE ── */
-@media (max-width: 700px) {
-  .nav { padding: 14px 16px; }
+@media (max-width: 900px) {
+  .main-layout { flex-direction: column; }
+  .left-panel { width: 100%; min-width: unset; max-height: unset; padding: 80px 16px 16px; }
+  #canvas3d { height: 55vw; min-height: 300px; }
+  .nav { padding: 12px 16px; }
   .nav-links { display: none; }
-  .hero-tagline { font-size: clamp(36px, 12vw, 80px); }
-  #canvas3d { height: 340px; }
-  .banner-grid { grid-template-columns: repeat(1, 1fr); }
-  .cta-bar { flex-direction: column; align-items: flex-start; }
-  .cta-right { width: 100%; justify-content: space-between; }
-  .features { grid-template-columns: repeat(2, 1fr); }
+  .features-bar { grid-template-columns: repeat(2, 1fr); }
+  .banner-grid { grid-template-columns: repeat(3, 1fr); }
 }
 </style>
 </head>
@@ -308,148 +308,107 @@ body {
 
 <!-- NAV -->
 <nav class="nav">
-  <div class="nav-logo">LEGENDARY<span>.</span></div>
+  <div>
+    <div class="nav-logo">LEGENDARY</div>
+    <span class="nav-logo-sub">BANNERS</span>
+  </div>
   <div class="nav-links">
-    <a href="#visualizer" class="nav-link">Visualizer</a>
-    <a href="#features" class="nav-link">Features</a>
-    <a href="https://unlimitedgraphix.com.au" class="nav-link" target="_blank">UG Studio</a>
-    <a href="#visualizer" class="nav-cta">SHOP NOW</a>
+    <a href="#" class="nav-link">Shop</a>
+    <a href="#" class="nav-link">Custom Design</a>
+    <a href="#" class="nav-link">Gallery</a>
+    <a href="#" class="nav-link">Install Guide</a>
+    <a href="https://unlimitedgraphix.com.au" class="nav-link" target="_blank">About</a>
+    <a href="#" class="nav-cta">SHOP NOW</a>
   </div>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-tagline">LEGENDARY<br><span>BANNERS</span></div>
-  <div class="hero-sub">Custom Windshield Vinyl · Perth, Australia · Est. 2010</div>
-  <div class="hero-scroll">
-    <span>Explore</span>
-    <div class="scroll-line"></div>
-  </div>
-</section>
+<!-- MAIN -->
+<div class="main-layout">
 
-<!-- VISUALIZER -->
-<section class="viz-section" id="visualizer">
-  <div class="viz-container">
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="configurator-title"><span>3D</span> BANNER<br>CONFIGURATOR</div>
+    <div class="configurator-sub">Choose. Preview. Perfect.</div>
 
-    <div class="section-eyebrow">
-      <div class="line"></div>
-      <div class="label">3D Live Configurator</div>
-      <div class="line"></div>
-    </div>
-
-    <!-- 3D Viewer -->
-    <div class="viewer-card" id="vizCard">
-      <div class="loading-screen" id="loadingScreen">
-        <div class="spinner"></div>
-        <div class="loading-pct" id="loadingPct">0%</div>
-        <div class="loading-label">Loading 3D Model</div>
-      </div>
-      <canvas id="canvas3d"></canvas>
-      <div class="controls-hint">Drag to rotate &nbsp;·&nbsp; Scroll to zoom &nbsp;·&nbsp; Two-finger pan</div>
-      <div class="info-bar">
-        <div class="info-left">
-          <div class="mini-swatch"><img id="miniImg" src="" alt=""/></div>
-          <div>
-            <div class="info-name" id="infoName">—</div>
-            <div class="info-sub">WINDSHIELD BANNER VINYL</div>
-          </div>
-        </div>
-        <div class="live-indicator">
-          <div class="live-text">Live Preview</div>
-          <div class="live-dot" id="liveDot"></div>
-        </div>
-      </div>
-    </div>
+    <div class="section-label">Select Banner Design</div>
 
     <!-- Tabs -->
     <div class="panel-tabs">
-      <button class="panel-tab active" id="tabFront" onclick="switchPanel('front')">🔵 &nbsp;Front Windshield</button>
-      <button class="panel-tab" id="tabRear" onclick="switchPanel('rear')">🔴 &nbsp;Rear Window</button>
-    </div>
-
-    <!-- Car Colour Picker -->
-    <div class="colour-bar">
-      <div class="colour-label">CAR COLOUR</div>
-      <div class="colour-swatches">
-        <button class="swatch active" data-colour="#0d0d14" data-name="Carbon Black" style="background:#0d0d14" title="Carbon Black" onclick="setCarColour(this)"></button>
-        <button class="swatch" data-colour="#f0f0f0" data-name="Alpine White" style="background:#f0f0f0" title="Alpine White" onclick="setCarColour(this)"></button>
-        <button class="swatch" data-colour="#c0c0c0" data-name="Silver" style="background:#c0c0c0" title="Silver" onclick="setCarColour(this)"></button>
-        <button class="swatch" data-colour="#1a1a2e" data-name="Midnight Blue" style="background:#1a1a2e" title="Midnight Blue" onclick="setCarColour(this)"></button>
-        <button class="swatch" data-colour="#0066cc" data-name="Miami Blue" style="background:#0066cc" title="Miami Blue" onclick="setCarColour(this)"></button>
-        <button class="swatch" data-colour="#cc2200" data-name="Imola Red" style="background:#cc2200" title="Imola Red" onclick="setCarColour(this)"></button>
-        <button class="swatch" data-colour="#2d5a1b" data-name="British Racing Green" style="background:#2d5a1b" title="British Racing Green" onclick="setCarColour(this)"></button>
-        <button class="swatch" data-colour="#8b6914" data-name="Cognac" style="background:#8b6914" title="Cognac" onclick="setCarColour(this)"></button>
-      </div>
-      <div class="colour-name" id="colourName">Carbon Black</div>
+      <button class="panel-tab active" id="tabFront" onclick="switchPanel('front')">Front Windshield</button>
+      <button class="panel-tab" id="tabRear" onclick="switchPanel('rear')">Rear Window</button>
     </div>
 
     <!-- Front Panel -->
     <div id="panelFront">
-      <div class="selector-header">
-        <div class="selector-title">Select Your Design</div>
-        <div class="selector-line"></div>
-        <div class="selector-count" id="frontCount">3 designs</div>
-      </div>
       <div class="banner-grid" id="bannerGrid"></div>
-      <div class="cta-bar">
-        <div class="cta-info">
-          <div class="cta-name" id="ctaName">—</div>
-          <div class="cta-sub">Front Windshield · High-Gloss Vinyl · UV Resistant · 5-Year Outdoor Rated</div>
-        </div>
-        <div class="cta-right">
-          <div class="cta-price" id="ctaPrice">$99.90</div>
-          <a class="cta-btn" id="ctaBtn" href="#" target="_blank">BUY NOW →</a>
-        </div>
-      </div>
     </div>
 
     <!-- Rear Panel -->
     <div id="panelRear" style="display:none;">
-      <div class="selector-header">
-        <div class="selector-title">Select Your Design</div>
-        <div class="selector-line"></div>
-        <div class="selector-count">3 designs</div>
-      </div>
       <div class="banner-grid" id="rearBannerGrid"></div>
-      <div class="cta-bar">
-        <div class="cta-info">
-          <div class="cta-name" id="rearCtaName">— Select a rear banner —</div>
-          <div class="cta-sub">Rear Window · High-Gloss Vinyl · UV Resistant · 5-Year Outdoor Rated</div>
-        </div>
-        <div class="cta-right">
-          <div class="cta-price">$99.90</div>
-          <a class="cta-btn" id="rearCtaBtn" href="#" onclick="handleRearBuy(event)">BUY NOW →</a>
-        </div>
-      </div>
     </div>
 
+    <!-- Car Colour -->
+    <div class="section-label">Car Colour</div>
+    <div class="colour-swatches">
+      <button class="swatch active" data-colour="#0d0d14" data-name="Carbon Black" style="background:#0d0d14" title="Carbon Black" onclick="setCarColour(this)"></button>
+      <button class="swatch" data-colour="#f0f0f0" data-name="Alpine White" style="background:#f0f0f0;border-color:rgba(255,255,255,0.3)" title="Alpine White" onclick="setCarColour(this)"></button>
+      <button class="swatch" data-colour="#c0c0c0" data-name="Silver" style="background:#c0c0c0" title="Silver" onclick="setCarColour(this)"></button>
+      <button class="swatch" data-colour="#1a1a2e" data-name="Midnight Blue" style="background:#1a1a2e" title="Midnight Blue" onclick="setCarColour(this)"></button>
+      <button class="swatch" data-colour="#0066cc" data-name="Miami Blue" style="background:#0066cc" title="Miami Blue" onclick="setCarColour(this)"></button>
+      <button class="swatch" data-colour="#cc2200" data-name="Imola Red" style="background:#cc2200" title="Imola Red" onclick="setCarColour(this)"></button>
+      <button class="swatch" data-colour="#2d5a1b" data-name="Racing Green" style="background:#2d5a1b" title="Racing Green" onclick="setCarColour(this)"></button>
+    </div>
+    <div class="colour-name" id="colourName">Carbon Black</div>
+
+    <!-- CTA -->
+    <div class="cta-block">
+      <div class="cta-banner-name" id="ctaName">—</div>
+      <div class="cta-banner-sub">Front Windshield · High-Gloss Vinyl · UV Resistant · 5-Year Outdoor Rated</div>
+      <div class="cta-price-row">
+        <div class="cta-price" id="ctaPrice">$99.90 <span>AUD</span></div>
+        <div style="font-size:10px;color:var(--muted);">Free shipping AU wide</div>
+      </div>
+      <a class="cta-btn" id="ctaBtn" href="#" target="_blank">ADD TO CART — $99.90</a>
+    </div>
   </div>
-</section>
+
+  <!-- RIGHT 3D CANVAS -->
+  <div class="right-canvas">
+    <div class="loading-screen" id="loadingScreen">
+      <div class="spinner"></div>
+      <div class="loading-pct" id="loadingPct">0%</div>
+      <div class="loading-label">Loading 3D Model</div>
+    </div>
+    <canvas id="canvas3d"></canvas>
+    <div class="controls-hint">Drag to rotate &nbsp;·&nbsp; Scroll to zoom</div>
+  </div>
+
+</div>
 
 <!-- FEATURES -->
-<section class="features" id="features">
-  <div class="feature">
-    <div class="feature-icon">🎨</div>
-    <div class="feature-title">100+ Designs</div>
-    <div class="feature-text">From JDM to anime, street art to motorsport — there's a Legendary Banner for every build.</div>
-  </div>
-  <div class="feature">
-    <div class="feature-icon">💎</div>
-    <div class="feature-title">Premium Vinyl</div>
-    <div class="feature-text">High-gloss cast vinyl with UV-resistant inks. Built to last 5+ years outdoors.</div>
-  </div>
-  <div class="feature">
-    <div class="feature-icon">🚗</div>
-    <div class="feature-title">Perfect Fit</div>
-    <div class="feature-text">Precision cut to fit the top of any windshield. No bubbles, no hassle — DIY friendly.</div>
-  </div>
-  <div class="feature">
-    <div class="feature-icon">📍</div>
+<div class="features-bar">
+  <div class="feature-item">
+    <div class="feature-icon">🏆</div>
     <div class="feature-title">Perth Made</div>
-    <div class="feature-text">Designed and fulfilled in Perth, WA by Unlimited Graphix — 15 years in the wrap game.</div>
+    <div class="feature-text">Proudly designed & made in WA</div>
   </div>
-</section>
+  <div class="feature-item">
+    <div class="feature-icon">🚀</div>
+    <div class="feature-title">Fast Shipping</div>
+    <div class="feature-text">Same day dispatch before 2PM</div>
+  </div>
+  <div class="feature-item">
+    <div class="feature-icon">🛡️</div>
+    <div class="feature-title">5-7 Year Durability</div>
+    <div class="feature-text">Built to last the distance</div>
+  </div>
+  <div class="feature-item">
+    <div class="feature-icon">⭐</div>
+    <div class="feature-title">1000+ Customers</div>
+    <div class="feature-text">Trusted by car enthusiasts</div>
+  </div>
+</div>
 
 <!-- FOOTER -->
 <footer class="footer">
@@ -460,35 +419,20 @@ body {
     <a href="https://unlimitedgraphix.com.au/terms-and-conditions" class="footer-link" target="_blank">Terms & Conditions</a>
     <a href="https://unlimitedgraphix.com.au" class="footer-link" target="_blank">UG Studio</a>
   </div>
-  <div style="margin-top:16px;font-size:10px;color:#222;letter-spacing:1px;">© 2026 Legendary Banners · All Rights Reserved</div>
+  <div style="margin-top:12px;font-size:10px;color:#222;letter-spacing:1px;">© 2026 Legendary Banners · All Rights Reserved</div>
 </footer>
 
 <!-- THREE.JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// ── BANNER DATA ── UPDATE THESE WITH YOUR SHOPIFY VARIANT URLS
 const SHOPIFY_BASE = 'https://legendary-banners.myshopify.com/products/legendary-banners-windshield-banner?variant=';
 const BANNERS = [
-  {
-    id:1, name:"Akatsuki", price:"$99.90",
-    img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/AKATSUKI.jpg/:/rs=w:1280,h:192",
-    variantId:"52125011378459"
-  },
-  {
-    id:2, name:"AMG", price:"$99.90",
-    img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/AMG.jpg/:/rs=w:1280,h:197",
-    variantId:"52125011411227"
-  },
-  {
-    id:3, name:"Blessed", price:"$99.90",
-    img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/BLESSED.jpg/:/cr=t:0%25,l:0%25,w:100%25,h:100%25/rs=w:1280,h:195",
-    variantId:"52125011443995"
-  }
+  { id:1, name:"Akatsuki", price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/AKATSUKI.jpg/:/rs=w:1280,h:192", variantId:"52125011378459" },
+  { id:2, name:"AMG", price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/AMG.jpg/:/rs=w:1280,h:197", variantId:"52125011411227" },
+  { id:3, name:"Blessed", price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/BLESSED.jpg/:/cr=t:0%25,l:0%25,w:100%25,h:100%25/rs=w:1280,h:195", variantId:"52125011443995" }
 ];
 
-function cartURL(variantId) {
-  return SHOPIFY_BASE + variantId;
-}
+function cartURL(variantId) { return SHOPIFY_BASE + variantId; }
 
 // ── CAR COLOUR ──
 let carModel = null;
@@ -502,55 +446,54 @@ function setCarColour(btn) {
     if (child.isMesh) {
       const mats = Array.isArray(child.material) ? child.material : [child.material];
       mats.forEach(mat => {
-        if (mat.name === 'Kuzov_Main_color') {
-          mat.color.set(col);
-          mat.needsUpdate = true;
-        }
+        if (mat.name === 'Kuzov_Main_color') { mat.color.set(col); mat.needsUpdate = true; }
       });
     }
   });
 }
+
+// ── THREE SETUP ──
 const canvas = document.getElementById('canvas3d');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.2;
+renderer.toneMappingExposure = 1.1;
 renderer.shadowMap.enabled = true;
-renderer.setClearColor(0x080808, 1);
+renderer.setClearColor(0x050010, 1);
 
 const scene = new THREE.Scene();
 
-// Dark showroom background
+// ── MIAMI SUNSET SKY ──
 const skyCanvas = document.createElement('canvas');
 skyCanvas.width = 1024; skyCanvas.height = 1024;
 const skyCtx = skyCanvas.getContext('2d');
-// Deep dark gradient
 const skyGrad = skyCtx.createLinearGradient(0, 0, 0, 1024);
-skyGrad.addColorStop(0.0,  '#080808');
-skyGrad.addColorStop(0.5,  '#0f0f0f');
-skyGrad.addColorStop(0.8,  '#141414');
-skyGrad.addColorStop(1.0,  '#1a1a1a');
+skyGrad.addColorStop(0.0,  '#050010');
+skyGrad.addColorStop(0.25, '#1a0035');
+skyGrad.addColorStop(0.45, '#4a0050');
+skyGrad.addColorStop(0.58, '#8b0060');
+skyGrad.addColorStop(0.68, '#cc1040');
+skyGrad.addColorStop(0.76, '#ee4010');
+skyGrad.addColorStop(0.85, '#ff8800');
+skyGrad.addColorStop(0.92, '#ffcc00');
+skyGrad.addColorStop(1.0,  '#111008');
 skyCtx.fillStyle = skyGrad;
 skyCtx.fillRect(0, 0, 1024, 1024);
-// Dramatic spotlight cones from above
-[
-  [512, 0, 60, 500, 'rgba(255,255,255,0.08)'],
-  [300, 0, 40, 400, 'rgba(255,255,255,0.05)'],
-  [720, 0, 40, 400, 'rgba(255,255,255,0.05)'],
-].forEach(([x, y, r, h, col]) => {
-  const g = skyCtx.createRadialGradient(x, y, 0, x, y+h, r*3);
-  g.addColorStop(0, col);
-  g.addColorStop(1, 'rgba(0,0,0,0)');
-  skyCtx.fillStyle = g;
-  skyCtx.fillRect(0, 0, 1024, 1024);
-});
-// Subtle warm glow at horizon
-const horizGrad = skyCtx.createLinearGradient(0, 600, 0, 800);
-horizGrad.addColorStop(0, 'rgba(40,30,10,0)');
-horizGrad.addColorStop(0.5, 'rgba(40,30,10,0.12)');
-horizGrad.addColorStop(1, 'rgba(0,0,0,0)');
-skyCtx.fillStyle = horizGrad;
+// Stars in upper portion
+for (let i = 0; i < 600; i++) {
+  const x = Math.random()*1024, y = Math.random()*400;
+  const size = Math.random() < 0.8 ? 0.5 : 1.2;
+  const b = 0.3 + Math.random()*0.7;
+  skyCtx.beginPath(); skyCtx.arc(x, y, size, 0, Math.PI*2);
+  skyCtx.fillStyle = `rgba(255,255,255,${b})`; skyCtx.fill();
+}
+// Sun glow at horizon
+const sunGlow = skyCtx.createRadialGradient(512, 870, 0, 512, 870, 300);
+sunGlow.addColorStop(0, 'rgba(255,220,50,0.7)');
+sunGlow.addColorStop(0.3, 'rgba(255,100,0,0.3)');
+sunGlow.addColorStop(1, 'rgba(0,0,0,0)');
+skyCtx.fillStyle = sunGlow;
 skyCtx.fillRect(0, 0, 1024, 1024);
 const skyTex = new THREE.CanvasTexture(skyCanvas);
 skyTex.needsUpdate = true;
@@ -559,416 +502,290 @@ scene.background = skyTex;
 const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.01, 100);
 
 // ── LIGHTING ──
-scene.add(new THREE.AmbientLight(0x111111, 0.8));
-const keyLight = new THREE.DirectionalLight(0xffffff, 3.0);
-keyLight.position.set(0, 10, 3); keyLight.castShadow = true; scene.add(keyLight);
-const fillLight = new THREE.DirectionalLight(0xffffff, 1.2);
-fillLight.position.set(-6, 6, 2); scene.add(fillLight);
-const fillLight2 = new THREE.DirectionalLight(0xffffff, 1.2);
-fillLight2.position.set(6, 6, 2); scene.add(fillLight2);
-const rimLight = new THREE.DirectionalLight(0xffeedd, 0.8);
-rimLight.position.set(0, 6, -8); scene.add(rimLight);
-// Dramatic downlights
-const spot1 = new THREE.PointLight(0xffffff, 4.0, 6);
+scene.add(new THREE.AmbientLight(0x220a30, 1.0));
+const keyLight = new THREE.DirectionalLight(0xffffff, 2.8);
+keyLight.position.set(3, 8, 4); keyLight.castShadow = true; scene.add(keyLight);
+const fillLight = new THREE.DirectionalLight(0xff4488, 0.8);
+fillLight.position.set(-5, 4, 2); scene.add(fillLight);
+const fillLight2 = new THREE.DirectionalLight(0x4488ff, 0.5);
+fillLight2.position.set(5, 4, 2); scene.add(fillLight2);
+const rimLight = new THREE.DirectionalLight(0xff8800, 1.2);
+rimLight.position.set(0, 3, -8); scene.add(rimLight);
+const spot1 = new THREE.PointLight(0xffffff, 3.5, 6);
 spot1.position.set(0, 5, 0); scene.add(spot1);
-const spot2 = new THREE.PointLight(0xffffff, 2.0, 5);
-spot2.position.set(-2.5, 5, -1); scene.add(spot2);
-const spot3 = new THREE.PointLight(0xffffff, 2.0, 5);
-spot3.position.set(2.5, 5, -1); scene.add(spot3);
-// Subtle coloured accent
-const accentLight = new THREE.PointLight(0x4488ff, 0.6, 8);
-accentLight.position.set(0, 1, -4); scene.add(accentLight);
-scene.add(new THREE.HemisphereLight(0x222222, 0x111111, 0.5));
+const neonLeft = new THREE.PointLight(0xff0088, 1.0, 5);
+neonLeft.position.set(-3, 1, -1); scene.add(neonLeft);
+const neonRight = new THREE.PointLight(0x00aaff, 0.8, 5);
+neonRight.position.set(3, 1, -1); scene.add(neonRight);
+scene.add(new THREE.HemisphereLight(0x220a30, 0x111105, 0.6));
 
 // ── ORBIT CONTROLS ──
-let isDragging = false, isRightDragging = false;
-let prevMouse = { x:0, y:0 };
-let spherical = { theta: 0.3, phi: Math.PI / 3.8, radius: 2.2 };
-let target = new THREE.Vector3(0, 0.45, 0);
-let autoRotate = true;
-let autoRotateTimeout;
+let isDragging=false, isRightDragging=false, prevMouse={x:0,y:0};
+let spherical={theta:0.3, phi:Math.PI/3.8, radius:2.2};
+let target=new THREE.Vector3(0,0.45,0);
+let autoRotate=true, autoRotateTimeout;
 
 function updateCamera() {
-  camera.position.x = target.x + spherical.radius * Math.sin(spherical.phi) * Math.sin(spherical.theta);
-  camera.position.y = target.y + spherical.radius * Math.cos(spherical.phi);
-  camera.position.z = target.z + spherical.radius * Math.sin(spherical.phi) * Math.cos(spherical.theta);
+  camera.position.x=target.x+spherical.radius*Math.sin(spherical.phi)*Math.sin(spherical.theta);
+  camera.position.y=target.y+spherical.radius*Math.cos(spherical.phi);
+  camera.position.z=target.z+spherical.radius*Math.sin(spherical.phi)*Math.cos(spherical.theta);
   camera.lookAt(target);
 }
 
 canvas.addEventListener('mousedown', e => {
-  if (e.button === 2) isRightDragging = true; else isDragging = true;
-  autoRotate = false; clearTimeout(autoRotateTimeout);
-  prevMouse = { x: e.clientX, y: e.clientY };
+  if(e.button===2) isRightDragging=true; else isDragging=true;
+  autoRotate=false; clearTimeout(autoRotateTimeout);
+  prevMouse={x:e.clientX,y:e.clientY};
 });
 canvas.addEventListener('mousemove', e => {
-  if (!isDragging && !isRightDragging) return;
-  const dx = e.clientX - prevMouse.x, dy = e.clientY - prevMouse.y;
-  if (isDragging) {
-    spherical.theta -= dx * 0.008;
-    spherical.phi = Math.max(0.2, Math.min(Math.PI * 0.85, spherical.phi - dy * 0.006));
-  }
-  if (isRightDragging) {
-    const right = new THREE.Vector3();
-    camera.getWorldDirection(right); right.cross(camera.up).normalize();
-    target.addScaledVector(right, -dx * 0.004);
-    target.addScaledVector(camera.up, dy * 0.004);
-  }
-  prevMouse = { x: e.clientX, y: e.clientY };
-  updateCamera();
+  if(!isDragging&&!isRightDragging) return;
+  const dx=e.clientX-prevMouse.x, dy=e.clientY-prevMouse.y;
+  if(isDragging){ spherical.theta-=dx*0.008; spherical.phi=Math.max(0.2,Math.min(Math.PI*0.85,spherical.phi-dy*0.006)); }
+  if(isRightDragging){ const r=new THREE.Vector3(); camera.getWorldDirection(r); r.cross(camera.up).normalize(); target.addScaledVector(r,-dx*0.004); target.addScaledVector(camera.up,dy*0.004); }
+  prevMouse={x:e.clientX,y:e.clientY}; updateCamera();
 });
-window.addEventListener('mouseup', () => {
-  isDragging = false; isRightDragging = false;
-  autoRotateTimeout = setTimeout(() => { autoRotate = true; }, 4000);
-});
-canvas.addEventListener('wheel', e => {
-  spherical.radius = Math.max(0.5, Math.min(12, spherical.radius + e.deltaY * 0.005));
-  autoRotate = false; clearTimeout(autoRotateTimeout);
-  autoRotateTimeout = setTimeout(() => { autoRotate = true; }, 3000);
-  updateCamera(); e.preventDefault();
-}, { passive: false });
-canvas.addEventListener('contextmenu', e => e.preventDefault());
-
-// Touch
-let lastTouch = null, lastPinchDist = null;
-canvas.addEventListener('touchstart', e => {
-  autoRotate = false; clearTimeout(autoRotateTimeout);
-  if (e.touches.length === 1) lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-  if (e.touches.length === 2) lastPinchDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-  e.preventDefault();
-}, { passive: false });
-canvas.addEventListener('touchmove', e => {
-  if (e.touches.length === 1 && lastTouch) {
-    const dx = e.touches[0].clientX - lastTouch.x, dy = e.touches[0].clientY - lastTouch.y;
-    spherical.theta -= dx * 0.01;
-    spherical.phi = Math.max(0.2, Math.min(Math.PI * 0.85, spherical.phi - dy * 0.008));
-    lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-    updateCamera();
-  }
-  if (e.touches.length === 2) {
-    const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-    const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-    const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-    if (lastPinchDist) spherical.radius = Math.max(0.5, Math.min(12, spherical.radius - (dist - lastPinchDist) * 0.015));
-    if (lastTouch) {
-      const panDX = midX - lastTouch.x, panDY = midY - lastTouch.y;
-      const right = new THREE.Vector3(); camera.getWorldDirection(right); right.cross(camera.up).normalize();
-      target.addScaledVector(right, -panDX * 0.004);
-      target.addScaledVector(camera.up, panDY * 0.004);
-    }
-    lastPinchDist = dist; lastTouch = { x: midX, y: midY }; updateCamera();
-  }
-  e.preventDefault();
-}, { passive: false });
-canvas.addEventListener('touchend', () => {
-  lastTouch = null; lastPinchDist = null;
-  autoRotateTimeout = setTimeout(() => { autoRotate = true; }, 4000);
-});
+window.addEventListener('mouseup',()=>{ isDragging=false; isRightDragging=false; autoRotateTimeout=setTimeout(()=>{autoRotate=true;},4000); });
+canvas.addEventListener('wheel',e=>{ spherical.radius=Math.max(0.5,Math.min(12,spherical.radius+e.deltaY*0.005)); autoRotate=false; clearTimeout(autoRotateTimeout); autoRotateTimeout=setTimeout(()=>{autoRotate=true;},3000); updateCamera(); e.preventDefault(); },{passive:false});
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
+let lastTouch=null, lastPinchDist=null;
+canvas.addEventListener('touchstart',e=>{ autoRotate=false; clearTimeout(autoRotateTimeout); if(e.touches.length===1) lastTouch={x:e.touches[0].clientX,y:e.touches[0].clientY}; if(e.touches.length===2) lastPinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); },{passive:false});
+canvas.addEventListener('touchmove',e=>{ if(e.touches.length===1&&lastTouch){ const dx=e.touches[0].clientX-lastTouch.x,dy=e.touches[0].clientY-lastTouch.y; spherical.theta-=dx*0.01; spherical.phi=Math.max(0.2,Math.min(Math.PI*0.85,spherical.phi-dy*0.008)); lastTouch={x:e.touches[0].clientX,y:e.touches[0].clientY}; updateCamera(); } if(e.touches.length===2){ const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); if(lastPinchDist) spherical.radius=Math.max(0.5,Math.min(12,spherical.radius-(d-lastPinchDist)*0.015)); lastPinchDist=d; updateCamera(); } e.preventDefault(); },{passive:false});
+canvas.addEventListener('touchend',()=>{ lastTouch=null; lastPinchDist=null; autoRotateTimeout=setTimeout(()=>{autoRotate=true;},4000); });
 
 // ── BANNER TEXTURES ──
-let bannerPlane = null, rearBannerPlane = null, currentRearBanner = null, bannerTexture = null;
+let bannerPlane=null, rearBannerPlane=null, currentRearBanner=null;
 
 function loadBannerTexture(url, callback) {
-  const loader = new THREE.TextureLoader();
-  loader.crossOrigin = 'anonymous';
-  loader.load(url, tex => { tex.encoding = THREE.sRGBEncoding; callback(tex); });
+  const loader=new THREE.TextureLoader(); loader.crossOrigin='anonymous';
+  loader.load(url, tex=>{ tex.encoding=THREE.sRGBEncoding; callback(tex); });
 }
 
-function makeBannerGeoFlipped(W, H, curveDrop) {
-  const segsX = 40, segsY = 4;
-  const positions = [], uvs = [], indices = [];
-  for (let iy = 0; iy <= segsY; iy++) {
-    for (let ix = 0; ix <= segsX; ix++) {
-      const u = ix/segsX, v = iy/segsY;
-      const x = (u-0.5)*W, y = (v-0.5)*H;
-      const z = curveDrop*(1-4*u*(1-u)); // Z flipped for rear window
-      const yArc = curveDrop*0.8*(4*u*(1-u)); // yArc flipped for rear window
-      positions.push(x, y+yArc, z);
-      uvs.push(u, 1-v);
-    }
-  }
-  for (let iy = 0; iy < segsY; iy++) {
-    for (let ix = 0; ix < segsX; ix++) {
-      const a=iy*(segsX+1)+ix, b=a+1, c=a+segsX+1, d=c+1;
-      indices.push(a,c,b); indices.push(b,c,d);
-    }
-  }
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions,3));
-  geo.setAttribute('uv', new THREE.Float32BufferAttribute(uvs,2));
-  geo.setIndex(indices); geo.computeVertexNormals();
-  return geo;
+function makeBannerGeoFlipped(W,H,curveDrop){
+  const segsX=40,segsY=4,positions=[],uvs=[],indices=[];
+  for(let iy=0;iy<=segsY;iy++){for(let ix=0;ix<=segsX;ix++){const u=ix/segsX,v=iy/segsY,x=(u-0.5)*W,y=(v-0.5)*H,z=curveDrop*(1-4*u*(1-u)),yArc=curveDrop*0.8*(4*u*(1-u));positions.push(x,y+yArc,z);uvs.push(u,1-v);}}
+  for(let iy=0;iy<segsY;iy++){for(let ix=0;ix<segsX;ix++){const a=iy*(segsX+1)+ix,b=a+1,c=a+segsX+1,d=c+1;indices.push(a,c,b);indices.push(b,c,d);}}
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));geo.setIndex(indices);geo.computeVertexNormals();return geo;
 }
 
-function makeBannerGeo(W, H, curveDrop) {
-  const segsX = 40, segsY = 4;
-  const positions = [], uvs = [], indices = [];
-  for (let iy = 0; iy <= segsY; iy++) {
-    for (let ix = 0; ix <= segsX; ix++) {
-      const u = ix/segsX, v = iy/segsY;
-      const x = (u-0.5)*W, y = (v-0.5)*H;
-      const z = -curveDrop*(1-4*u*(1-u));
-      const yArc = -curveDrop*0.8*(4*u*(1-u));
-      positions.push(x, y+yArc, z);
-      uvs.push(u, 1-v);
-    }
-  }
-  for (let iy = 0; iy < segsY; iy++) {
-    for (let ix = 0; ix < segsX; ix++) {
-      const a=iy*(segsX+1)+ix, b=a+1, c=a+segsX+1, d=c+1;
-      indices.push(a,c,b); indices.push(b,c,d);
-    }
-  }
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions,3));
-  geo.setAttribute('uv', new THREE.Float32BufferAttribute(uvs,2));
-  geo.setIndex(indices); geo.computeVertexNormals();
-  return geo;
+function makeBannerGeo(W,H,curveDrop){
+  const segsX=40,segsY=4,positions=[],uvs=[],indices=[];
+  for(let iy=0;iy<=segsY;iy++){for(let ix=0;ix<=segsX;ix++){const u=ix/segsX,v=iy/segsY,x=(u-0.5)*W,y=(v-0.5)*H,z=-curveDrop*(1-4*u*(1-u)),yArc=-curveDrop*0.8*(4*u*(1-u));positions.push(x,y+yArc,z);uvs.push(u,1-v);}}
+  for(let iy=0;iy<segsY;iy++){for(let ix=0;ix<segsX;ix++){const a=iy*(segsX+1)+ix,b=a+1,c=a+segsX+1,d=c+1;indices.push(a,c,b);indices.push(b,c,d);}}
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));geo.setIndex(indices);geo.computeVertexNormals();return geo;
 }
 
 function applyBannerToWindshield(texture) {
-  if (bannerPlane) { scene.remove(bannerPlane); bannerPlane.geometry.dispose(); bannerPlane.material.dispose(); bannerPlane=null; }
-  texture.flipY=false; texture.repeat.set(1,1); texture.offset.set(0,0);
-  texture.wrapS=THREE.ClampToEdgeWrapping; texture.wrapT=THREE.ClampToEdgeWrapping; texture.needsUpdate=true;
-  const mat = new THREE.MeshBasicMaterial({ map:texture, transparent:true, opacity:0.92, depthWrite:false, side:THREE.DoubleSide, polygonOffset:true, polygonOffsetFactor:-1, polygonOffsetUnits:-1 });
-  bannerPlane = new THREE.Mesh(makeBannerGeo(0.90, 0.127, 0.075), mat);
-  bannerPlane.position.set(0, 0.457, 0.259);
-  bannerPlane.rotation.x = THREE.MathUtils.degToRad(-64);
+  if(bannerPlane){scene.remove(bannerPlane);bannerPlane.geometry.dispose();bannerPlane.material.dispose();bannerPlane=null;}
+  texture.flipY=false;texture.repeat.set(1,1);texture.offset.set(0,0);
+  texture.wrapS=THREE.ClampToEdgeWrapping;texture.wrapT=THREE.ClampToEdgeWrapping;texture.needsUpdate=true;
+  const mat=new THREE.MeshBasicMaterial({map:texture,transparent:true,opacity:0.92,depthWrite:false,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});
+  bannerPlane=new THREE.Mesh(makeBannerGeo(0.90,0.127,0.075),mat);
+  bannerPlane.position.set(0,0.457,0.259);
+  bannerPlane.rotation.x=THREE.MathUtils.degToRad(-64);
   scene.add(bannerPlane);
 }
 
 function applyBannerToRearWindow(texture) {
-  if (rearBannerPlane) { scene.remove(rearBannerPlane); rearBannerPlane.geometry.dispose(); rearBannerPlane.material.dispose(); rearBannerPlane=null; }
-  if (!texture) return;
-  texture.flipY = false;
-  texture.repeat.set(1, 1);
-  texture.offset.set(0, 0);
-  texture.wrapS = THREE.ClampToEdgeWrapping;
-  texture.wrapT = THREE.ClampToEdgeWrapping;
-  texture.needsUpdate = true;
-  const mat = new THREE.MeshBasicMaterial({
-    map: texture, transparent: true, opacity: 0.93,
-    side: THREE.DoubleSide, depthWrite: false,
-    polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1
-  });
-  // Rear window slopes away from viewer — match the angle of the BMW rear glass (~65°)
-  rearBannerPlane = new THREE.Mesh(makeBannerGeo(0.90, 0.127, 0.075), mat);
-  rearBannerPlane.position.set(0, 0.41, -0.95);
-  rearBannerPlane.rotation.x = THREE.MathUtils.degToRad(55);
-  rearBannerPlane.rotation.y = THREE.MathUtils.degToRad(180);
-  rearBannerPlane.renderOrder = 999;
+  if(rearBannerPlane){scene.remove(rearBannerPlane);rearBannerPlane.geometry.dispose();rearBannerPlane.material.dispose();rearBannerPlane=null;}
+  if(!texture) return;
+  texture.flipY=false;texture.repeat.set(1,1);texture.offset.set(0,0);
+  texture.wrapS=THREE.ClampToEdgeWrapping;texture.wrapT=THREE.ClampToEdgeWrapping;texture.needsUpdate=true;
+  const mat=new THREE.MeshBasicMaterial({map:texture,transparent:true,opacity:0.93,side:THREE.DoubleSide,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});
+  rearBannerPlane=new THREE.Mesh(makeBannerGeo(0.90,0.127,0.075),mat);
+  rearBannerPlane.position.set(0,0.41,-0.95);
+  rearBannerPlane.rotation.x=THREE.MathUtils.degToRad(55);
+  rearBannerPlane.rotation.y=THREE.MathUtils.degToRad(180);
+  rearBannerPlane.renderOrder=999;
   scene.add(rearBannerPlane);
 }
 
+// ── MIAMI SCENE OBJECTS ──
+function buildMiamiScene() {
+  // Wet neon floor
+  const floorC=document.createElement('canvas'); floorC.width=1024; floorC.height=512;
+  const fCtx=floorC.getContext('2d');
+  fCtx.fillStyle='#06000e'; fCtx.fillRect(0,0,1024,512);
+  // Reflection of sky gradient on floor
+  const fGrad=fCtx.createLinearGradient(0,0,0,512);
+  fGrad.addColorStop(0,'rgba(180,30,80,0.5)');
+  fGrad.addColorStop(0.3,'rgba(120,10,50,0.35)');
+  fGrad.addColorStop(0.6,'rgba(40,5,20,0.2)');
+  fGrad.addColorStop(1,'rgba(0,0,0,0)');
+  fCtx.fillStyle=fGrad; fCtx.fillRect(0,0,1024,512);
+  // Neon puddle streaks
+  [['rgba(255,0,128,0.5)',460,0,480,512],['rgba(0,180,255,0.3)',530,0,520,512],['rgba(255,100,0,0.25)',500,0,510,512]].forEach(([col,x1,y1,x2,y2])=>{
+    fCtx.strokeStyle=col; fCtx.lineWidth=3; fCtx.shadowColor=col; fCtx.shadowBlur=12;
+    fCtx.beginPath(); fCtx.moveTo(x1,y1); fCtx.lineTo(x2,y2); fCtx.stroke();
+  });
+  const floorTex=new THREE.CanvasTexture(floorC);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(24,14),new THREE.MeshBasicMaterial({map:floorTex,transparent:true,opacity:0.85,depthWrite:false}));
+  floor.rotation.x=-Math.PI/2; floor.position.set(0,-0.05,-2); scene.add(floor);
+
+  // City silhouette
+  const cityC=document.createElement('canvas'); cityC.width=2048; cityC.height=400;
+  const cCtx=cityC.getContext('2d');
+  const buildings=[[0,220,60,180],[70,200,50,200],[130,170,90,230],[230,190,45,210],[285,150,70,250],[365,165,55,235],[430,140,85,260],[525,170,45,230],[580,120,65,280],[655,155,75,245],[740,135,55,265],[805,160,80,240],[895,150,60,250],[965,125,70,275],[1045,160,55,240],[1110,140,85,260],[1205,130,60,270],[1275,155,90,245],[1375,145,65,255],[1450,120,75,280],[1535,160,55,240],[1600,135,80,265],[1690,150,60,250],[1760,125,70,275],[1840,160,55,240],[1905,140,80,260],[1995,130,50,270]];
+  cCtx.fillStyle='#09000f';
+  buildings.forEach(([x,y,w,h])=>{
+    cCtx.fillRect(x,400-h,w,h);
+    // Windows
+    for(let wx=x+6;wx<x+w-6;wx+=12){
+      for(let wy=400-h+10;wy<388;wy+=16){
+        if(Math.random()>0.45){
+          const wCol=Math.random()<0.3?'rgba(255,200,80,0.6)':'rgba(200,150,255,0.4)';
+          cCtx.fillStyle=wCol; cCtx.fillRect(wx,wy,6,8);
+        }
+      }
+    }
+    cCtx.fillStyle='#09000f';
+  });
+  // Neon glow on buildings
+  cCtx.shadowColor='#ff0080'; cCtx.shadowBlur=30;
+  cCtx.strokeStyle='rgba(255,0,128,0.6)'; cCtx.lineWidth=2;
+  [[100,200,160,200],[800,155,865,155]].forEach(([x1,y1,x2,y2])=>{ cCtx.beginPath(); cCtx.moveTo(x1,y1); cCtx.lineTo(x2,y2); cCtx.stroke(); });
+  const cityTex=new THREE.CanvasTexture(cityC);
+  const city=new THREE.Mesh(new THREE.PlaneGeometry(30,5.5),new THREE.MeshBasicMaterial({map:cityTex,transparent:true,opacity:0.88,depthWrite:false,side:THREE.DoubleSide}));
+  city.position.set(0,0.8,-12); scene.add(city);
+
+  // Palm trees
+  function makePalm(x,z,scale){
+    const pC=document.createElement('canvas'); pC.width=160; pC.height=320;
+    const pCtx=pC.getContext('2d');
+    pCtx.strokeStyle='#1a0828'; pCtx.lineWidth=7;
+    pCtx.beginPath(); pCtx.moveTo(80,320); pCtx.bezierCurveTo(84,240,76,180,88,100); pCtx.stroke();
+    pCtx.lineWidth=3;
+    [[88,100,-80,-50],[88,100,75,-55],[88,100,-95,15],[88,100,90,10],[88,100,-40,-70],[88,100,35,-72],[88,100,0,-80]].forEach(([sx,sy,ex,ey])=>{
+      pCtx.strokeStyle='#0d1f08'; pCtx.shadowColor='#1a3010'; pCtx.shadowBlur=4;
+      pCtx.beginPath(); pCtx.moveTo(sx,sy); pCtx.quadraticCurveTo(sx+ex*0.5,sy+ey*0.5,sx+ex,sy+ey); pCtx.stroke();
+    });
+    const pt=new THREE.CanvasTexture(pC);
+    const pm=new THREE.Mesh(new THREE.PlaneGeometry(1.4*scale,2.8*scale),new THREE.MeshBasicMaterial({map:pt,transparent:true,opacity:0.9,depthWrite:false,side:THREE.DoubleSide}));
+    pm.position.set(x,0.9*scale,z); scene.add(pm);
+  }
+  makePalm(-7,-7,1.4); makePalm(7.5,-8,1.1); makePalm(-10,-10,1.6); makePalm(11,-9,1.2); makePalm(-5,-11,1.0);
+}
+buildMiamiScene();
+
 // ── LOAD MODEL ──
 function loadGLTFLoader(callback) {
-  const s = document.createElement('script');
-  s.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
-  s.onload = callback; document.head.appendChild(s);
+  const s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
+  s.onload=callback; document.head.appendChild(s);
 }
 
 function loadModel() {
-  const MODEL_URL = 'https://green-night-47f9.karlitojemal.workers.dev/2020_bmw_m340i_xdrive.glb';
-  const loader = new THREE.GLTFLoader();
-  loader.load(MODEL_URL, gltf => {
-    const model = gltf.scene;
-    const box = new THREE.Box3().setFromObject(model);
-    const centre = box.getCenter(new THREE.Vector3());
-    const size = box.getSize(new THREE.Vector3());
-    const scale = 3.5 / Math.max(size.x, size.y, size.z);
+  const MODEL_URL='https://green-night-47f9.karlitojemal.workers.dev/2020_bmw_m340i_xdrive.glb';
+  const loader=new THREE.GLTFLoader();
+  loader.load(MODEL_URL, gltf=>{
+    const model=gltf.scene;
+    const box=new THREE.Box3().setFromObject(model);
+    const centre=box.getCenter(new THREE.Vector3());
+    const size=box.getSize(new THREE.Vector3());
+    const scale=3.5/Math.max(size.x,size.y,size.z);
     model.scale.setScalar(scale);
     model.position.sub(centre.multiplyScalar(scale));
-    model.position.y += 0.01;
-
-    scene.environment = null;
-    scene.background = skyTex;
-    renderer.setClearColor(0x080808, 1);
-
-    model.traverse(child => {
-      if (child.isMesh) {
-        child.castShadow = true; child.receiveShadow = true;
-        const mats = Array.isArray(child.material) ? child.material : [child.material];
-        mats.forEach(mat => {
-          if (mat.envMap) { mat.envMap = null; mat.needsUpdate = true; }
-          if (mat.name === 'Kuzov_Main_color') { mat.color = new THREE.Color(0x0d0d14); mat.roughness=0.15; mat.metalness=0.9; mat.needsUpdate=true; }
-          if (mat.name === 'Glass_Windows' || mat.name === 'Glass_backlights' || mat.name === 'glass_light') { mat.color=new THREE.Color(0x0a1015); mat.roughness=0.05; mat.transparent=true; mat.opacity=0.6; mat.depthWrite=false; mat.needsUpdate=true; }
+    model.position.y+=0.01;
+    scene.environment=null; scene.background=skyTex;
+    renderer.setClearColor(0x050010,1);
+    model.traverse(child=>{
+      if(child.isMesh){
+        child.castShadow=true; child.receiveShadow=true;
+        const mats=Array.isArray(child.material)?child.material:[child.material];
+        mats.forEach(mat=>{
+          if(mat.envMap){mat.envMap=null;mat.needsUpdate=true;}
+          if(mat.name==='Kuzov_Main_color'){mat.color=new THREE.Color(0x0d0d14);mat.roughness=0.15;mat.metalness=0.9;mat.needsUpdate=true;}
+          if(mat.name==='Glass_Windows'||mat.name==='Glass_backlights'||mat.name==='glass_light'){mat.color=new THREE.Color(0x0a1015);mat.roughness=0.05;mat.transparent=true;mat.opacity=0.6;mat.depthWrite=false;mat.needsUpdate=true;}
         });
       }
     });
-
-    const box2 = new THREE.Box3().setFromObject(model);
-    const centre2 = box2.getCenter(new THREE.Vector3());
-    model.position.y -= centre2.y * 0.5;
-    scene.add(model);
-    carModel = model;
-
-    loadBannerTexture(BANNERS[0].img, tex => applyBannerToWindshield(tex));
-
+    const box2=new THREE.Box3().setFromObject(model);
+    const centre2=box2.getCenter(new THREE.Vector3());
+    model.position.y-=centre2.y*0.5;
+    scene.add(model); carModel=model;
+    loadBannerTexture(BANNERS[0].img,tex=>applyBannerToWindshield(tex));
     document.getElementById('loadingScreen').classList.add('hidden');
-    setTimeout(() => document.getElementById('loadingScreen').style.display='none', 600);
+    setTimeout(()=>document.getElementById('loadingScreen').style.display='none',600);
   },
-  progress => {
-    if (progress.total > 0) document.getElementById('loadingPct').textContent = Math.round(progress.loaded/progress.total*100) + '%';
-  },
-  err => { console.error(err); document.getElementById('loadingPct').textContent = '⚠'; });
+  progress=>{if(progress.total>0) document.getElementById('loadingPct').textContent=Math.round(progress.loaded/progress.total*100)+'%';},
+  err=>{console.error(err);document.getElementById('loadingPct').textContent='⚠';});
 }
-
-// ── SHOWROOM FLOOR ──
-function createNightScene() {
-  const groundCanvas = document.createElement('canvas');
-  groundCanvas.width = 512; groundCanvas.height = 256;
-  const gCtx = groundCanvas.getContext('2d');
-  // Gloss black base
-  gCtx.fillStyle = '#0a0a0a';
-  gCtx.fillRect(0, 0, 512, 256);
-  // Sharp centre reflection streak
-  const refGrad = gCtx.createLinearGradient(200, 0, 312, 256);
-  refGrad.addColorStop(0, 'rgba(255,255,255,0)');
-  refGrad.addColorStop(0.4, 'rgba(255,255,255,0.18)');
-  refGrad.addColorStop(0.6, 'rgba(255,255,255,0.18)');
-  refGrad.addColorStop(1, 'rgba(255,255,255,0)');
-  gCtx.fillStyle = refGrad;
-  gCtx.fillRect(0, 0, 512, 256);
-  // Fade to black at edges
-  const edgeGrad = gCtx.createLinearGradient(0, 0, 512, 0);
-  edgeGrad.addColorStop(0, 'rgba(0,0,0,0.8)');
-  edgeGrad.addColorStop(0.3, 'rgba(0,0,0,0)');
-  edgeGrad.addColorStop(0.7, 'rgba(0,0,0,0)');
-  edgeGrad.addColorStop(1, 'rgba(0,0,0,0.8)');
-  gCtx.fillStyle = edgeGrad;
-  gCtx.fillRect(0, 0, 512, 256);
-  const groundTex = new THREE.CanvasTexture(groundCanvas);
-  const ground = new THREE.Mesh(
-    new THREE.PlaneGeometry(20, 12),
-    new THREE.MeshBasicMaterial({ map: groundTex, transparent: true, opacity: 0.95, depthWrite: false })
-  );
-  ground.rotation.x = -Math.PI/2;
-  ground.position.set(0, -0.05, -2);
-  scene.add(ground);
-}
-createNightScene();
-
-// ── NEON SKYLINE ──
-function createNeonSkyline() {
-  const canvas2 = document.createElement('canvas');
-  canvas2.width = 2048; canvas2.height = 512;
-  const ctx = canvas2.getContext('2d');
-  ctx.clearRect(0,0,2048,512);
-  const text = 'CHOOSE YOUR BANNER';
-  ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.font = `900 160px 'Arial Black', Impact, sans-serif`;
-  ctx.shadowColor='#ff0080'; ctx.shadowBlur=80; ctx.fillStyle='rgba(255,0,128,0.15)';
-  for(let i=0;i<3;i++) ctx.fillText(text,1024,256);
-  ctx.shadowColor='#ff6600'; ctx.shadowBlur=40; ctx.fillStyle='rgba(255,102,0,0.3)';
-  for(let i=0;i<2;i++) ctx.fillText(text,1024,256);
-  ctx.shadowColor='#fff'; ctx.shadowBlur=15; ctx.fillStyle='rgba(255,255,255,0.7)'; ctx.fillText(text,1024,256);
-  ctx.shadowBlur=0; ctx.fillStyle='#fff'; ctx.fillText(text,1024,256);
-  const neonColors=['#ff00ff','#00ffff','#ff6600','#00ff88'];
-  for(let d=0;d<8;d++){
-    const x=200+(d*230)+Math.random()*80, startY=256+80, dripLen=20+Math.random()*60;
-    const color=neonColors[d%neonColors.length];
-    ctx.strokeStyle=color; ctx.lineWidth=2+Math.random()*3; ctx.shadowColor=color; ctx.shadowBlur=10;
-    ctx.beginPath(); ctx.moveTo(x,startY); ctx.bezierCurveTo(x+5,startY+dripLen*0.4,x-3,startY+dripLen*0.7,x+2,startY+dripLen); ctx.stroke();
-  }
-  const tex = new THREE.CanvasTexture(canvas2);
-  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(12,3), new THREE.MeshBasicMaterial({map:tex,transparent:true,opacity:0.85,depthWrite:false,side:THREE.DoubleSide}));
-  mesh.position.set(0,3.5,-8); scene.add(mesh);
-  let t=0;
-  return () => { t+=0.05; mesh.material.opacity=0.75+Math.sin(t*3.7)*0.08+Math.sin(t*11.3)*0.04; };
-}
-const tickNeon = createNeonSkyline();
 
 // ── RESIZE ──
-function onResize() {
-  const w=canvas.clientWidth, h=canvas.clientHeight;
-  renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix();
-}
-window.addEventListener('resize', onResize); onResize(); updateCamera();
+function onResize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+window.addEventListener('resize',onResize); onResize(); updateCamera();
 
 // ── RENDER LOOP ──
-function animate() {
-  requestAnimationFrame(animate);
-  if (autoRotate) { spherical.theta += 0.003; updateCamera(); }
-  tickNeon();
-  renderer.render(scene, camera);
-}
+function animate(){requestAnimationFrame(animate);if(autoRotate){spherical.theta+=0.003;updateCamera();}renderer.render(scene,camera);}
 
 // ── UI ──
 function updateVisuals(banner) {
-  if (!banner) return;
-  document.getElementById('miniImg').src = banner.img;
-  document.getElementById('infoName').textContent = banner.name;
-  document.getElementById('ctaName').textContent = banner.name;
-  document.getElementById('ctaPrice').textContent = banner.price;
-  const btn = document.getElementById('ctaBtn');
-  btn.href = cartURL(banner.variantId);
-
-  document.querySelectorAll('#bannerGrid .banner-card').forEach(card => {
-    const b = BANNERS.find(x => x.id === parseInt(card.dataset.id));
-    if (!b) return;
-    if (b.id === banner.id) {
-      card.classList.add('active');
-    } else {
-      card.classList.remove('active');
-    }
+  if(!banner) return;
+  document.getElementById('ctaName').textContent=banner.name;
+  document.getElementById('ctaPrice').innerHTML=banner.price+' <span>AUD</span>';
+  const btn=document.getElementById('ctaBtn');
+  btn.href=cartURL(banner.variantId);
+  btn.textContent='ADD TO CART — '+banner.price;
+  document.querySelectorAll('#bannerGrid .banner-card').forEach(card=>{
+    card.classList.toggle('active', parseInt(card.dataset.id)===banner.id);
   });
-
-  loadBannerTexture(banner.img, tex => applyBannerToWindshield(tex));
+  loadBannerTexture(banner.img,tex=>applyBannerToWindshield(tex));
 }
 
-function handleRearBuy(e) {
+function handleRearBuy(e){
   e.preventDefault();
-  if (!currentRearBanner) { alert('Please select a rear window banner first!'); return; }
-  window.open(cartURL(currentRearBanner.variantId), '_blank');
+  if(!currentRearBanner){alert('Please select a rear window banner first!');return;}
+  window.open(cartURL(currentRearBanner.variantId),'_blank');
 }
 
-function switchPanel(panel) {
-  const isFront = panel === 'front';
-  document.getElementById('panelFront').style.display = isFront ? 'block' : 'none';
-  document.getElementById('panelRear').style.display = isFront ? 'none' : 'block';
-  document.getElementById('tabFront').classList.toggle('active', isFront);
-  document.getElementById('tabRear').classList.toggle('active', !isFront);
+function switchPanel(panel){
+  const isFront=panel==='front';
+  document.getElementById('panelFront').style.display=isFront?'block':'none';
+  document.getElementById('panelRear').style.display=isFront?'none':'block';
+  document.getElementById('tabFront').classList.toggle('active',isFront);
+  document.getElementById('tabRear').classList.toggle('active',!isFront);
+  // Update CTA for rear
+  if(!isFront){
+    document.getElementById('ctaName').textContent='Rear Window Banner';
+    document.getElementById('ctaBtn').onclick=handleRearBuy;
+    document.getElementById('ctaBtn').href='#';
+    document.getElementById('ctaBtn').removeAttribute('target');
+  } else {
+    document.getElementById('ctaBtn').onclick=null;
+    document.getElementById('ctaBtn').setAttribute('target','_blank');
+    updateVisuals(BANNERS[0]);
+  }
 }
 
-function buildGrid() {
-  const grid = document.getElementById('bannerGrid');
-  BANNERS.forEach(banner => {
-    const card = document.createElement('div');
-    card.className = 'banner-card'; card.dataset.id = banner.id;
-    card.innerHTML = `
-      <div class="swatch-preview"><img src="${banner.img}" alt="${banner.name}"/></div>
-      <div class="card-name">${banner.name}</div>
-      <div class="card-price">${banner.price}</div>
-      <div class="card-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
-    card.addEventListener('click', () => updateVisuals(banner));
+function buildGrid(){
+  const grid=document.getElementById('bannerGrid');
+  BANNERS.forEach(banner=>{
+    const card=document.createElement('div');
+    card.className='banner-card'; card.dataset.id=banner.id;
+    card.innerHTML=`<div class="swatch-preview"><img src="${banner.img}" alt="${banner.name}"/></div><div class="card-name">${banner.name}</div><div class="card-price">${banner.price}</div><div class="card-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
+    card.addEventListener('click',()=>updateVisuals(banner));
     grid.appendChild(card);
   });
 }
 
-function buildRearGrid() {
-  const grid = document.getElementById('rearBannerGrid');
-  BANNERS.forEach(banner => {
-    const card = document.createElement('div');
-    card.className = 'banner-card'; card.dataset.id = 'rear-' + banner.id;
-    card.innerHTML = `
-      <div class="swatch-preview"><img src="${banner.img}" alt="${banner.name}"/></div>
-      <div class="card-name">${banner.name}</div>
-      <div class="card-price">${banner.price}</div>
-      <div class="card-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
-    card.addEventListener('click', () => {
-      currentRearBanner = banner;
-      document.querySelectorAll('#rearBannerGrid .banner-card').forEach(c => c.classList.remove('active'));
+function buildRearGrid(){
+  const grid=document.getElementById('rearBannerGrid');
+  BANNERS.forEach(banner=>{
+    const card=document.createElement('div');
+    card.className='banner-card'; card.dataset.id='rear-'+banner.id;
+    card.innerHTML=`<div class="swatch-preview"><img src="${banner.img}" alt="${banner.name}"/></div><div class="card-name">${banner.name}</div><div class="card-price">${banner.price}</div><div class="card-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
+    card.addEventListener('click',()=>{
+      currentRearBanner=banner;
+      document.querySelectorAll('#rearBannerGrid .banner-card').forEach(c=>c.classList.remove('active'));
       card.classList.add('active');
-      document.getElementById('rearCtaName').textContent = banner.name + ' (Rear Window)';
-      loadBannerTexture(banner.img, tex => applyBannerToRearWindow(tex));
+      document.getElementById('ctaName').textContent=banner.name+' (Rear)';
+      loadBannerTexture(banner.img,tex=>applyBannerToRearWindow(tex));
     });
     grid.appendChild(card);
   });
 }
 
-loadGLTFLoader(() => { loadModel(); animate(); });
-buildGrid();
-buildRearGrid();
-updateVisuals(BANNERS[0]);
+loadGLTFLoader(()=>{loadModel();animate();});
+buildGrid(); buildRearGrid(); updateVisuals(BANNERS[0]);
 </script>
 </body>
 </html>
