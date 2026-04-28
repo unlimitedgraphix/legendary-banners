@@ -517,27 +517,41 @@ renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.2;
 renderer.shadowMap.enabled = true;
-renderer.setClearColor(0xf0f0f0, 1);
+renderer.setClearColor(0x080808, 1);
 
 const scene = new THREE.Scene();
 
-// Studio showroom background
+// Dark showroom background
 const skyCanvas = document.createElement('canvas');
 skyCanvas.width = 1024; skyCanvas.height = 1024;
 const skyCtx = skyCanvas.getContext('2d');
+// Deep dark gradient
 const skyGrad = skyCtx.createLinearGradient(0, 0, 0, 1024);
-skyGrad.addColorStop(0.0,  '#e8e8e8');
-skyGrad.addColorStop(0.4,  '#f0f0f0');
-skyGrad.addColorStop(0.7,  '#d8d8d8');
-skyGrad.addColorStop(1.0,  '#aaaaaa');
+skyGrad.addColorStop(0.0,  '#080808');
+skyGrad.addColorStop(0.5,  '#0f0f0f');
+skyGrad.addColorStop(0.8,  '#141414');
+skyGrad.addColorStop(1.0,  '#1a1a1a');
 skyCtx.fillStyle = skyGrad;
 skyCtx.fillRect(0, 0, 1024, 1024);
-// Soft spotlight blooms on ceiling
-[[512,100,200,'rgba(255,255,255,0.6)'],[200,80,140,'rgba(255,255,255,0.3)'],[820,80,140,'rgba(255,255,255,0.3)']].forEach(([x,y,r,col]) => {
-  const g = skyCtx.createRadialGradient(x,y,0,x,y,r);
-  g.addColorStop(0, col); g.addColorStop(1,'rgba(255,255,255,0)');
-  skyCtx.fillStyle = g; skyCtx.fillRect(0,0,1024,1024);
+// Dramatic spotlight cones from above
+[
+  [512, 0, 60, 500, 'rgba(255,255,255,0.08)'],
+  [300, 0, 40, 400, 'rgba(255,255,255,0.05)'],
+  [720, 0, 40, 400, 'rgba(255,255,255,0.05)'],
+].forEach(([x, y, r, h, col]) => {
+  const g = skyCtx.createRadialGradient(x, y, 0, x, y+h, r*3);
+  g.addColorStop(0, col);
+  g.addColorStop(1, 'rgba(0,0,0,0)');
+  skyCtx.fillStyle = g;
+  skyCtx.fillRect(0, 0, 1024, 1024);
 });
+// Subtle warm glow at horizon
+const horizGrad = skyCtx.createLinearGradient(0, 600, 0, 800);
+horizGrad.addColorStop(0, 'rgba(40,30,10,0)');
+horizGrad.addColorStop(0.5, 'rgba(40,30,10,0.12)');
+horizGrad.addColorStop(1, 'rgba(0,0,0,0)');
+skyCtx.fillStyle = horizGrad;
+skyCtx.fillRect(0, 0, 1024, 1024);
 const skyTex = new THREE.CanvasTexture(skyCanvas);
 skyTex.needsUpdate = true;
 scene.background = skyTex;
@@ -545,23 +559,26 @@ scene.background = skyTex;
 const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.01, 100);
 
 // ── LIGHTING ──
-scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-const keyLight = new THREE.DirectionalLight(0xffffff, 3.5);
+scene.add(new THREE.AmbientLight(0x111111, 0.8));
+const keyLight = new THREE.DirectionalLight(0xffffff, 3.0);
 keyLight.position.set(0, 10, 3); keyLight.castShadow = true; scene.add(keyLight);
-const fillLight = new THREE.DirectionalLight(0xffffff, 1.8);
+const fillLight = new THREE.DirectionalLight(0xffffff, 1.2);
 fillLight.position.set(-6, 6, 2); scene.add(fillLight);
-const fillLight2 = new THREE.DirectionalLight(0xffffff, 1.8);
+const fillLight2 = new THREE.DirectionalLight(0xffffff, 1.2);
 fillLight2.position.set(6, 6, 2); scene.add(fillLight2);
-const rimLight = new THREE.DirectionalLight(0xffffff, 1.2);
-rimLight.position.set(0, 8, -6); scene.add(rimLight);
-// Downlights — spot effect from above
-const spot1 = new THREE.PointLight(0xffffff, 2.0, 8);
-spot1.position.set(0, 4, 0); scene.add(spot1);
-const spot2 = new THREE.PointLight(0xffffff, 1.2, 6);
-spot2.position.set(-2, 4, -1); scene.add(spot2);
-const spot3 = new THREE.PointLight(0xffffff, 1.2, 6);
-spot3.position.set(2, 4, -1); scene.add(spot3);
-scene.add(new THREE.HemisphereLight(0xffffff, 0xcccccc, 0.8));
+const rimLight = new THREE.DirectionalLight(0xffeedd, 0.8);
+rimLight.position.set(0, 6, -8); scene.add(rimLight);
+// Dramatic downlights
+const spot1 = new THREE.PointLight(0xffffff, 4.0, 6);
+spot1.position.set(0, 5, 0); scene.add(spot1);
+const spot2 = new THREE.PointLight(0xffffff, 2.0, 5);
+spot2.position.set(-2.5, 5, -1); scene.add(spot2);
+const spot3 = new THREE.PointLight(0xffffff, 2.0, 5);
+spot3.position.set(2.5, 5, -1); scene.add(spot3);
+// Subtle coloured accent
+const accentLight = new THREE.PointLight(0x4488ff, 0.6, 8);
+accentLight.position.set(0, 1, -4); scene.add(accentLight);
+scene.add(new THREE.HemisphereLight(0x222222, 0x111111, 0.5));
 
 // ── ORBIT CONTROLS ──
 let isDragging = false, isRightDragging = false;
@@ -735,8 +752,8 @@ function applyBannerToRearWindow(texture) {
   });
   // Rear window slopes away from viewer — match the angle of the BMW rear glass (~65°)
   rearBannerPlane = new THREE.Mesh(makeBannerGeo(0.90, 0.127, 0.075), mat);
-  rearBannerPlane.position.set(0, 0.455, -0.95);
-  rearBannerPlane.rotation.x = THREE.MathUtils.degToRad(65);
+  rearBannerPlane.position.set(0, 0.41, -0.95);
+  rearBannerPlane.rotation.x = THREE.MathUtils.degToRad(55);
   rearBannerPlane.rotation.y = THREE.MathUtils.degToRad(180);
   rearBannerPlane.renderOrder = 999;
   scene.add(rearBannerPlane);
@@ -764,7 +781,7 @@ function loadModel() {
 
     scene.environment = null;
     scene.background = skyTex;
-    renderer.setClearColor(0xf0f0f0, 1);
+    renderer.setClearColor(0x080808, 1);
 
     model.traverse(child => {
       if (child.isMesh) {
@@ -795,28 +812,34 @@ function loadModel() {
   err => { console.error(err); document.getElementById('loadingPct').textContent = '⚠'; });
 }
 
-// ── STUDIO FLOOR ──
+// ── SHOWROOM FLOOR ──
 function createNightScene() {
   const groundCanvas = document.createElement('canvas');
   groundCanvas.width = 512; groundCanvas.height = 256;
   const gCtx = groundCanvas.getContext('2d');
-  const gGrad = gCtx.createLinearGradient(0, 0, 0, 256);
-  gGrad.addColorStop(0, 'rgba(255,255,255,0.95)');
-  gGrad.addColorStop(0.4, 'rgba(230,230,230,0.8)');
-  gGrad.addColorStop(1, 'rgba(200,200,200,0.3)');
-  gCtx.fillStyle = gGrad;
+  // Gloss black base
+  gCtx.fillStyle = '#0a0a0a';
   gCtx.fillRect(0, 0, 512, 256);
-  // Reflection streak
-  const refGrad = gCtx.createLinearGradient(180, 0, 330, 256);
+  // Sharp centre reflection streak
+  const refGrad = gCtx.createLinearGradient(200, 0, 312, 256);
   refGrad.addColorStop(0, 'rgba(255,255,255,0)');
-  refGrad.addColorStop(0.5, 'rgba(255,255,255,0.4)');
+  refGrad.addColorStop(0.4, 'rgba(255,255,255,0.18)');
+  refGrad.addColorStop(0.6, 'rgba(255,255,255,0.18)');
   refGrad.addColorStop(1, 'rgba(255,255,255,0)');
   gCtx.fillStyle = refGrad;
   gCtx.fillRect(0, 0, 512, 256);
+  // Fade to black at edges
+  const edgeGrad = gCtx.createLinearGradient(0, 0, 512, 0);
+  edgeGrad.addColorStop(0, 'rgba(0,0,0,0.8)');
+  edgeGrad.addColorStop(0.3, 'rgba(0,0,0,0)');
+  edgeGrad.addColorStop(0.7, 'rgba(0,0,0,0)');
+  edgeGrad.addColorStop(1, 'rgba(0,0,0,0.8)');
+  gCtx.fillStyle = edgeGrad;
+  gCtx.fillRect(0, 0, 512, 256);
   const groundTex = new THREE.CanvasTexture(groundCanvas);
   const ground = new THREE.Mesh(
-    new THREE.PlaneGeometry(20, 10),
-    new THREE.MeshBasicMaterial({ map: groundTex, transparent: true, opacity: 0.9, depthWrite: false })
+    new THREE.PlaneGeometry(20, 12),
+    new THREE.MeshBasicMaterial({ map: groundTex, transparent: true, opacity: 0.95, depthWrite: false })
   );
   ground.rotation.x = -Math.PI/2;
   ground.position.set(0, -0.05, -2);
