@@ -63,28 +63,33 @@ body {
 }
 .nav-cta:hover { box-shadow: 0 0 35px var(--pink-glow); transform: translateY(-1px); }
 
-/* ── MAIN LAYOUT ── */
+/* ── MAIN LAYOUT — canvas top, configurator below ── */
 .main-layout {
-  min-height: 100vh;
-  display: flex;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Left panel */
-.left-panel {
-  width: 340px;
-  min-width: 340px;
-  background: var(--surface);
-  border-right: 1px solid var(--border);
-  backdrop-filter: blur(20px);
-  z-index: 10;
   display: flex;
   flex-direction: column;
-  padding: 24px 24px 24px;
   position: relative;
-  overflow-y: auto;
-  max-height: 100vh;
+}
+
+.right-canvas {
+  width: 100%;
+  height: 70vh;
+  min-height: 420px;
+  position: relative;
+}
+#canvas3d {
+  width: 100%; height: 100%; display: block;
+  cursor: grab; outline: none;
+}
+#canvas3d:active { cursor: grabbing; }
+
+/* Configurator panel — full width below canvas */
+.left-panel {
+  width: 100%;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  padding: 24px 32px;
+  position: relative;
 }
 .left-panel::before {
   content: '';
@@ -94,17 +99,16 @@ body {
   background: linear-gradient(90deg, transparent, var(--pink), transparent);
 }
 
-/* Right — 3D canvas */
-.right-canvas {
-  flex: 1;
-  position: relative;
-  min-height: 100vh;
+/* Three column grid inside configurator */
+.config-grid {
+  display: grid;
+  grid-template-columns: 1fr 180px 280px;
+  gap: 32px;
+  align-items: start;
+  margin-top: 16px;
 }
-#canvas3d {
-  width: 100%; height: 100vh; display: block;
-  cursor: grab; outline: none;
-}
-#canvas3d:active { cursor: grabbing; }
+.config-col {}
+.cta-col { border-left: 1px solid var(--border); padding-left: 32px; }
 
 /* Loading */
 .loading-screen {
@@ -287,9 +291,10 @@ body {
 
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
-  .main-layout { flex-direction: column; }
-  .left-panel { width: 100%; min-width: unset; max-height: unset; padding: 80px 16px 16px; }
-  #canvas3d { height: 55vw; min-height: 300px; }
+  .right-canvas { height: 55vw; min-height: 280px; }
+  .left-panel { padding: 16px; }
+  .config-grid { grid-template-columns: 1fr; gap: 16px; }
+  .cta-col { border-left: none; padding-left: 0; border-top: 1px solid var(--border); padding-top: 16px; }
   .nav { padding: 12px 16px; }
   .nav-links { display: none; }
   .features-bar { grid-template-columns: repeat(2, 1fr); }
@@ -318,59 +323,7 @@ body {
 <!-- MAIN -->
 <div class="main-layout">
 
-  <!-- LEFT PANEL -->
-  <div class="left-panel">
-    <div style="margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border);">
-      <div style="font-family:var(--font-display);font-size:26px;letter-spacing:4px;color:#fff;text-shadow:0 0 30px var(--pink),0 0 60px rgba(255,0,128,0.4);">LEGENDARY</div>
-      <div style="font-family:var(--font-body);font-size:10px;letter-spacing:6px;color:var(--pink);text-shadow:0 0 15px var(--pink);">BANNERS</div>
-    </div>
-    <div class="configurator-title"><span>3D</span> BANNER<br>CONFIGURATOR</div>
-    <div class="configurator-sub">Choose. Preview. Perfect.</div>
-
-    <div class="section-label">Select Banner Design</div>
-
-    <!-- Tabs -->
-    <div class="panel-tabs">
-      <button class="panel-tab active" id="tabFront" onclick="switchPanel('front')">Front Windshield</button>
-      <button class="panel-tab" id="tabRear" onclick="switchPanel('rear')">Rear Window</button>
-    </div>
-
-    <!-- Front Panel -->
-    <div id="panelFront">
-      <div class="banner-grid" id="bannerGrid"></div>
-    </div>
-
-    <!-- Rear Panel -->
-    <div id="panelRear" style="display:none;">
-      <div class="banner-grid" id="rearBannerGrid"></div>
-    </div>
-
-    <!-- Car Colour -->
-    <div class="section-label">Car Colour</div>
-    <div class="colour-swatches">
-      <button class="swatch active" data-colour="#0d0d14" data-name="Carbon Black" style="background:#0d0d14" title="Carbon Black" onclick="setCarColour(this)"></button>
-      <button class="swatch" data-colour="#f0f0f0" data-name="Alpine White" style="background:#f0f0f0;border-color:rgba(255,255,255,0.3)" title="Alpine White" onclick="setCarColour(this)"></button>
-      <button class="swatch" data-colour="#c0c0c0" data-name="Silver" style="background:#c0c0c0" title="Silver" onclick="setCarColour(this)"></button>
-      <button class="swatch" data-colour="#1a1a2e" data-name="Midnight Blue" style="background:#1a1a2e" title="Midnight Blue" onclick="setCarColour(this)"></button>
-      <button class="swatch" data-colour="#0066cc" data-name="Miami Blue" style="background:#0066cc" title="Miami Blue" onclick="setCarColour(this)"></button>
-      <button class="swatch" data-colour="#cc2200" data-name="Imola Red" style="background:#cc2200" title="Imola Red" onclick="setCarColour(this)"></button>
-      <button class="swatch" data-colour="#2d5a1b" data-name="Racing Green" style="background:#2d5a1b" title="Racing Green" onclick="setCarColour(this)"></button>
-    </div>
-    <div class="colour-name" id="colourName">Carbon Black</div>
-
-    <!-- CTA -->
-    <div class="cta-block">
-      <div class="cta-banner-name" id="ctaName">—</div>
-      <div class="cta-banner-sub">Front Windshield · High-Gloss Vinyl · UV Resistant · 5-Year Outdoor Rated</div>
-      <div class="cta-price-row">
-        <div class="cta-price" id="ctaPrice">$99.90 <span>AUD</span></div>
-        <div style="font-size:10px;color:var(--muted);">Free shipping AU wide</div>
-      </div>
-      <a class="cta-btn" id="ctaBtn" href="#" target="_blank">ADD TO CART — $99.90</a>
-    </div>
-  </div>
-
-  <!-- RIGHT 3D CANVAS -->
+  <!-- TOP: FULL WIDTH 3D CANVAS -->
   <div class="right-canvas">
     <div class="loading-screen" id="loadingScreen">
       <div class="spinner"></div>
@@ -379,6 +332,65 @@ body {
     </div>
     <canvas id="canvas3d"></canvas>
     <div class="controls-hint">Drag to rotate &nbsp;·&nbsp; Scroll to zoom</div>
+    <!-- Logo overlay on canvas -->
+    <div style="position:absolute;top:20px;left:24px;z-index:10;pointer-events:none;">
+      <div style="font-family:var(--font-display);font-size:28px;letter-spacing:4px;color:#fff;text-shadow:0 0 30px var(--pink),0 0 60px rgba(255,0,128,0.4);">LEGENDARY</div>
+      <div style="font-family:var(--font-body);font-size:10px;letter-spacing:6px;color:var(--pink);text-shadow:0 0 15px var(--pink);">BANNERS</div>
+    </div>
+  </div>
+
+  <!-- BOTTOM: CONFIGURATOR PANEL FULL WIDTH -->
+  <div class="left-panel">
+    <div class="configurator-title"><span>3D</span> BANNER CONFIGURATOR</div>
+    <div class="configurator-sub">Choose. Preview. Perfect.</div>
+
+    <div class="config-grid">
+
+      <!-- Banner Selection -->
+      <div class="config-col">
+        <div class="section-label">Select Banner Design</div>
+        <div class="panel-tabs">
+          <button class="panel-tab active" id="tabFront" onclick="switchPanel('front')">Front Windshield</button>
+          <button class="panel-tab" id="tabRear" onclick="switchPanel('rear')">Rear Window</button>
+        </div>
+        <div id="panelFront">
+          <div class="banner-grid" id="bannerGrid"></div>
+        </div>
+        <div id="panelRear" style="display:none;">
+          <div class="banner-grid" id="rearBannerGrid"></div>
+        </div>
+      </div>
+
+      <!-- Car Colour -->
+      <div class="config-col">
+        <div class="section-label">Car Colour</div>
+        <div class="colour-swatches">
+          <button class="swatch active" data-colour="#0d0d14" data-name="Carbon Black" style="background:#0d0d14" title="Carbon Black" onclick="setCarColour(this)"></button>
+          <button class="swatch" data-colour="#f0f0f0" data-name="Alpine White" style="background:#f0f0f0;border-color:rgba(255,255,255,0.3)" title="Alpine White" onclick="setCarColour(this)"></button>
+          <button class="swatch" data-colour="#c0c0c0" data-name="Silver" style="background:#c0c0c0" title="Silver" onclick="setCarColour(this)"></button>
+          <button class="swatch" data-colour="#1a1a2e" data-name="Midnight Blue" style="background:#1a1a2e" title="Midnight Blue" onclick="setCarColour(this)"></button>
+          <button class="swatch" data-colour="#0066cc" data-name="Miami Blue" style="background:#0066cc" title="Miami Blue" onclick="setCarColour(this)"></button>
+          <button class="swatch" data-colour="#cc2200" data-name="Imola Red" style="background:#cc2200" title="Imola Red" onclick="setCarColour(this)"></button>
+          <button class="swatch" data-colour="#2d5a1b" data-name="Racing Green" style="background:#2d5a1b" title="Racing Green" onclick="setCarColour(this)"></button>
+        </div>
+        <div class="colour-name" id="colourName">Carbon Black</div>
+      </div>
+
+      <!-- CTA -->
+      <div class="config-col cta-col">
+        <div class="section-label">Your Selection</div>
+        <div class="cta-block">
+          <div class="cta-banner-name" id="ctaName">—</div>
+          <div class="cta-banner-sub">Front Windshield · High-Gloss Vinyl · UV Resistant · 5-Year Outdoor Rated</div>
+          <div class="cta-price-row">
+            <div class="cta-price" id="ctaPrice">$99.90 <span>AUD</span></div>
+            <div style="font-size:10px;color:var(--muted);">Free shipping AU wide</div>
+          </div>
+          <a class="cta-btn" id="ctaBtn" href="#" target="_blank">ADD TO CART — $99.90</a>
+        </div>
+      </div>
+
+    </div>
   </div>
 
 </div>
@@ -461,36 +473,40 @@ renderer.setClearColor(0x050010, 1);
 
 const scene = new THREE.Scene();
 
-// ── MIAMI SUNSET SKY — CSS background (stays fixed, doesn't rotate with camera) ──
+// ── BACKGROUND — set as CSS on canvas container ──
+// To use a custom PNG: replace the URL below with your hosted image
+const BG_URL = ''; // Leave empty to use generated gradient, or put your PNG URL here
 (function(){
-  const skyCanvas2D = document.createElement('canvas');
-  skyCanvas2D.width = 1024; skyCanvas2D.height = 1024;
-  const sCtx = skyCanvas2D.getContext('2d');
-  const sGrad = sCtx.createLinearGradient(0, 0, 0, 1024);
-  sGrad.addColorStop(0.0,  '#050010');
-  sGrad.addColorStop(0.25, '#1a0035');
-  sGrad.addColorStop(0.45, '#4a0050');
-  sGrad.addColorStop(0.58, '#8b0060');
-  sGrad.addColorStop(0.68, '#cc1040');
-  sGrad.addColorStop(0.76, '#ee4010');
-  sGrad.addColorStop(0.85, '#ff8800');
-  sGrad.addColorStop(0.92, '#ffcc00');
-  sGrad.addColorStop(1.0,  '#111008');
-  sCtx.fillStyle = sGrad; sCtx.fillRect(0, 0, 1024, 1024);
-  // Stars
-  for(let i=0;i<600;i++){
-    const x=Math.random()*1024, y=Math.random()*400, size=Math.random()<0.8?0.5:1.2, b=0.3+Math.random()*0.7;
-    sCtx.beginPath(); sCtx.arc(x,y,size,0,Math.PI*2); sCtx.fillStyle=`rgba(255,255,255,${b})`; sCtx.fill();
+  const container = document.getElementById('canvas3d').parentElement;
+  if(BG_URL) {
+    container.style.background = `url(${BG_URL}) center/cover no-repeat`;
+  } else {
+    // Generated Miami sunset fallback
+    const skyCanvas2D = document.createElement('canvas');
+    skyCanvas2D.width = 1024; skyCanvas2D.height = 1024;
+    const sCtx = skyCanvas2D.getContext('2d');
+    const sGrad = sCtx.createLinearGradient(0, 0, 0, 1024);
+    sGrad.addColorStop(0.0,  '#050010');
+    sGrad.addColorStop(0.25, '#1a0035');
+    sGrad.addColorStop(0.45, '#4a0050');
+    sGrad.addColorStop(0.58, '#8b0060');
+    sGrad.addColorStop(0.68, '#cc1040');
+    sGrad.addColorStop(0.76, '#ee4010');
+    sGrad.addColorStop(0.85, '#ff8800');
+    sGrad.addColorStop(0.92, '#ffcc00');
+    sGrad.addColorStop(1.0,  '#111008');
+    sCtx.fillStyle = sGrad; sCtx.fillRect(0, 0, 1024, 1024);
+    for(let i=0;i<600;i++){
+      const x=Math.random()*1024, y=Math.random()*400, size=Math.random()<0.8?0.5:1.2, b=0.3+Math.random()*0.7;
+      sCtx.beginPath(); sCtx.arc(x,y,size,0,Math.PI*2); sCtx.fillStyle=`rgba(255,255,255,${b})`; sCtx.fill();
+    }
+    const sg=sCtx.createRadialGradient(512,870,0,512,870,300);
+    sg.addColorStop(0,'rgba(255,220,50,0.7)'); sg.addColorStop(0.3,'rgba(255,100,0,0.3)'); sg.addColorStop(1,'rgba(0,0,0,0)');
+    sCtx.fillStyle=sg; sCtx.fillRect(0,0,1024,1024);
+    container.style.background = `url(${skyCanvas2D.toDataURL()}) center/cover no-repeat`;
   }
-  // Sun glow
-  const sg=sCtx.createRadialGradient(512,870,0,512,870,300);
-  sg.addColorStop(0,'rgba(255,220,50,0.7)'); sg.addColorStop(0.3,'rgba(255,100,0,0.3)'); sg.addColorStop(1,'rgba(0,0,0,0)');
-  sCtx.fillStyle=sg; sCtx.fillRect(0,0,1024,1024);
-  document.getElementById('canvas3d').parentElement.style.background = `url(${skyCanvas2D.toDataURL()}) center/cover no-repeat`;
 })();
-// scene.background stays null — renderer clears to transparent
 renderer.setClearColor(0x000000, 0);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 scene.background = null;
 
 const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.01, 100);
@@ -535,7 +551,7 @@ canvas.addEventListener('mousedown', e => {
 canvas.addEventListener('mousemove', e => {
   if(!isDragging&&!isRightDragging) return;
   const dx=e.clientX-prevMouse.x, dy=e.clientY-prevMouse.y;
-  if(isDragging){ carGroup.rotation.y -= dx*0.008; spherical.phi=Math.max(0.2,Math.min(Math.PI*0.85,spherical.phi-dy*0.006)); updateCamera(); }
+  if(isDragging){ carGroup.rotation.y -= dx*0.008; spherical.phi=Math.max(0.25,Math.min(Math.PI*0.48,spherical.phi-dy*0.006)); updateCamera(); }
   if(isRightDragging){ const r=new THREE.Vector3(); camera.getWorldDirection(r); r.cross(camera.up).normalize(); target.addScaledVector(r,-dx*0.004); target.addScaledVector(camera.up,dy*0.004); updateCamera(); }
   prevMouse={x:e.clientX,y:e.clientY};
 });
@@ -544,7 +560,7 @@ canvas.addEventListener('wheel',e=>{ spherical.radius=Math.max(0.8,Math.min(8,sp
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 let lastTouch=null, lastPinchDist=null;
 canvas.addEventListener('touchstart',e=>{ autoRotateSpeed=0; if(e.touches.length===1) lastTouch={x:e.touches[0].clientX,y:e.touches[0].clientY}; if(e.touches.length===2) lastPinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); e.preventDefault(); },{passive:false});
-canvas.addEventListener('touchmove',e=>{ if(e.touches.length===1&&lastTouch){ const dx=e.touches[0].clientX-lastTouch.x,dy=e.touches[0].clientY-lastTouch.y; carGroup.rotation.y-=dx*0.01; spherical.phi=Math.max(0.2,Math.min(Math.PI*0.85,spherical.phi-dy*0.008)); lastTouch={x:e.touches[0].clientX,y:e.touches[0].clientY}; updateCamera(); } if(e.touches.length===2){ const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); if(lastPinchDist) spherical.radius=Math.max(0.8,Math.min(8,spherical.radius-(d-lastPinchDist)*0.015)); lastPinchDist=d; updateCamera(); } e.preventDefault(); },{passive:false});
+canvas.addEventListener('touchmove',e=>{ if(e.touches.length===1&&lastTouch){ const dx=e.touches[0].clientX-lastTouch.x,dy=e.touches[0].clientY-lastTouch.y; carGroup.rotation.y-=dx*0.01; spherical.phi=Math.max(0.25,Math.min(Math.PI*0.48,spherical.phi-dy*0.008)); lastTouch={x:e.touches[0].clientX,y:e.touches[0].clientY}; updateCamera(); } if(e.touches.length===2){ const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); if(lastPinchDist) spherical.radius=Math.max(0.8,Math.min(8,spherical.radius-(d-lastPinchDist)*0.015)); lastPinchDist=d; updateCamera(); } e.preventDefault(); },{passive:false});
 canvas.addEventListener('touchend',()=>{ lastTouch=null; lastPinchDist=null; setTimeout(()=>{autoRotateSpeed=0.003;},3000); });
 
 // ── BANNER TEXTURES ──
@@ -570,24 +586,24 @@ function makeBannerGeo(W,H,curveDrop){
 }
 
 function applyBannerToWindshield(texture) {
-  if(bannerPlane){scene.remove(bannerPlane);bannerPlane.geometry.dispose();bannerPlane.material.dispose();bannerPlane=null;}
+  if(bannerPlane){carGroup.remove(bannerPlane);bannerPlane.geometry.dispose();bannerPlane.material.dispose();bannerPlane=null;}
   texture.flipY=false;texture.repeat.set(1,1);texture.offset.set(0,0);
   texture.wrapS=THREE.ClampToEdgeWrapping;texture.wrapT=THREE.ClampToEdgeWrapping;texture.needsUpdate=true;
   const mat=new THREE.MeshBasicMaterial({map:texture,transparent:true,opacity:0.92,depthWrite:false,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});
   bannerPlane=new THREE.Mesh(makeBannerGeo(0.90,0.127,0.075),mat);
-  bannerPlane.position.set(0,0.457,0.259);
+  bannerPlane.position.set(0,0.985,0.259);
   bannerPlane.rotation.x=THREE.MathUtils.degToRad(-64);
   carGroup.add(bannerPlane);
 }
 
 function applyBannerToRearWindow(texture) {
-  if(rearBannerPlane){scene.remove(rearBannerPlane);rearBannerPlane.geometry.dispose();rearBannerPlane.material.dispose();rearBannerPlane=null;}
+  if(rearBannerPlane){carGroup.remove(rearBannerPlane);rearBannerPlane.geometry.dispose();rearBannerPlane.material.dispose();rearBannerPlane=null;}
   if(!texture) return;
   texture.flipY=false;texture.repeat.set(1,1);texture.offset.set(0,0);
   texture.wrapS=THREE.ClampToEdgeWrapping;texture.wrapT=THREE.ClampToEdgeWrapping;texture.needsUpdate=true;
   const mat=new THREE.MeshBasicMaterial({map:texture,transparent:true,opacity:0.93,side:THREE.DoubleSide,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});
   rearBannerPlane=new THREE.Mesh(makeBannerGeo(0.90,0.127,0.075),mat);
-  rearBannerPlane.position.set(0,0.41,-0.95);
+  rearBannerPlane.position.set(0,0.992,-0.95);
   rearBannerPlane.rotation.x=THREE.MathUtils.degToRad(55);
   rearBannerPlane.rotation.y=THREE.MathUtils.degToRad(180);
   rearBannerPlane.renderOrder=999;
@@ -726,22 +742,25 @@ function loadModel() {
     });
     carGroup.add(model); carModel=model;
 
-    // Reflection — flipped clone below floor
+    // Reflection — flipped clone mirrored below floor (Y=0 is floor level)
     const reflClone = model.clone();
     reflClone.scale.set(scale, -scale, scale);
+    // Mirror position: if car top of wheels is at model.position.y above floor,
+    // reflection bottom should start at floor going down
     reflClone.position.copy(model.position);
-    reflClone.position.y = -model.position.y;
+    reflClone.position.y = 0; // reflection starts at floor
     reflClone.traverse(child=>{
       if(child.isMesh){
         const mats=Array.isArray(child.material)?child.material.map(m=>m.clone()):[child.material.clone()];
-        (Array.isArray(child.material)?mats:mats).forEach(mat=>{
-          mat.transparent=true; mat.opacity=0.18; mat.depthWrite=false;
+        (Array.isArray(mats)?mats:[mats]).forEach(mat=>{
+          mat.transparent=true; mat.opacity=0.15; mat.depthWrite=false;
         });
         child.material=Array.isArray(child.material)?mats:mats[0];
       }
     });
     carGroup.add(reflClone);
     loadBannerTexture(BANNERS[0].img,tex=>applyBannerToWindshield(tex));
+    loadBannerTexture(BANNERS[0].img,tex=>applyBannerToRearWindow(tex));
     document.getElementById('loadingScreen').classList.add('hidden');
     setTimeout(()=>document.getElementById('loadingScreen').style.display='none',600);
   },
