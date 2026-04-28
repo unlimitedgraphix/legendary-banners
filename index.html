@@ -475,7 +475,7 @@ const scene = new THREE.Scene();
 
 // ── BACKGROUND — set as CSS on canvas container ──
 // To use a custom PNG: replace the URL below with your hosted image
-const BG_URL = ''; // Leave empty to use generated gradient, or put your PNG URL here
+const BG_URL = 'https://green-night-47f9.karlitojemal.workers.dev/miami-bg.png';
 (function(){
   const container = document.getElementById('canvas3d').parentElement;
   if(BG_URL) {
@@ -591,7 +591,7 @@ function applyBannerToWindshield(texture) {
   texture.wrapS=THREE.ClampToEdgeWrapping;texture.wrapT=THREE.ClampToEdgeWrapping;texture.needsUpdate=true;
   const mat=new THREE.MeshBasicMaterial({map:texture,transparent:true,opacity:0.92,depthWrite:false,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});
   bannerPlane=new THREE.Mesh(makeBannerGeo(0.90,0.127,0.075),mat);
-  bannerPlane.position.set(0,0.985,0.259);
+  bannerPlane.position.set(0,1.005,0.259);
   bannerPlane.rotation.x=THREE.MathUtils.degToRad(-64);
   carGroup.add(bannerPlane);
 }
@@ -603,8 +603,8 @@ function applyBannerToRearWindow(texture) {
   texture.wrapS=THREE.ClampToEdgeWrapping;texture.wrapT=THREE.ClampToEdgeWrapping;texture.needsUpdate=true;
   const mat=new THREE.MeshBasicMaterial({map:texture,transparent:true,opacity:0.93,side:THREE.DoubleSide,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});
   rearBannerPlane=new THREE.Mesh(makeBannerGeo(0.90,0.127,0.075),mat);
-  rearBannerPlane.position.set(0,0.992,-0.95);
-  rearBannerPlane.rotation.x=THREE.MathUtils.degToRad(55);
+  rearBannerPlane.position.set(0,1.002,-0.95);
+  rearBannerPlane.rotation.x=THREE.MathUtils.degToRad(65);
   rearBannerPlane.rotation.y=THREE.MathUtils.degToRad(180);
   rearBannerPlane.renderOrder=999;
   carGroup.add(rearBannerPlane);
