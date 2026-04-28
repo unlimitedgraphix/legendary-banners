@@ -464,41 +464,27 @@ renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.2;
 renderer.shadowMap.enabled = true;
-renderer.setClearColor(0x00000a, 1);
+renderer.setClearColor(0xf0f0f0, 1);
 
 const scene = new THREE.Scene();
 
-// Midnight starry sky
+// Studio showroom background
 const skyCanvas = document.createElement('canvas');
 skyCanvas.width = 1024; skyCanvas.height = 1024;
 const skyCtx = skyCanvas.getContext('2d');
 const skyGrad = skyCtx.createLinearGradient(0, 0, 0, 1024);
-skyGrad.addColorStop(0.0,  '#00000a');
-skyGrad.addColorStop(0.4,  '#01010f');
-skyGrad.addColorStop(0.7,  '#020318');
-skyGrad.addColorStop(0.88, '#050510');
-skyGrad.addColorStop(1.0,  '#000000');
+skyGrad.addColorStop(0.0,  '#e8e8e8');
+skyGrad.addColorStop(0.4,  '#f0f0f0');
+skyGrad.addColorStop(0.7,  '#d8d8d8');
+skyGrad.addColorStop(1.0,  '#aaaaaa');
 skyCtx.fillStyle = skyGrad;
 skyCtx.fillRect(0, 0, 1024, 1024);
-// Stars — varied sizes and brightness
-for (let i = 0; i < 1800; i++) {
-  const x = Math.random()*1024, y = Math.random()*820;
-  const r = Math.random();
-  const size = r < 0.7 ? 0.5 : r < 0.92 ? 1.0 : r < 0.99 ? 1.5 : 2.2;
-  const brightness = 0.4 + Math.random()*0.6;
-  const col = Math.random()<0.15 ? `rgba(180,200,255,${brightness})` : Math.random()<0.08 ? `rgba(255,220,180,${brightness})` : `rgba(255,255,255,${brightness})`;
-  skyCtx.beginPath(); skyCtx.arc(x, y, size, 0, Math.PI*2);
-  skyCtx.fillStyle = col; skyCtx.fill();
-}
-// Faint milky way band
-const mwGrad = skyCtx.createLinearGradient(0, 200, 1024, 600);
-mwGrad.addColorStop(0, 'rgba(80,90,140,0)');
-mwGrad.addColorStop(0.3, 'rgba(80,90,140,0.06)');
-mwGrad.addColorStop(0.5, 'rgba(100,110,160,0.09)');
-mwGrad.addColorStop(0.7, 'rgba(80,90,140,0.06)');
-mwGrad.addColorStop(1, 'rgba(80,90,140,0)');
-skyCtx.fillStyle = mwGrad;
-skyCtx.fillRect(0, 0, 1024, 1024);
+// Soft spotlight blooms on ceiling
+[[512,100,200,'rgba(255,255,255,0.6)'],[200,80,140,'rgba(255,255,255,0.3)'],[820,80,140,'rgba(255,255,255,0.3)']].forEach(([x,y,r,col]) => {
+  const g = skyCtx.createRadialGradient(x,y,0,x,y,r);
+  g.addColorStop(0, col); g.addColorStop(1,'rgba(255,255,255,0)');
+  skyCtx.fillStyle = g; skyCtx.fillRect(0,0,1024,1024);
+});
 const skyTex = new THREE.CanvasTexture(skyCanvas);
 skyTex.needsUpdate = true;
 scene.background = skyTex;
@@ -506,14 +492,23 @@ scene.background = skyTex;
 const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.01, 100);
 
 // ── LIGHTING ──
-scene.add(new THREE.AmbientLight(0x8899cc, 0.35));
-const keyLight = new THREE.DirectionalLight(0xaabbff, 1.8);
-keyLight.position.set(5, 8, 5); keyLight.castShadow = true; scene.add(keyLight);
-const fillLight = new THREE.DirectionalLight(0x4466aa, 0.5);
-fillLight.position.set(-5, 3, -3); scene.add(fillLight);
-const rimLight = new THREE.DirectionalLight(0x00aaff, 0.4);
-rimLight.position.set(0, 5, -8); scene.add(rimLight);
-scene.add(new THREE.HemisphereLight(0x111133, 0x222211, 0.4));
+scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+const keyLight = new THREE.DirectionalLight(0xffffff, 3.5);
+keyLight.position.set(0, 10, 3); keyLight.castShadow = true; scene.add(keyLight);
+const fillLight = new THREE.DirectionalLight(0xffffff, 1.8);
+fillLight.position.set(-6, 6, 2); scene.add(fillLight);
+const fillLight2 = new THREE.DirectionalLight(0xffffff, 1.8);
+fillLight2.position.set(6, 6, 2); scene.add(fillLight2);
+const rimLight = new THREE.DirectionalLight(0xffffff, 1.2);
+rimLight.position.set(0, 8, -6); scene.add(rimLight);
+// Downlights — spot effect from above
+const spot1 = new THREE.PointLight(0xffffff, 2.0, 8);
+spot1.position.set(0, 4, 0); scene.add(spot1);
+const spot2 = new THREE.PointLight(0xffffff, 1.2, 6);
+spot2.position.set(-2, 4, -1); scene.add(spot2);
+const spot3 = new THREE.PointLight(0xffffff, 1.2, 6);
+spot3.position.set(2, 4, -1); scene.add(spot3);
+scene.add(new THREE.HemisphereLight(0xffffff, 0xcccccc, 0.8));
 
 // ── ORBIT CONTROLS ──
 let isDragging = false, isRightDragging = false;
@@ -716,7 +711,7 @@ function loadModel() {
 
     scene.environment = null;
     scene.background = skyTex;
-    renderer.setClearColor(0x00000a, 1);
+    renderer.setClearColor(0xf0f0f0, 1);
 
     model.traverse(child => {
       if (child.isMesh) {
@@ -746,27 +741,28 @@ function loadModel() {
   err => { console.error(err); document.getElementById('loadingPct').textContent = '⚠'; });
 }
 
-// ── NIGHT SCENE ──
+// ── STUDIO FLOOR ──
 function createNightScene() {
-  // Dark ground plane with subtle reflection
   const groundCanvas = document.createElement('canvas');
   groundCanvas.width = 512; groundCanvas.height = 256;
   const gCtx = groundCanvas.getContext('2d');
   const gGrad = gCtx.createLinearGradient(0, 0, 0, 256);
-  gGrad.addColorStop(0, 'rgba(10,15,30,0.9)');
-  gGrad.addColorStop(0.5, 'rgba(5,8,18,0.6)');
-  gGrad.addColorStop(1, 'rgba(0,0,0,0)');
+  gGrad.addColorStop(0, 'rgba(255,255,255,0.95)');
+  gGrad.addColorStop(0.4, 'rgba(230,230,230,0.8)');
+  gGrad.addColorStop(1, 'rgba(200,200,200,0.3)');
   gCtx.fillStyle = gGrad;
   gCtx.fillRect(0, 0, 512, 256);
-  // Subtle ground light streaks
-  ['rgba(60,80,180,0.15)', 'rgba(40,60,140,0.1)'].forEach((col, i) => {
-    gCtx.strokeStyle = col; gCtx.lineWidth = 2;
-    gCtx.beginPath(); gCtx.moveTo(256, 0); gCtx.lineTo(i===0?80:430, 256); gCtx.stroke();
-  });
+  // Reflection streak
+  const refGrad = gCtx.createLinearGradient(180, 0, 330, 256);
+  refGrad.addColorStop(0, 'rgba(255,255,255,0)');
+  refGrad.addColorStop(0.5, 'rgba(255,255,255,0.4)');
+  refGrad.addColorStop(1, 'rgba(255,255,255,0)');
+  gCtx.fillStyle = refGrad;
+  gCtx.fillRect(0, 0, 512, 256);
   const groundTex = new THREE.CanvasTexture(groundCanvas);
   const ground = new THREE.Mesh(
     new THREE.PlaneGeometry(20, 10),
-    new THREE.MeshBasicMaterial({ map: groundTex, transparent: true, opacity: 0.6, depthWrite: false })
+    new THREE.MeshBasicMaterial({ map: groundTex, transparent: true, opacity: 0.9, depthWrite: false })
   );
   ground.rotation.x = -Math.PI/2;
   ground.position.set(0, -0.05, -2);
