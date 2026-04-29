@@ -487,11 +487,13 @@ new THREE.TextureLoader().load(BG_URL, tex => {
   // Add a properly sized background plane
   const aspect = 16/9; // miami image is landscape 16:9
   const bgPlane = new THREE.Mesh(
-    new THREE.PlaneGeometry(aspect * 18, 18),
-    new THREE.MeshBasicMaterial({ map: tex, depthWrite: false, depthTest: false, side: THREE.FrontSide })
+    new THREE.PlaneGeometry(aspect * 23.76, 23.76),
+    new THREE.MeshBasicMaterial({ map: tex, depthWrite: false, depthTest: true, side: THREE.FrontSide })
   );
   bgPlane.name = 'bgPlane';
-  bgPlane.position.set(0, 3, -20);
+  bgPlane.position.set(-2.13, 4.74, -28);
+  bgPlane.material.opacity = 0.7;
+  bgPlane.material.transparent = true;
   bgPlane.renderOrder = -999;
   scene.add(bgPlane);
   // Remove scene.background so only the plane shows (avoids double/zoom)
@@ -502,26 +504,22 @@ new THREE.TextureLoader().load(BG_URL, tex => {
 const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.01, 100);
 
 // ── LIGHTING ──
-scene.add(new THREE.AmbientLight(0x220a30, 1.0));
-const keyLight = new THREE.DirectionalLight(0xffffff, 2.8);
+scene.add(new THREE.AmbientLight(0x220a30, 0.4));
+const keyLight = new THREE.DirectionalLight(0xffffff, 1.5);
 keyLight.position.set(3, 8, 4); keyLight.castShadow = true; scene.add(keyLight);
-const fillLight = new THREE.DirectionalLight(0xff4488, 0.8);
+const fillLight = new THREE.DirectionalLight(0xff4488, 0.3);
 fillLight.position.set(-5, 4, 2); scene.add(fillLight);
-const fillLight2 = new THREE.DirectionalLight(0x4488ff, 0.5);
+const fillLight2 = new THREE.DirectionalLight(0x4488ff, 0.2);
 fillLight2.position.set(5, 4, 2); scene.add(fillLight2);
-const rimLight = new THREE.DirectionalLight(0xff8800, 1.2);
+const rimLight = new THREE.DirectionalLight(0xff8800, 0.5);
 rimLight.position.set(0, 3, -8); scene.add(rimLight);
-const spot1 = new THREE.PointLight(0xffffff, 3.5, 6);
+const spot1 = new THREE.PointLight(0xffffff, 2.0, 6);
 spot1.position.set(0, 5, 0); scene.add(spot1);
-const neonLeft = new THREE.PointLight(0xff0088, 1.0, 5);
-neonLeft.position.set(-3, 1, -1); scene.add(neonLeft);
-const neonRight = new THREE.PointLight(0x00aaff, 0.8, 5);
-neonRight.position.set(3, 1, -1); scene.add(neonRight);
-scene.add(new THREE.HemisphereLight(0x220a30, 0x111105, 0.6));
+scene.add(new THREE.HemisphereLight(0x220a30, 0x111105, 0.3));
 
 // ── ORBIT CONTROLS — rotate carGroup only, camera stays fixed ──
 let isDragging=false, isRightDragging=false, prevMouse={x:0,y:0};
-let spherical={theta:0.3, phi:Math.PI/3.8, radius:2.2};
+let spherical={theta:0, phi:Math.PI/3.8, radius:2.2};
 let target=new THREE.Vector3(0,0.2,0);
 let carGroup = new THREE.Group(); scene.add(carGroup);
 let autoRotateSpeed = 0.003;
@@ -539,10 +537,9 @@ canvas.addEventListener('mousedown', e => {
   prevMouse={x:e.clientX,y:e.clientY};
 });
 canvas.addEventListener('mousemove', e => {
-  if(!isDragging&&!isRightDragging) return;
+  if(!isDragging) return;
   const dx=e.clientX-prevMouse.x, dy=e.clientY-prevMouse.y;
   if(isDragging){ carGroup.rotation.y -= dx*0.008; spherical.phi=Math.max(0.25,Math.min(Math.PI*0.48,spherical.phi-dy*0.006)); updateCamera(); }
-  if(isRightDragging){ const r=new THREE.Vector3(); camera.getWorldDirection(r); r.cross(camera.up).normalize(); target.addScaledVector(r,-dx*0.004); target.addScaledVector(camera.up,dy*0.004); updateCamera(); }
   prevMouse={x:e.clientX,y:e.clientY};
 });
 window.addEventListener('mouseup',()=>{ isDragging=false; isRightDragging=false; setTimeout(()=>{autoRotateSpeed=0.003;},3000); });
@@ -602,46 +599,33 @@ function applyBannerToRearWindow(texture) {
 
 // ── MIAMI SCENE OBJECTS ──
 function buildMiamiScene() {
-  // ── BLACK MARBLE FLOOR ──
-  const marbleC = document.createElement('canvas'); marbleC.width=1024; marbleC.height=1024;
-  const mCtx = marbleC.getContext('2d');
-  // Base — deep black
-  mCtx.fillStyle='#080808'; mCtx.fillRect(0,0,1024,1024);
-  // Marble veins
-  for(let v=0;v<18;v++){
-    const x1=Math.random()*1024, y1=Math.random()*1024;
-    const x2=x1+(Math.random()-0.5)*600, y2=y1+(Math.random()-0.5)*600;
-    const opacity=0.03+Math.random()*0.07;
-    const grad=mCtx.createLinearGradient(x1,y1,x2,y2);
-    const grey=`rgba(${180+Math.floor(Math.random()*60)},${180+Math.floor(Math.random()*60)},${180+Math.floor(Math.random()*60)},`;
-    grad.addColorStop(0,grey+'0)');
-    grad.addColorStop(0.3,grey+opacity+')');
-    grad.addColorStop(0.5,grey+(opacity*1.5)+')');
-    grad.addColorStop(0.7,grey+opacity+')');
-    grad.addColorStop(1,grey+'0)');
-    mCtx.strokeStyle=grad; mCtx.lineWidth=1+Math.random()*2;
-    mCtx.beginPath(); mCtx.moveTo(x1,y1);
-    const cx=x1+(x2-x1)*0.5+(Math.random()-0.5)*200, cy=y1+(y2-y1)*0.5+(Math.random()-0.5)*200;
-    mCtx.quadraticCurveTo(cx,cy,x2,y2); mCtx.stroke();
+  // ── DARK GREY STONE FLOOR ──
+  const floorC = document.createElement('canvas'); floorC.width=1024; floorC.height=1024;
+  const fCtx = floorC.getContext('2d');
+  // Dark base
+  fCtx.fillStyle = '#1e1e1e'; fCtx.fillRect(0,0,1024,1024);
+  // Stone texture — noise grain
+  for(let i=0;i<80000;i++){
+    const x=Math.random()*1024, y=Math.random()*1024;
+    const v=Math.floor(Math.random()*30);
+    fCtx.fillStyle=`rgba(${v+20},${v+20},${v+20},0.15)`;
+    fCtx.fillRect(x,y,2,2);
   }
-  // Polished sheen
-  const sheen=mCtx.createRadialGradient(512,512,0,512,512,700);
-  sheen.addColorStop(0,'rgba(255,255,255,0.04)');
-  sheen.addColorStop(0.5,'rgba(255,255,255,0.01)');
-  sheen.addColorStop(1,'rgba(0,0,0,0)');
-  mCtx.fillStyle=sheen; mCtx.fillRect(0,0,1024,1024);
-  const marbleTex = new THREE.CanvasTexture(marbleC);
-  marbleTex.repeat.set(4,4); marbleTex.wrapS=marbleTex.wrapT=THREE.RepeatWrapping;
+  // Stone tile lines
+  fCtx.strokeStyle='rgba(10,10,10,0.8)'; fCtx.lineWidth=3;
+  [0,512,1024].forEach(x=>{ fCtx.beginPath(); fCtx.moveTo(x,0); fCtx.lineTo(x,1024); fCtx.stroke(); });
+  [0,512,1024].forEach(y=>{ fCtx.beginPath(); fCtx.moveTo(0,y); fCtx.lineTo(1024,y); fCtx.stroke(); });
+  // Subtle highlights on tile edges
+  fCtx.strokeStyle='rgba(60,60,60,0.3)'; fCtx.lineWidth=1;
+  [514,516].forEach(x=>{ fCtx.beginPath(); fCtx.moveTo(x,0); fCtx.lineTo(x,1024); fCtx.stroke(); });
+  [514,516].forEach(y=>{ fCtx.beginPath(); fCtx.moveTo(0,y); fCtx.lineTo(1024,y); fCtx.stroke(); });
+  const floorTex = new THREE.CanvasTexture(floorC);
+  floorTex.repeat.set(4,4); floorTex.wrapS=floorTex.wrapT=THREE.RepeatWrapping;
 
   // Floor mesh
   const floorMesh = new THREE.Mesh(
     new THREE.PlaneGeometry(30,20),
-    new THREE.MeshStandardMaterial({
-      map: marbleTex,
-      roughness: 0.08,
-      metalness: 0.1,
-      color: new THREE.Color(0x111111),
-    })
+    new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.9, metalness: 0.0, color: new THREE.Color(0x333333) })
   );
   floorMesh.rotation.x=-Math.PI/2;
   floorMesh.position.set(0,0,0);
