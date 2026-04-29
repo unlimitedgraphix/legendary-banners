@@ -473,23 +473,30 @@ renderer.setClearColor(0x050010, 1);
 
 const scene = new THREE.Scene();
 
-// ── BACKGROUND — PNG as scene.background with correct mapping ──
+// ── BACKGROUND — PNG as scene.background + backup plane ──
 const BG_URL = 'https://green-night-47f9.karlitojemal.workers.dev/miami-bg.png';
 renderer.setClearColor(0x050010, 1);
-const bgLoader = new THREE.TextureLoader();
-bgLoader.crossOrigin = 'anonymous';
-bgLoader.load(BG_URL, tex => {
+new THREE.TextureLoader().load(BG_URL, tex => {
   tex.encoding = THREE.sRGBEncoding;
-  tex.mapping = THREE.EquirectangularReflectionMapping;
+  tex.needsUpdate = true;
+  // Remove background plane approach — just use scene.background
   scene.background = tex;
-}, undefined, () => {
-  // Fallback gradient if image fails
-  const fc = document.createElement('canvas'); fc.width=1024; fc.height=512;
-  const fCtx = fc.getContext('2d');
-  const fg = fCtx.createLinearGradient(0,0,0,512);
-  fg.addColorStop(0,'#050010'); fg.addColorStop(0.5,'#4a0050'); fg.addColorStop(0.8,'#ff6600'); fg.addColorStop(1,'#111008');
-  fCtx.fillStyle=fg; fCtx.fillRect(0,0,1024,512);
-  scene.background = new THREE.CanvasTexture(fc);
+  // Remove old background plane if exists
+  const old = scene.getObjectByName('bgPlane');
+  if(old) scene.remove(old);
+  // Add a properly sized background plane
+  const aspect = 16/9; // miami image is landscape 16:9
+  const bgPlane = new THREE.Mesh(
+    new THREE.PlaneGeometry(aspect * 18, 18),
+    new THREE.MeshBasicMaterial({ map: tex, depthWrite: false, depthTest: false, side: THREE.FrontSide })
+  );
+  bgPlane.name = 'bgPlane';
+  bgPlane.position.set(0, 3, -20);
+  bgPlane.renderOrder = -999;
+  scene.add(bgPlane);
+  // Remove scene.background so only the plane shows (avoids double/zoom)
+  scene.background = null;
+  renderer.setClearColor(0x000000, 1);
 });
 
 const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.01, 100);
