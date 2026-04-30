@@ -69,12 +69,22 @@ body {
   flex-direction: column;
   position: relative;
 }
+.scroll-content {
+  position: relative;
+  z-index: 50;
+  background: #0a0010;
+  margin-top: 82vh;
+}
 
 .right-canvas {
   width: 100%;
   height: 82vh;
   min-height: 520px;
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
 }
 #canvas3d {
   width: 100%; height: 100%; display: block;
@@ -150,7 +160,7 @@ body {
 /* Section label */
 .section-label {
   font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
-  color: var(--pink); margin-bottom: 12px; margin-top: 20px;
+  color: var(--pink); margin-bottom: 12px; margin-top: 0;
   display: flex; align-items: center; gap: 8px;
 }
 .section-label::after {
@@ -430,10 +440,13 @@ body {
     </div>
   </div>
 
+</div><!-- close main-layout -->
+
+<div class="scroll-content">
   <!-- BOTTOM: CONFIGURATOR PANEL FULL WIDTH -->
   <div class="left-panel">
     <!-- CTA — above banner grid -->
-    <div class="cta-block" id="ctaBlock" style="border:1px solid var(--border);border-radius:10px;padding:16px 24px;margin-bottom:24px;background:rgba(255,0,128,0.04);position:relative;transition:padding 0.3s ease;">
+    <div class="cta-block" id="ctaBlock" style="border:1px solid var(--border);border-radius:10px;padding:16px 24px;margin-bottom:16px;background:rgba(255,0,128,0.04);position:relative;transition:padding 0.3s ease;">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:nowrap;">
         <div style="flex-shrink:0;">
           <div class="cta-price" id="ctaPrice">$119.90 <span>AUD</span></div>
@@ -477,7 +490,6 @@ body {
     </div>
   </div>
 
-</div>
 
 <!-- FEATURES -->
 <div class="features-bar">
@@ -514,6 +526,7 @@ body {
   </div>
   <div style="margin-top:12px;font-size:10px;color:#222;letter-spacing:1px;">© 2026 Legendary Banners · All Rights Reserved</div>
 </footer>
+</div><!-- close scroll-content -->
 
 <!-- THREE.JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
