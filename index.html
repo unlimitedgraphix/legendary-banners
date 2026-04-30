@@ -222,10 +222,10 @@ body {
   align-items: center;
   gap: 8px;
 }
-.colour-wheel-wrap {
+  .colour-wheel-wrap {
   position: relative;
-  width: 90px;
-  height: 90px;
+  width: 45px;
+  height: 45px;
   cursor: crosshair;
 }
 .colour-wheel-wrap canvas {
@@ -235,15 +235,15 @@ body {
 }
 .colour-wheel-pointer {
   position: absolute;
-  width: 12px; height: 12px;
+  width: 7px; height: 7px;
   border-radius: 50%;
-  border: 2px solid #fff;
-  box-shadow: 0 0 6px rgba(0,0,0,0.8);
+  border: 1.5px solid #fff;
+  box-shadow: 0 0 4px rgba(0,0,0,0.8);
   transform: translate(-50%, -50%);
   pointer-events: none;
 }
 .colour-wheel-label {
-  font-size: 9px;
+  font-size: 7px;
   letter-spacing: 2px;
   text-transform: uppercase;
   color: rgba(255,255,255,0.5);
@@ -251,11 +251,7 @@ body {
   white-space: nowrap;
 }
 .colour-wheel-selected {
-  width: 24px; height: 24px;
-  border-radius: 50%;
-  border: 2px solid rgba(255,255,255,0.3);
-  box-shadow: 0 0 10px rgba(0,0,0,0.6);
-  margin: 0 auto;
+  display: none;
 }
 
 /* CTA */
@@ -376,15 +372,14 @@ body {
 
     <!-- COLOUR WHEEL OVERLAY -->
     <div class="colour-wheel-overlay">
-      <div class="colour-wheel-selected" id="wheelSelected" style="background:#0d0d14;"></div>
       <div class="colour-wheel-wrap" id="colourWheelWrap">
-        <canvas id="colourWheelCanvas" width="90" height="90"></canvas>
+        <canvas id="colourWheelCanvas" width="45" height="45"></canvas>
         <div class="colour-wheel-pointer" id="colourWheelPointer" style="left:50%;top:50%;"></div>
       </div>
       <!-- Black & White quick picks -->
-      <div style="display:flex;gap:6px;justify-content:center;">
-        <button onclick="applyWheelColour('#050505')" title="Black" style="width:22px;height:22px;border-radius:50%;background:#050505;border:2px solid rgba(255,255,255,0.2);cursor:pointer;outline:none;transition:transform 0.15s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></button>
-        <button onclick="applyWheelColour('#f5f5f5')" title="White" style="width:22px;height:22px;border-radius:50%;background:#f5f5f5;border:2px solid rgba(255,255,255,0.4);cursor:pointer;outline:none;transition:transform 0.15s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></button>
+      <div style="display:flex;gap:4px;justify-content:center;">
+        <button onclick="applyWheelColour('#050505')" title="Black" style="width:11px;height:11px;border-radius:50%;background:#050505;border:1.5px solid rgba(255,255,255,0.25);cursor:pointer;outline:none;transition:transform 0.15s;" onmouseover="this.style.transform='scale(1.3)'" onmouseout="this.style.transform='scale(1)'"></button>
+        <button onclick="applyWheelColour('#ffffff')" title="White" style="width:11px;height:11px;border-radius:50%;background:#ffffff;border:1.5px solid rgba(200,200,200,0.5);cursor:pointer;outline:none;transition:transform 0.15s;" onmouseover="this.style.transform='scale(1.3)'" onmouseout="this.style.transform='scale(1)'"></button>
       </div>
       <div class="colour-wheel-label">Car Colour</div>
     </div>
@@ -923,28 +918,32 @@ buildGrid(); buildRearGrid(); updateVisuals(BANNERS[0]);
   const selected= document.getElementById('wheelSelected');
   const W = cvs.width, H = cvs.height, cx = W/2, cy = H/2, r = W/2;
 
-  // Draw hue/saturation wheel with brightness gradient
+  // Draw hue wheel — full spectrum ring with white/black gradient overlay
   function drawWheel(){
-    // Hue ring
+    // Draw full hue spectrum as pie slices
     for(let angle=0; angle<360; angle++){
-      const startAngle = (angle-1)*Math.PI/180;
-      const endAngle   = (angle+1)*Math.PI/180;
-      const grad = ctx.createRadialGradient(cx,cy,0,cx,cy,r);
-      grad.addColorStop(0,   'white');
-      grad.addColorStop(0.5, `hsl(${angle},100%,50%)`);
-      grad.addColorStop(1,   `hsl(${angle},100%,20%)`);
+      const start = (angle - 1) * Math.PI / 180;
+      const end   = (angle + 1) * Math.PI / 180;
       ctx.beginPath();
-      ctx.moveTo(cx,cy);
-      ctx.arc(cx,cy,r,startAngle,endAngle);
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, r, start, end);
       ctx.closePath();
-      ctx.fillStyle = grad;
+      ctx.fillStyle = `hsl(${angle}, 100%, 50%)`;
       ctx.fill();
     }
-    // Dark centre overlay for depth
-    const dark = ctx.createRadialGradient(cx,cy,0,cx,cy,r*0.18);
-    dark.addColorStop(0,'rgba(0,0,0,0.7)');
-    dark.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fillStyle=dark; ctx.fill();
+    // White radial overlay — centre is white, fades out to transparent
+    const white = ctx.createRadialGradient(cx,cy,0, cx,cy,r);
+    white.addColorStop(0,   'rgba(255,255,255,1)');
+    white.addColorStop(0.5, 'rgba(255,255,255,0.3)');
+    white.addColorStop(1,   'rgba(255,255,255,0)');
+    ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2);
+    ctx.fillStyle = white; ctx.fill();
+    // Black outer edge overlay — darkens the rim
+    const black = ctx.createRadialGradient(cx,cy,r*0.6, cx,cy,r);
+    black.addColorStop(0, 'rgba(0,0,0,0)');
+    black.addColorStop(1, 'rgba(0,0,0,0.65)');
+    ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2);
+    ctx.fillStyle = black; ctx.fill();
   }
   drawWheel();
 
@@ -959,8 +958,7 @@ buildGrid(); buildRearGrid(); updateVisuals(BANNERS[0]);
 
   window.applyWheelColour = applyColour;
   function applyColour(hex){
-    selected.style.background = hex;
-    selected.style.boxShadow  = `0 0 12px ${hex}88`;
+    if(selected) { selected.style.background = hex; selected.style.boxShadow = `0 0 12px ${hex}88`; }
     if(!carModel) return;
     const col = new THREE.Color(hex);
     carModel.traverse(child=>{
