@@ -363,8 +363,8 @@ body {
 }
   .colour-wheel-wrap {
   position: relative;
-  width: 45px;
-  height: 45px;
+  width: 48px;
+  height: 48px;
   cursor: crosshair;
 }
 .colour-wheel-wrap canvas {
@@ -519,14 +519,14 @@ body {
         onmouseenter="clearTimeout(volumeFadeTimer);document.getElementById('volumePanel').classList.remove('fade-out');"
         onmouseleave="volumeFadeTimer=setTimeout(function(){document.getElementById('volumePanel').classList.add('fade-out');},1500);">
         <span class="volume-label">VOL</span>
-        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="10" oninput="setVolume(this.value)">
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="5" oninput="setVolume(this.value)">
       </div>
     </div>
 
     <!-- COLOUR WHEEL OVERLAY -->
     <div class="colour-wheel-overlay">
       <div class="colour-wheel-wrap" id="colourWheelWrap">
-        <canvas id="colourWheelCanvas" width="45" height="45"></canvas>
+        <canvas id="colourWheelCanvas" width="48" height="48"></canvas>
         <div class="colour-wheel-pointer" id="colourWheelPointer" style="left:50%;top:50%;"></div>
       </div>
       <!-- Black & White quick picks -->
@@ -1049,7 +1049,7 @@ let frontBanner  = null;
 let rearBanner   = null;
 let activeTarget = 'front'; // which window clicks currently apply to
 
-function toggleWindow(which){ playClick(); if(navigator.vibrate) navigator.vibrate(20);
+function toggleWindow(which){ playClick(); if(navigator.vibrate) navigator.vibrate(30);
   if(which==='front'){
     if(!frontActive){
       // Turn on
@@ -1166,7 +1166,7 @@ function buildGrid(){
     card.innerHTML=`<div class="swatch-preview"><img src="${banner.img}" alt="${banner.name}"/></div><div class="card-name">${banner.name}</div><div class="card-price">${banner.price}</div><div class="card-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
     card.addEventListener('click',()=>{
       playClick();
-      if(navigator.vibrate) navigator.vibrate(30);
+      if(navigator.vibrate) navigator.vibrate(15);
       if(activeTarget === 'front' && frontActive){
         frontBanner = banner;
         loadBannerTexture(banner.img, tex=>applyBannerToWindshield(tex));
@@ -1267,7 +1267,7 @@ function playClick(){
     filter.Q.value = 0.8;
 
     var gain = audioCtx.createGain();
-    gain.gain.setValueAtTime(0.12, t);
+    gain.gain.setValueAtTime(0.138, t);
     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.02);
 
     noise.connect(filter);
@@ -1291,7 +1291,7 @@ function playClick(){
     filter2.Q.value = 0.8;
 
     var gain2 = audioCtx.createGain();
-    gain2.gain.setValueAtTime(0.07, t + 0.025);
+    gain2.gain.setValueAtTime(0.08, t + 0.025);
     gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.045);
 
     noise2.connect(filter2);
@@ -1315,7 +1315,7 @@ function startMusicAuto(){
   var btn   = document.getElementById('musicBtn');
   var panel = document.getElementById('volumePanel');
   if(!musicPlaying){
-    audio.volume = 0.10;
+    audio.volume = 0.05;
     audio.play().then(function(){
       btn.textContent = '🔊';
       btn.classList.add('playing');
