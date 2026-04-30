@@ -247,6 +247,15 @@ body {
   color: rgba(255,255,255,0.5);
   text-transform: uppercase;
 }
+/* Fade transitions */
+.controls-hint {
+  transition: opacity 1s ease;
+}
+.controls-hint.hidden { opacity: 0; pointer-events: none; }
+.volume-panel {
+  transition: opacity 0.5s ease;
+}
+.volume-panel.fade-out { opacity: 0; pointer-events: none; }
 
 /* Savings bubble */
 .savings-bubble {
@@ -506,9 +515,11 @@ body {
     </audio>
     <div class="music-controls">
       <button class="music-btn" id="musicBtn" onclick="toggleMusic()" title="Toggle music">🎵</button>
-      <div class="volume-panel" id="volumePanel">
+      <div class="volume-panel" id="volumePanel"
+        onmouseenter="clearTimeout(volumeFadeTimer);document.getElementById('volumePanel').classList.remove('fade-out');"
+        onmouseleave="volumeFadeTimer=setTimeout(function(){document.getElementById('volumePanel').classList.add('fade-out');},1500);">
         <span class="volume-label">VOL</span>
-        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="70" oninput="setVolume(this.value)">
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="10" oninput="setVolume(this.value)">
       </div>
     </div>
 
@@ -1038,7 +1049,7 @@ let frontBanner  = null;
 let rearBanner   = null;
 let activeTarget = 'front'; // which window clicks currently apply to
 
-function toggleWindow(which){
+function toggleWindow(which){ playClick();
   if(which==='front'){
     if(!frontActive){
       // Turn on
@@ -1154,6 +1165,7 @@ function buildGrid(){
     card.className='banner-card'; card.dataset.id=banner.id;
     card.innerHTML=`<div class="swatch-preview"><img src="${banner.img}" alt="${banner.name}"/></div><div class="card-name">${banner.name}</div><div class="card-price">${banner.price}</div><div class="card-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
     card.addEventListener('click',()=>{
+      playClick();
       if(activeTarget === 'front' && frontActive){
         frontBanner = banner;
         loadBannerTexture(banner.img, tex=>applyBannerToWindshield(tex));
@@ -1187,7 +1199,7 @@ if(document.readyState === 'loading'){
 
 // ── MUSIC TOGGLE ──
 var musicPlaying = false;
-function toggleMusic(){
+function toggleMusic(){ playClick();
   var audio  = document.getElementById('bgMusic');
   var btn    = document.getElementById('musicBtn');
   var panel  = document.getElementById('volumePanel');
@@ -1203,16 +1215,129 @@ function toggleMusic(){
       btn.textContent = '🔊';
       btn.classList.add('playing');
       panel.classList.add('visible');
+      panel.classList.remove('fade-out');
       musicPlaying = true;
+      // Auto fade volume panel after 1.5s
+      clearTimeout(volumeFadeTimer);
+      volumeFadeTimer = setTimeout(function(){
+        panel.classList.add('fade-out');
+      }, 1000);
     }).catch(function(){
       console.log('Autoplay blocked');
     });
   }
 }
+var volumeFadeTimer = null;
 function setVolume(val){
   var audio = document.getElementById('bgMusic');
   audio.volume = val / 100;
+  // Reset fade timer on every interaction
+  var panel = document.getElementById('volumePanel');
+  if(panel) {
+    panel.classList.remove('fade-out');
+    clearTimeout(volumeFadeTimer);
+    volumeFadeTimer = setTimeout(function(){
+      panel.classList.add('fade-out');
+    }, 1000);
+  }
 }
+
+// ── CLICK SOUND — soft mouse click, muted when music is off ──
+var audioCtx = null;
+function playClick(){
+  if(!musicPlaying) return;  // muted when music is off
+  try {
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    var t = audioCtx.currentTime;
+
+    // Click down — soft noise burst
+    var bufSize = audioCtx.sampleRate * 0.004;
+    var buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+    var data = buf.getChannelData(0);
+    for(var i = 0; i < bufSize; i++){
+      data[i] = (Math.random() * 2 - 1) * (1 - i / bufSize);
+    }
+    var noise = audioCtx.createBufferSource();
+    noise.buffer = buf;
+
+    var filter = audioCtx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 2000;
+    filter.Q.value = 0.8;
+
+    var gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(0.12, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.02);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioCtx.destination);
+    noise.start(t);
+    noise.stop(t + 0.02);
+
+    // Click up — softer second pop
+    var buf2 = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+    var data2 = buf2.getChannelData(0);
+    for(var j = 0; j < bufSize; j++){
+      data2[j] = (Math.random() * 2 - 1) * (1 - j / bufSize);
+    }
+    var noise2 = audioCtx.createBufferSource();
+    noise2.buffer = buf2;
+
+    var filter2 = audioCtx.createBiquadFilter();
+    filter2.type = 'bandpass';
+    filter2.frequency.value = 1800;
+    filter2.Q.value = 0.8;
+
+    var gain2 = audioCtx.createGain();
+    gain2.gain.setValueAtTime(0.07, t + 0.025);
+    gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.045);
+
+    noise2.connect(filter2);
+    filter2.connect(gain2);
+    gain2.connect(audioCtx.destination);
+    noise2.start(t + 0.025);
+    noise2.stop(t + 0.045);
+
+  } catch(e){}
+}
+
+// ── FADE ROTATE HINT after 5s ──
+setTimeout(function(){
+  var hint = document.querySelector('.controls-hint');
+  if(hint) hint.classList.add('hidden');
+}, 5000);
+
+// ── AUTOPLAY MUSIC ──
+function startMusicAuto(){
+  var audio = document.getElementById('bgMusic');
+  var btn   = document.getElementById('musicBtn');
+  var panel = document.getElementById('volumePanel');
+  if(!musicPlaying){
+    audio.volume = 0.10;
+    audio.play().then(function(){
+      btn.textContent = '🔊';
+      btn.classList.add('playing');
+      panel.classList.add('visible');
+      panel.classList.remove('fade-out');
+      musicPlaying = true;
+      clearTimeout(volumeFadeTimer);
+      volumeFadeTimer = setTimeout(function(){
+        panel.classList.add('fade-out');
+      }, 1000);
+    }).catch(function(){
+      // Autoplay blocked — try on first interaction
+      document.addEventListener('click', function onFirstClick(){
+        startMusicAuto();
+        document.removeEventListener('click', onFirstClick);
+      }, { once: true });
+    });
+  }
+}
+// Try autoplay immediately
+startMusicAuto();
+// Also try after model loads as backup
+setTimeout(startMusicAuto, 3000);
 
 // ── COLOUR WHEEL ──
 (function(){
@@ -1300,7 +1425,7 @@ function setVolume(val){
   }
 
   let dragging = false;
-  wrap.addEventListener('mousedown', e=>{ dragging=true; pickAt(e); });
+  wrap.addEventListener('mousedown', e=>{ dragging=true; playClick(); pickAt(e); });
   window.addEventListener('mousemove', e=>{ if(dragging) pickAt(e); });
   window.addEventListener('mouseup',   ()=>{ dragging=false; });
 
