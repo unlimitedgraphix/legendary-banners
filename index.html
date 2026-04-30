@@ -73,7 +73,6 @@ body {
   position: relative;
   z-index: 50;
   background: #0a0010;
-  margin-top: 82vh;
 }
 
 .right-canvas {
@@ -893,7 +892,15 @@ function loadModel() {
 }
 
 // ── RESIZE ──
-function onResize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+function onResize(){
+  const w=canvas.clientWidth,h=canvas.clientHeight;
+  renderer.setSize(w,h,false);
+  camera.aspect=w/h;
+  camera.updateProjectionMatrix();
+  // Match scroll-content top to actual canvas height
+  const sc = document.querySelector('.scroll-content');
+  if(sc) sc.style.marginTop = document.querySelector('.right-canvas').offsetHeight + 'px';
+}
 window.addEventListener('resize',onResize); onResize(); updateCamera();
 
 // ── RENDER LOOP ──
