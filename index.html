@@ -159,20 +159,15 @@ body {
 }
 
 /* Panel tabs */
-.panel-tabs {
-  display: flex; gap: 8px; margin-bottom: 14px;
+/* Window toggle buttons handled inline */
+.banner-card.rear-active {
+  border-color: var(--cyan) !important;
+  background: rgba(0,238,255,0.08) !important;
+  box-shadow: 0 0 16px rgba(0,238,255,0.25) !important;
 }
-.panel-tab {
-  flex: 1; padding: 10px 8px; cursor: pointer;
-  font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-  border: 1px solid var(--border); background: transparent; color: var(--muted);
-  border-radius: 6px; transition: all 0.2s; font-family: var(--font-body);
-}
-.panel-tab.active {
-  color: #fff; border-color: var(--pink);
-  background: rgba(255,0,128,0.1);
-  box-shadow: 0 0 12px var(--pink-glow);
-}
+.banner-card.rear-active .card-name { color: var(--cyan) !important; }
+.banner-card.rear-active .card-price { color: var(--cyan) !important; }
+.banner-card.rear-active .card-check { background: var(--cyan) !important; opacity:1 !important; }
 
 /* Banner grid */
 .banner-grid {
@@ -205,6 +200,7 @@ body {
   opacity: 0; transition: opacity 0.2s;
 }
 .banner-card.active .card-check { opacity: 1; }
+
 
 /* Car colour — legacy swatches hidden, replaced by wheel */
 .colour-swatches { display: none; }
@@ -368,7 +364,7 @@ body {
       <div class="loading-label">Loading 3D Model</div>
     </div>
     <canvas id="canvas3d"></canvas>
-    <div class="controls-hint">Drag to rotate &nbsp;·&nbsp; Scroll to zoom</div>
+    <div class="controls-hint">Rotate &amp; Zoom</div>
 
     <!-- COLOUR WHEEL OVERLAY -->
     <div class="colour-wheel-overlay">
@@ -385,8 +381,7 @@ body {
     </div>
     <!-- Logo overlay on canvas -->
     <div style="position:absolute;top:20px;left:24px;z-index:10;pointer-events:none;">
-      <div style="font-family:var(--font-display);font-size:28px;letter-spacing:4px;color:#fff;text-shadow:0 0 30px var(--pink),0 0 60px rgba(255,0,128,0.4);">CHOOSE YOUR</div>
-      <div style="font-family:var(--font-display);font-size:28px;letter-spacing:4px;color:var(--pink);text-shadow:0 0 30px var(--pink),0 0 60px rgba(255,0,128,0.4);margin-top:-8px;">BANNER</div>
+      <div style="font-family:var(--font-display);font-size:28px;letter-spacing:4px;color:#fff;text-shadow:0 0 30px var(--pink),0 0 60px rgba(255,0,128,0.4);">CHOOSE YOUR <span style='color:var(--pink)'>BANNER</span></div>
     </div>
   </div>
 
@@ -412,16 +407,24 @@ body {
       <!-- Banner Selection only — car colour section removed (wheel is on canvas) -->
       <div class="config-col">
         <div class="section-label">Select Banner Design</div>
-        <div class="panel-tabs">
-          <button class="panel-tab active" id="tabFront" onclick="switchPanel('front')">Front Windshield</button>
-          <button class="panel-tab" id="tabRear" onclick="switchPanel('rear')">Rear Window</button>
+        <!-- Window toggles -->
+        <div style="display:flex;gap:8px;margin-bottom:14px;">
+          <button id="toggleFront" onclick="toggleWindow('front')"
+            style="flex:1;padding:10px 8px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+                   border-radius:6px;cursor:pointer;font-family:var(--font-body);transition:all 0.2s;
+                   border:1px solid var(--pink);background:rgba(255,0,128,0.15);color:#fff;
+                   box-shadow:0 0 12px var(--pink-glow);">
+            ◆ FRONT
+          </button>
+          <button id="toggleRear" onclick="toggleWindow('rear')"
+            style="flex:1;padding:10px 8px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+                   border-radius:6px;cursor:pointer;font-family:var(--font-body);transition:all 0.2s;
+                   border:1px solid rgba(0,238,255,0.2);background:transparent;color:var(--muted);">
+            ◆ REAR
+          </button>
         </div>
-        <div id="panelFront">
-          <div class="banner-grid" id="bannerGrid"></div>
-        </div>
-        <div id="panelRear" style="display:none;">
-          <div class="banner-grid" id="rearBannerGrid"></div>
-        </div>
+        <!-- Single shared banner grid -->
+        <div class="banner-grid" id="bannerGrid"></div>
       </div>
 
     </div>
@@ -839,40 +842,118 @@ function animate(){requestAnimationFrame(animate); carGroup.rotation.y+=autoRota
 // ── UI ──
 function updateVisuals(banner) {
   if(!banner) return;
-  document.getElementById('ctaName').textContent=banner.name;
-  document.getElementById('ctaPrice').innerHTML=banner.price+' <span>AUD</span>';
-  const btn=document.getElementById('ctaBtn');
-  btn.href=cartURL(banner.variantId);
-  btn.textContent='ADD TO CART — '+banner.price;
-  document.querySelectorAll('#bannerGrid .banner-card').forEach(card=>{
-    card.classList.toggle('active', parseInt(card.dataset.id)===banner.id);
-  });
-  loadBannerTexture(banner.img,tex=>applyBannerToWindshield(tex));
-}
-
-function handleRearBuy(e){
-  e.preventDefault();
-  if(!currentRearBanner){alert('Please select a rear window banner first!');return;}
-  window.open(cartURL(currentRearBanner.variantId),'_blank');
-}
-
-function switchPanel(panel){
-  const isFront=panel==='front';
-  document.getElementById('panelFront').style.display=isFront?'block':'none';
-  document.getElementById('panelRear').style.display=isFront?'none':'block';
-  document.getElementById('tabFront').classList.toggle('active',isFront);
-  document.getElementById('tabRear').classList.toggle('active',!isFront);
-  // Update CTA for rear
-  if(!isFront){
-    document.getElementById('ctaName').textContent='Rear Window Banner';
-    document.getElementById('ctaBtn').onclick=handleRearBuy;
-    document.getElementById('ctaBtn').href='#';
-    document.getElementById('ctaBtn').removeAttribute('target');
-  } else {
-    document.getElementById('ctaBtn').onclick=null;
-    document.getElementById('ctaBtn').setAttribute('target','_blank');
-    updateVisuals(BANNERS[0]);
+  if(frontActive) {
+    frontBanner = banner;
+    loadBannerTexture(banner.img, tex=>applyBannerToWindshield(tex));
   }
+  updateToggleUI();
+  updateCTA();
+}
+
+// Track which windows are active and which banner each has selected
+let frontActive  = true;
+let rearActive   = false;
+let frontBanner  = null;
+let rearBanner   = null;
+let activeTarget = 'front'; // which window clicks currently apply to
+
+function toggleWindow(which){
+  if(which==='front'){
+    if(!frontActive){
+      // Turn on
+      frontActive = true;
+      activeTarget = 'front';
+      if(frontBanner) loadBannerTexture(frontBanner.img, tex=>applyBannerToWindshield(tex));
+    } else if(rearActive) {
+      // Turn off (only if rear is also on)
+      frontActive = false;
+      activeTarget = 'rear';
+      applyBannerToWindshield(null);
+    }
+    // Can't turn off if it's the only one active
+  } else {
+    if(!rearActive){
+      // Turn on
+      rearActive = true;
+      activeTarget = 'rear';
+      if(rearBanner) loadBannerTexture(rearBanner.img, tex=>applyBannerToRearWindow(tex));
+    } else if(frontActive) {
+      // Turn off (only if front is also on)
+      rearActive = false;
+      activeTarget = 'front';
+      applyBannerToRearWindow(null);
+      rearBanner = null;
+    }
+    // Can't turn off if it's the only one active
+  }
+  updateToggleUI();
+  updateCTA();
+}
+
+function updateToggleUI(){
+  const fb = document.getElementById('toggleFront');
+  const rb = document.getElementById('toggleRear');
+  const frontTarget = activeTarget === 'front';
+  const rearTarget  = activeTarget === 'rear';
+
+  fb.style.border     = frontActive ? '1px solid var(--pink)'         : '1px solid rgba(255,0,128,0.2)';
+  fb.style.background = frontActive ? 'rgba(255,0,128,0.15)'          : 'transparent';
+  fb.style.color      = frontActive ? '#fff'                           : 'var(--muted)';
+  fb.style.boxShadow  = frontTarget && frontActive ? '0 0 18px var(--pink-glow), inset 0 0 8px rgba(255,0,128,0.2)' : frontActive ? '0 0 8px var(--pink-glow)' : 'none';
+  fb.style.outline    = frontTarget && frontActive ? '2px solid var(--pink)' : 'none';
+  fb.textContent      = frontTarget && frontActive && rearActive ? '◆ FRONT  ✦' : '◆ FRONT';
+
+  rb.style.border     = rearActive  ? '1px solid var(--cyan)'         : '1px solid rgba(0,238,255,0.2)';
+  rb.style.background = rearActive  ? 'rgba(0,238,255,0.1)'           : 'transparent';
+  rb.style.color      = rearActive  ? 'var(--cyan)'                   : 'var(--muted)';
+  rb.style.boxShadow  = rearTarget  && rearActive  ? '0 0 18px rgba(0,238,255,0.4), inset 0 0 8px rgba(0,238,255,0.15)' : rearActive ? '0 0 8px rgba(0,238,255,0.25)' : 'none';
+  rb.style.outline    = rearTarget  && rearActive  ? '2px solid var(--cyan)'  : 'none';
+  rb.textContent      = rearTarget  && rearActive  && frontActive ? '◆ REAR  ✦' : '◆ REAR';
+
+  // Update card highlights — pink for front, cyan for rear, both if both active
+  document.querySelectorAll('#bannerGrid .banner-card').forEach(card => {
+    const bid = parseInt(card.dataset.id);
+    const isFrontSel = frontActive && frontBanner && frontBanner.id === bid;
+    const isRearSel  = rearActive  && rearBanner  && rearBanner.id  === bid;
+    card.classList.toggle('active',      isFrontSel);
+    card.classList.toggle('rear-active', isRearSel && !isFrontSel);
+  });
+}
+
+function updateCTA(){
+  const btn   = document.getElementById('ctaBtn');
+  const name  = document.getElementById('ctaName');
+  const price = document.getElementById('ctaPrice');
+  const both  = frontActive && rearActive;
+
+  if(both){
+    name.textContent    = 'Both Windshields Bundle';
+    price.innerHTML     = '$179.90 <span>AUD</span>';
+    btn.textContent     = 'ADD BUNDLE TO CART — $179.90';
+    btn.onclick         = handleBothBuy;
+    btn.href            = '#';
+    btn.removeAttribute('target');
+  } else {
+    const b = frontActive ? frontBanner : rearBanner;
+    if(b){
+      name.textContent  = b.name;
+      price.innerHTML   = b.price + ' <span>AUD</span>';
+      btn.textContent   = 'ADD TO CART — ' + b.price;
+      btn.href          = cartURL(b.variantId);
+      btn.onclick       = null;
+      btn.setAttribute('target','_blank');
+    }
+  }
+}
+
+function handleBothBuy(e){
+  e.preventDefault();
+  const BUNDLE_VARIANT_ID = 'PLACEHOLDER_BUNDLE_VARIANT_ID';
+  if(BUNDLE_VARIANT_ID === 'PLACEHOLDER_BUNDLE_VARIANT_ID'){
+    alert('Bundle coming soon! Please add each item separately for now.');
+    return;
+  }
+  window.open(cartURL(BUNDLE_VARIANT_ID),'_blank');
 }
 
 function buildGrid(){
@@ -881,30 +962,37 @@ function buildGrid(){
     const card=document.createElement('div');
     card.className='banner-card'; card.dataset.id=banner.id;
     card.innerHTML=`<div class="swatch-preview"><img src="${banner.img}" alt="${banner.name}"/></div><div class="card-name">${banner.name}</div><div class="card-price">${banner.price}</div><div class="card-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
-    card.addEventListener('click',()=>updateVisuals(banner));
-    grid.appendChild(card);
-  });
-}
-
-function buildRearGrid(){
-  const grid=document.getElementById('rearBannerGrid');
-  BANNERS.forEach(banner=>{
-    const card=document.createElement('div');
-    card.className='banner-card'; card.dataset.id='rear-'+banner.id;
-    card.innerHTML=`<div class="swatch-preview"><img src="${banner.img}" alt="${banner.name}"/></div><div class="card-name">${banner.name}</div><div class="card-price">${banner.price}</div><div class="card-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
     card.addEventListener('click',()=>{
-      currentRearBanner=banner;
-      document.querySelectorAll('#rearBannerGrid .banner-card').forEach(c=>c.classList.remove('active'));
-      card.classList.add('active');
-      document.getElementById('ctaName').textContent=banner.name+' (Rear)';
-      loadBannerTexture(banner.img,tex=>applyBannerToRearWindow(tex));
+      if(activeTarget === 'front' && frontActive){
+        frontBanner = banner;
+        loadBannerTexture(banner.img, tex=>applyBannerToWindshield(tex));
+      } else if(activeTarget === 'rear' && rearActive){
+        rearBanner = banner;
+        loadBannerTexture(banner.img, tex=>applyBannerToRearWindow(tex));
+      }
+      updateToggleUI();
+      updateCTA();
     });
     grid.appendChild(card);
   });
 }
 
+
 loadGLTFLoader(()=>{loadModel();animate();});
-buildGrid(); buildRearGrid(); updateVisuals(BANNERS[0]);
+
+// Ensure DOM is fully ready before building grids
+function initUI(){
+  buildGrid();
+  frontBanner = BANNERS[0];
+  rearBanner  = null;  // no rear pre-selected
+  updateToggleUI();
+  updateCTA();
+}
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', initUI);
+} else {
+  initUI();
+}
 
 // ── COLOUR WHEEL ──
 (function(){
