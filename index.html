@@ -159,6 +159,51 @@ body {
 }
 
 /* Panel tabs */
+/* Savings bubble */
+.savings-bubble {
+  display: none;
+  position: absolute;
+  bottom: -28px;
+  right: 24px;
+  z-index: 10;
+  text-align: center;
+}
+.savings-bubble.visible { display: block; }
+.savings-tag {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  background: #FFD700;
+  clip-path: polygon(12px 0%, calc(100% - 12px) 0%, 100% 50%, calc(100% - 12px) 100%, 12px 100%, 0% 50%);
+  padding: 6px 28px;
+  box-shadow: 4px 4px 0px rgba(0,0,0,0.9), 6px 6px 12px rgba(0,0,0,0.6);
+  animation: savingsPulse 1.2s ease-in-out infinite;
+}
+.savings-tag-main {
+  font-family: var(--font-display);
+  font-size: 20px;
+  letter-spacing: 2px;
+  color: #cc0000;
+  line-height: 1;
+}
+.savings-tag-sub {
+  font-family: var(--font-body);
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: #000;
+  font-weight: 700;
+  margin-top: 1px;
+  text-transform: uppercase;
+}
+@keyframes savingsPulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); }
+  50% { transform: scale(1.05); filter: drop-shadow(0 6px 14px rgba(0,0,0,0.7)); }
+}
+
+/* CTA block — position relative so bubble can anchor to it */
+.cta-bundle-active { padding-bottom: 28px !important; transition: padding 0.3s ease; }
+
 /* Window toggle buttons handled inline */
 .banner-card.rear-active {
   border-color: var(--cyan) !important;
@@ -388,13 +433,19 @@ body {
   <!-- BOTTOM: CONFIGURATOR PANEL FULL WIDTH -->
   <div class="left-panel">
     <!-- CTA — above banner grid -->
-    <div class="cta-block" style="border:1px solid var(--border);border-radius:10px;padding:16px 24px;margin-bottom:24px;background:rgba(255,0,128,0.04);">
+    <div class="cta-block" id="ctaBlock" style="border:1px solid var(--border);border-radius:10px;padding:16px 24px;margin-bottom:24px;background:rgba(255,0,128,0.04);position:relative;transition:padding 0.3s ease;">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:nowrap;">
         <div style="flex-shrink:0;">
-          <div class="cta-price" id="ctaPrice">$99.90 <span>AUD</span></div>
+          <div class="cta-price" id="ctaPrice">$119.90 <span>AUD</span></div>
           <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:4px;">Tool Kit Included</div>
         </div>
         <a class="cta-btn" id="ctaBtn" href="#" target="_blank" style="width:auto;padding:14px 24px;flex-shrink:0;white-space:nowrap;">ADD TO CART</a>
+      </div>
+      <div class="savings-bubble" id="savingsBubble">
+        <div class="savings-tag">
+          <span class="savings-tag-main">SAVE $39.90</span>
+          <span class="savings-tag-sub">16% OFF — 2 BANNER DEAL</span>
+        </div>
       </div>
     </div>
 
@@ -469,106 +520,106 @@ body {
 <script>
 const SHOPIFY_BASE = 'https://legendary-banners.myshopify.com/products/legendary-banners-windshield-banner?variant=';
 const BANNERS = [
-  { id:1,   name:"4X4",                      price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/4X4.jpg/:/rs=w:1280,h:192",                        variantId:"" },
-  { id:2,   name:"Aboriginal Flag",           price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/ABORIGINAL-FLAG.jpg/:/rs=w:1280,h:192",           variantId:"" },
-  { id:3,   name:"Akatsuki",                  price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/AKATSUKI.jpg/:/rs=w:1280,h:192",                   variantId:"52125011378459" },
-  { id:4,   name:"AMG",                       price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/AMG.jpg/:/rs=w:1280,h:192",                        variantId:"52125011411227" },
-  { id:5,   name:"Anime",                     price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/ANIME.jpg/:/rs=w:1280,h:192",                      variantId:"" },
-  { id:6,   name:"Anti Social",               price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/ANTI-SOCIAL.jpg/:/rs=w:1280,h:192",               variantId:"" },
-  { id:7,   name:"Audi",                      price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/AUDI.jpg/:/rs=w:1280,h:192",                       variantId:"" },
-  { id:8,   name:"Aus Flag",                  price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/AUSFLAG.jpg/:/rs=w:1280,h:192",                    variantId:"" },
-  { id:9,   name:"Bandana Black",             price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/BANDANA-BLVCK.jpg/:/rs=w:1280,h:192",             variantId:"" },
-  { id:10,  name:"Bandana White",             price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/BANDANA-WHITE.jpg/:/rs=w:1280,h:192",             variantId:"" },
-  { id:11,  name:"Bingtang",                  price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/BINGTANG.jpg/:/rs=w:1280,h:192",                   variantId:"" },
-  { id:12,  name:"Blessed",                   price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/BLESSED.jpg/:/rs=w:1280,h:192",                    variantId:"52125011443995" },
-  { id:13,  name:"BMW M3",                    price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/BMW-M3.jpg/:/rs=w:1280,h:192",                     variantId:"" },
-  { id:14,  name:"Bush Chook",                price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/BUSH-CHOOK.jpg/:/rs=w:1280,h:192",                variantId:"" },
-  { id:15,  name:"Camo Army",                 price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CAMO-ARMY.jpg/:/rs=w:1280,h:192",                 variantId:"" },
-  { id:16,  name:"Camo Pink Purple",          price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CAMO-PINK-PURP.jpg/:/rs=w:1280,h:192",           variantId:"" },
-  { id:17,  name:"Camo Snow",                 price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CAMO-SNOW.jpg/:/rs=w:1280,h:192",                 variantId:"" },
-  { id:18,  name:"Camo Urban",                price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CAMO-URBAN.jpg/:/rs=w:1280,h:192",                variantId:"" },
-  { id:19,  name:"Carbon Fibre",              price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CARBON-FIBRE.jpg/:/rs=w:1280,h:192",              variantId:"" },
-  { id:20,  name:"Cash Bling",                price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CASH-BLING.jpg/:/rs=w:1280,h:192",                variantId:"" },
-  { id:21,  name:"Centrelink",                price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CENTRELINK.jpg/:/rs=w:1280,h:192",                variantId:"" },
-  { id:22,  name:"Chicano Bliss",             price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CHICANO-BLISS.jpg/:/rs=w:1280,h:192",             variantId:"" },
-  { id:23,  name:"Chicano Dark",              price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CHICANO-DARK.jpg/:/rs=w:1280,h:192",              variantId:"" },
-  { id:24,  name:"Dinan",                     price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/DINAN.jpg/:/rs=w:1280,h:192",                     variantId:"" },
-  { id:25,  name:"Doodles B&W",               price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/DOODLES-B%26W.jpg/:/rs=w:1280,h:192",            variantId:"" },
-  { id:26,  name:"Doodles W&B",               price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/DOODLES-W%26B.jpg/:/rs=w:1280,h:192",            variantId:"" },
-  { id:27,  name:"Eagles",                    price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/EAGLES.jpg/:/rs=w:1280,h:192",                    variantId:"" },
-  { id:28,  name:"F Can",                     price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/F-CAN.jpg/:/rs=w:1280,h:192",                     variantId:"" },
-  { id:29,  name:"Focal",                     price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/FOCAL.jpg/:/rs=w:1280,h:192",                     variantId:"" },
-  { id:30,  name:"Ford",                      price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/FORD.jpg/:/rs=w:1280,h:192",                      variantId:"" },
-  { id:31,  name:"Freo Dockers",              price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/FREO-DOCKERS.jpg/:/rs=w:1280,h:192",              variantId:"" },
-  { id:32,  name:"Gangsta Edition",           price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/GANGSTA-EDITION.jpg/:/rs=w:1280,h:192",           variantId:"" },
-  { id:33,  name:"Geedup Black",              price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/GEEDUP-BLACK.jpg/:/rs=w:1280,h:192",              variantId:"" },
-  { id:34,  name:"Geedup White",              price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/GEEDUP-WHITE.jpg/:/rs=w:1280,h:192",              variantId:"" },
-  { id:35,  name:"Graffiti Black",            price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/GRAFFITI-BLACK.jpg/:/rs=w:1280,h:192",            variantId:"" },
-  { id:36,  name:"Gran Turismo",              price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/GRAN-TURISMO.jpg/:/rs=w:1280,h:192",              variantId:"" },
-  { id:37,  name:"Ground Zero",               price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/GROUND-ZERO.jpg/:/rs=w:1280,h:192",               variantId:"" },
-  { id:38,  name:"Hard Tuned",                price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HARD-TUNED.jpg/:/rs=w:1280,h:192",                variantId:"" },
-  { id:39,  name:"Hello Bad Kitty",           price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HELLO-BAD-KITTY.jpg/:/rs=w:1280,h:192",           variantId:"" },
-  { id:40,  name:"Hello Kitty",               price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HELLO-KITTY.jpg/:/rs=w:1280,h:192",               variantId:"" },
-  { id:41,  name:"Hip Hop Gray",              price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HIP-HOP-GRAYpdf.jpg/:/rs=w:1280,h:192",          variantId:"" },
-  { id:42,  name:"Hip Hop R&B Gray",          price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HIP-HOP-R%26B-GRAY.jpg/:/rs=w:1280,h:192",       variantId:"" },
-  { id:43,  name:"Hip Hop",                   price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HIP-HOP.jpg/:/rs=w:1280,h:192",                   variantId:"" },
-  { id:44,  name:"Holden Commodore",          price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HOLDEN-COMMODORE.jpg/:/rs=w:1280,h:192",          variantId:"" },
-  { id:45,  name:"Holden",                    price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HOLDEN.jpg/:/rs=w:1280,h:192",                    variantId:"" },
-  { id:46,  name:"Honda Accord",              price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HONDA-ACCORD.jpg/:/rs=w:1280,h:192",              variantId:"" },
-  { id:47,  name:"Honda Civic",               price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HONDA-CIVIC.jpg/:/rs=w:1280,h:192",               variantId:"" },
-  { id:48,  name:"Honda Racing",              price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HONDA-RACING.jpg/:/rs=w:1280,h:192",              variantId:"" },
-  { id:49,  name:"Honda Type R Black",        price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HONDA-TYPE-R-BLACK.jpg/:/rs=w:1280,h:192",        variantId:"" },
-  { id:50,  name:"Honda Type R Red Black",    price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HONDA-TYPE-R-RED-BLACK.jpg/:/rs=w:1280,h:192",    variantId:"" },
-  { id:51,  name:"Honda Type R Red",          price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HONDA-TYPE-R-RED.jpg/:/rs=w:1280,h:192",          variantId:"" },
-  { id:52,  name:"Honda Type R White",        price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HONDA-TYPE-R-WHITE.jpg/:/rs=w:1280,h:192",        variantId:"" },
-  { id:53,  name:"Honda VTEC",                price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HONDA-VTEC.jpg/:/rs=w:1280,h:192",                variantId:"" },
-  { id:54,  name:"Jap Clouds Asuki",          price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/JAP-CLOUDS-ASUKI.jpg/:/rs=w:1280,h:192",          variantId:"" },
-  { id:55,  name:"JDM B&W",                   price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/JDM-B%26W.jpg/:/rs=w:1280,h:192",                 variantId:"" },
-  { id:56,  name:"JDM Original",              price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/JDM-ORIGINAL.jpg/:/rs=w:1280,h:192",              variantId:"" },
-  { id:57,  name:"JDM Osaka",                 price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/JDM-OSAKA.jpg/:/rs=w:1280,h:192",                 variantId:"" },
-  { id:58,  name:"JDM Purple Blue",           price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/JDM-PURP-BLUE.jpg/:/rs=w:1280,h:192",             variantId:"" },
-  { id:59,  name:"Jimmys Gonna Send It",      price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/JIMMYS-GONNA-SEND-IT.jpg/:/rs=w:1280,h:192",      variantId:"" },
-  { id:60,  name:"JL Audio",                  price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/JL-AUDIO.jpg/:/rs=w:1280,h:192",                  variantId:"" },
-  { id:61,  name:"Krusty",                    price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/KRUSTY.jpg/:/rs=w:1280,h:192",                    variantId:"" },
-  { id:62,  name:"Lexus",                     price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LEXUS.jpg/:/rs=w:1280,h:192",                     variantId:"" },
-  { id:63,  name:"LV B&W",                    price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-B%26W.jpg/:/rs=w:1280,h:192",                  variantId:"" },
-  { id:64,  name:"LV Bling",                  price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-BLING.jpg/:/rs=w:1280,h:192",                  variantId:"" },
-  { id:65,  name:"LV Gray Black",             price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-GRAY-BLACK.jpg/:/rs=w:1280,h:192",             variantId:"" },
-  { id:66,  name:"LV Original",               price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-ORIGINAL.jpg/:/rs=w:1280,h:192",               variantId:"" },
-  { id:67,  name:"LV Pink Pin",               price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-PINK-PIN.jpg/:/rs=w:1280,h:192",               variantId:"" },
-  { id:68,  name:"LV Pink",                   price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-PINK.jpg/:/rs=w:1280,h:192",                   variantId:"" },
-  { id:69,  name:"LV Purple Pin",             price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-PURPlE-PIN.jpg/:/rs=w:1280,h:192",             variantId:"" },
-  { id:70,  name:"LV Purple",                 price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-PURPLE.jpg/:/rs=w:1280,h:192",                 variantId:"" },
-  { id:71,  name:"LV Red",                    price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-RED.jpg/:/rs=w:1280,h:192",                    variantId:"" },
-  { id:72,  name:"Mario",                     price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/MARIO.jpg/:/rs=w:1280,h:192",                     variantId:"" },
-  { id:73,  name:"Metal Mulisha",             price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/METAL-MULISHA.jpg/:/rs=w:1280,h:192",             variantId:"" },
-  { id:74,  name:"Mugen Power",               price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/MUGEN-POWER.jpg/:/rs=w:1280,h:192",               variantId:"" },
-  { id:75,  name:"N Performance",             price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/N-PERFORMANCE.jpg/:/rs=w:1280,h:192",             variantId:"" },
-  { id:76,  name:"Nismo",                     price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/NISMO.jpg/:/rs=w:1280,h:192",                     variantId:"" },
-  { id:77,  name:"Not Like Us Black",         price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/NOT-LIKE-US-BLACK.jpg/:/rs=w:1280,h:192",         variantId:"" },
-  { id:78,  name:"Not Like Us Pink",          price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/NOT-LIKE-US-PINK.jpg/:/rs=w:1280,h:192",          variantId:"" },
-  { id:79,  name:"Not Like Us Purple",        price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/NOT-LIKE-US-PURPLE.jpg/:/rs=w:1280,h:192",        variantId:"" },
-  { id:80,  name:"Not Like Us W&B",           price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/NOT-LIKE-US-W%26B.jpg/:/rs=w:1280,h:192",         variantId:"" },
-  { id:81,  name:"Notorious",                 price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/NOTORIOUS.jpg/:/rs=w:1280,h:192",                 variantId:"" },
-  { id:82,  name:"Pink Skulls",               price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/PINK-SKULLS.jpg/:/rs=w:1280,h:192",               variantId:"" },
-  { id:83,  name:"Playboy Pink",              price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/PLAYBOY-PINK.jpg/:/rs=w:1280,h:192",              variantId:"" },
-  { id:84,  name:"Playboy Teal",              price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/PLAYBOY-TEAL.jpg/:/rs=w:1280,h:192",              variantId:"" },
-  { id:85,  name:"Rockford Fosgate",          price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/ROCKFORD-FOSGATE.jpg/:/rs=w:1280,h:192",          variantId:"" },
-  { id:86,  name:"Speed Hunters Black Jap",   price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SPEED-HUNTERS-BLACK-JAP.jpg/:/rs=w:1280,h:192",   variantId:"" },
-  { id:87,  name:"Speed Hunters Pink",        price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SPEED-HUNTERS-PINK.jpg/:/rs=w:1280,h:192",        variantId:"" },
-  { id:88,  name:"Speed Hunters Purple",      price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SPEED-HUNTERS-PURPLE.jpg/:/rs=w:1280,h:192",      variantId:"" },
-  { id:89,  name:"Speed Hunters Red Jap",     price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SPEED-HUNTERS-RED-JAP.jpg/:/rs=w:1280,h:192",     variantId:"" },
-  { id:90,  name:"Spoon",                     price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SPOON.jpg/:/rs=w:1280,h:192",                     variantId:"" },
-  { id:91,  name:"Squid Games",               price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SQUID-GAMES.jpg/:/rs=w:1280,h:192",               variantId:"" },
-  { id:92,  name:"Subaru WRX",                price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SUBARU-WRX.jpg/:/rs=w:1280,h:192",                variantId:"" },
-  { id:93,  name:"Subieflow",                 price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SUBIEFLOW.jpg/:/rs=w:1280,h:192",                 variantId:"" },
-  { id:94,  name:"Supreme Grey",              price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SUPREME-GREY.jpg/:/rs=w:1280,h:192",              variantId:"" },
-  { id:95,  name:"Turbo Gray",                price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/TURBO-GRAY.jpg/:/rs=w:1280,h:192",                variantId:"" },
-  { id:96,  name:"Turbo Pink",                price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/TURBO-PINK.jpg/:/rs=w:1280,h:192",                variantId:"" },
-  { id:97,  name:"Turbo Purple",              price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/TURBO-PURPLE.jpg/:/rs=w:1280,h:192",              variantId:"" },
-  { id:98,  name:"Versace Black",             price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/VERSACE-BLACK.jpg/:/rs=w:1280,h:192",             variantId:"" },
-  { id:99,  name:"Versace Gold",              price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/VERSACE-GOLD.jpg/:/rs=w:1280,h:192",              variantId:"" },
-  { id:100, name:"Wolf Lion",                 price:"$99.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/WOLF-LION.jpg/:/rs=w:1280,h:192",                 variantId:"" }
+  { id:1,   name:"4X4",                      price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/4X4.jpg/:/rs=w:1280,h:192",                        variantId:"" },
+  { id:2,   name:"Aboriginal Flag",           price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/ABORIGINAL-FLAG.jpg/:/rs=w:1280,h:192",           variantId:"" },
+  { id:3,   name:"Akatsuki",                  price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/AKATSUKI.jpg/:/rs=w:1280,h:192",                   variantId:"52125011378459" },
+  { id:4,   name:"AMG",                       price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/AMG.jpg/:/rs=w:1280,h:192",                        variantId:"52125011411227" },
+  { id:5,   name:"Anime",                     price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/ANIME.jpg/:/rs=w:1280,h:192",                      variantId:"" },
+  { id:6,   name:"Anti Social",               price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/ANTI-SOCIAL.jpg/:/rs=w:1280,h:192",               variantId:"" },
+  { id:7,   name:"Audi",                      price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/AUDI.jpg/:/rs=w:1280,h:192",                       variantId:"" },
+  { id:8,   name:"Aus Flag",                  price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/AUSFLAG.jpg/:/rs=w:1280,h:192",                    variantId:"" },
+  { id:9,   name:"Bandana Black",             price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/BANDANA-BLVCK.jpg/:/rs=w:1280,h:192",             variantId:"" },
+  { id:10,  name:"Bandana White",             price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/BANDANA-WHITE.jpg/:/rs=w:1280,h:192",             variantId:"" },
+  { id:11,  name:"Bingtang",                  price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/BINGTANG.jpg/:/rs=w:1280,h:192",                   variantId:"" },
+  { id:12,  name:"Blessed",                   price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/BLESSED.jpg/:/rs=w:1280,h:192",                    variantId:"52125011443995" },
+  { id:13,  name:"BMW M3",                    price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/BMW-M3.jpg/:/rs=w:1280,h:192",                     variantId:"" },
+  { id:14,  name:"Bush Chook",                price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/BUSH-CHOOK.jpg/:/rs=w:1280,h:192",                variantId:"" },
+  { id:15,  name:"Camo Army",                 price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CAMO-ARMY.jpg/:/rs=w:1280,h:192",                 variantId:"" },
+  { id:16,  name:"Camo Pink Purple",          price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CAMO-PINK-PURP.jpg/:/rs=w:1280,h:192",           variantId:"" },
+  { id:17,  name:"Camo Snow",                 price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CAMO-SNOW.jpg/:/rs=w:1280,h:192",                 variantId:"" },
+  { id:18,  name:"Camo Urban",                price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CAMO-URBAN.jpg/:/rs=w:1280,h:192",                variantId:"" },
+  { id:19,  name:"Carbon Fibre",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CARBON-FIBRE.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:20,  name:"Cash Bling",                price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CASH-BLING.jpg/:/rs=w:1280,h:192",                variantId:"" },
+  { id:21,  name:"Centrelink",                price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CENTRELINK.jpg/:/rs=w:1280,h:192",                variantId:"" },
+  { id:22,  name:"Chicano Bliss",             price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CHICANO-BLISS.jpg/:/rs=w:1280,h:192",             variantId:"" },
+  { id:23,  name:"Chicano Dark",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CHICANO-DARK.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:24,  name:"Dinan",                     price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/DINAN.jpg/:/rs=w:1280,h:192",                     variantId:"" },
+  { id:25,  name:"Doodles B&W",               price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/DOODLES-B%26W.jpg/:/rs=w:1280,h:192",            variantId:"" },
+  { id:26,  name:"Doodles W&B",               price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/DOODLES-W%26B.jpg/:/rs=w:1280,h:192",            variantId:"" },
+  { id:27,  name:"Eagles",                    price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/EAGLES.jpg/:/rs=w:1280,h:192",                    variantId:"" },
+  { id:28,  name:"F Can",                     price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/F-CAN.jpg/:/rs=w:1280,h:192",                     variantId:"" },
+  { id:29,  name:"Focal",                     price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/FOCAL.jpg/:/rs=w:1280,h:192",                     variantId:"" },
+  { id:30,  name:"Ford",                      price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/FORD.jpg/:/rs=w:1280,h:192",                      variantId:"" },
+  { id:31,  name:"Freo Dockers",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/FREO-DOCKERS.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:32,  name:"Gangsta Edition",           price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/GANGSTA-EDITION.jpg/:/rs=w:1280,h:192",           variantId:"" },
+  { id:33,  name:"Geedup Black",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/GEEDUP-BLACK.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:34,  name:"Geedup White",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/GEEDUP-WHITE.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:35,  name:"Graffiti Black",            price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/GRAFFITI-BLACK.jpg/:/rs=w:1280,h:192",            variantId:"" },
+  { id:36,  name:"Gran Turismo",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/GRAN-TURISMO.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:37,  name:"Ground Zero",               price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/GROUND-ZERO.jpg/:/rs=w:1280,h:192",               variantId:"" },
+  { id:38,  name:"Hard Tuned",                price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HARD-TUNED.jpg/:/rs=w:1280,h:192",                variantId:"" },
+  { id:39,  name:"Hello Bad Kitty",           price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HELLO-BAD-KITTY.jpg/:/rs=w:1280,h:192",           variantId:"" },
+  { id:40,  name:"Hello Kitty",               price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HELLO-KITTY.jpg/:/rs=w:1280,h:192",               variantId:"" },
+  { id:41,  name:"Hip Hop Gray",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HIP-HOP-GRAYpdf.jpg/:/rs=w:1280,h:192",          variantId:"" },
+  { id:42,  name:"Hip Hop R&B Gray",          price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HIP-HOP-R%26B-GRAY.jpg/:/rs=w:1280,h:192",       variantId:"" },
+  { id:43,  name:"Hip Hop",                   price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HIP-HOP.jpg/:/rs=w:1280,h:192",                   variantId:"" },
+  { id:44,  name:"Holden Commodore",          price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HOLDEN-COMMODORE.jpg/:/rs=w:1280,h:192",          variantId:"" },
+  { id:45,  name:"Holden",                    price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HOLDEN.jpg/:/rs=w:1280,h:192",                    variantId:"" },
+  { id:46,  name:"Honda Accord",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HONDA-ACCORD.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:47,  name:"Honda Civic",               price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HONDA-CIVIC.jpg/:/rs=w:1280,h:192",               variantId:"" },
+  { id:48,  name:"Honda Racing",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HONDA-RACING.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:49,  name:"Honda Type R Black",        price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HONDA-TYPE-R-BLACK.jpg/:/rs=w:1280,h:192",        variantId:"" },
+  { id:50,  name:"Honda Type R Red Black",    price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HONDA-TYPE-R-RED-BLACK.jpg/:/rs=w:1280,h:192",    variantId:"" },
+  { id:51,  name:"Honda Type R Red",          price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HONDA-TYPE-R-RED.jpg/:/rs=w:1280,h:192",          variantId:"" },
+  { id:52,  name:"Honda Type R White",        price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HONDA-TYPE-R-WHITE.jpg/:/rs=w:1280,h:192",        variantId:"" },
+  { id:53,  name:"Honda VTEC",                price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HONDA-VTEC.jpg/:/rs=w:1280,h:192",                variantId:"" },
+  { id:54,  name:"Jap Clouds Asuki",          price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/JAP-CLOUDS-ASUKI.jpg/:/rs=w:1280,h:192",          variantId:"" },
+  { id:55,  name:"JDM B&W",                   price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/JDM-B%26W.jpg/:/rs=w:1280,h:192",                 variantId:"" },
+  { id:56,  name:"JDM Original",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/JDM-ORIGINAL.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:57,  name:"JDM Osaka",                 price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/JDM-OSAKA.jpg/:/rs=w:1280,h:192",                 variantId:"" },
+  { id:58,  name:"JDM Purple Blue",           price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/JDM-PURP-BLUE.jpg/:/rs=w:1280,h:192",             variantId:"" },
+  { id:59,  name:"Jimmys Gonna Send It",      price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/JIMMYS-GONNA-SEND-IT.jpg/:/rs=w:1280,h:192",      variantId:"" },
+  { id:60,  name:"JL Audio",                  price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/JL-AUDIO.jpg/:/rs=w:1280,h:192",                  variantId:"" },
+  { id:61,  name:"Krusty",                    price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/KRUSTY.jpg/:/rs=w:1280,h:192",                    variantId:"" },
+  { id:62,  name:"Lexus",                     price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LEXUS.jpg/:/rs=w:1280,h:192",                     variantId:"" },
+  { id:63,  name:"LV B&W",                    price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-B%26W.jpg/:/rs=w:1280,h:192",                  variantId:"" },
+  { id:64,  name:"LV Bling",                  price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-BLING.jpg/:/rs=w:1280,h:192",                  variantId:"" },
+  { id:65,  name:"LV Gray Black",             price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-GRAY-BLACK.jpg/:/rs=w:1280,h:192",             variantId:"" },
+  { id:66,  name:"LV Original",               price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-ORIGINAL.jpg/:/rs=w:1280,h:192",               variantId:"" },
+  { id:67,  name:"LV Pink Pin",               price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-PINK-PIN.jpg/:/rs=w:1280,h:192",               variantId:"" },
+  { id:68,  name:"LV Pink",                   price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-PINK.jpg/:/rs=w:1280,h:192",                   variantId:"" },
+  { id:69,  name:"LV Purple Pin",             price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-PURPlE-PIN.jpg/:/rs=w:1280,h:192",             variantId:"" },
+  { id:70,  name:"LV Purple",                 price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-PURPLE.jpg/:/rs=w:1280,h:192",                 variantId:"" },
+  { id:71,  name:"LV Red",                    price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-RED.jpg/:/rs=w:1280,h:192",                    variantId:"" },
+  { id:72,  name:"Mario",                     price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/MARIO.jpg/:/rs=w:1280,h:192",                     variantId:"" },
+  { id:73,  name:"Metal Mulisha",             price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/METAL-MULISHA.jpg/:/rs=w:1280,h:192",             variantId:"" },
+  { id:74,  name:"Mugen Power",               price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/MUGEN-POWER.jpg/:/rs=w:1280,h:192",               variantId:"" },
+  { id:75,  name:"N Performance",             price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/N-PERFORMANCE.jpg/:/rs=w:1280,h:192",             variantId:"" },
+  { id:76,  name:"Nismo",                     price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/NISMO.jpg/:/rs=w:1280,h:192",                     variantId:"" },
+  { id:77,  name:"Not Like Us Black",         price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/NOT-LIKE-US-BLACK.jpg/:/rs=w:1280,h:192",         variantId:"" },
+  { id:78,  name:"Not Like Us Pink",          price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/NOT-LIKE-US-PINK.jpg/:/rs=w:1280,h:192",          variantId:"" },
+  { id:79,  name:"Not Like Us Purple",        price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/NOT-LIKE-US-PURPLE.jpg/:/rs=w:1280,h:192",        variantId:"" },
+  { id:80,  name:"Not Like Us W&B",           price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/NOT-LIKE-US-W%26B.jpg/:/rs=w:1280,h:192",         variantId:"" },
+  { id:81,  name:"Notorious",                 price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/NOTORIOUS.jpg/:/rs=w:1280,h:192",                 variantId:"" },
+  { id:82,  name:"Pink Skulls",               price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/PINK-SKULLS.jpg/:/rs=w:1280,h:192",               variantId:"" },
+  { id:83,  name:"Playboy Pink",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/PLAYBOY-PINK.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:84,  name:"Playboy Teal",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/PLAYBOY-TEAL.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:85,  name:"Rockford Fosgate",          price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/ROCKFORD-FOSGATE.jpg/:/rs=w:1280,h:192",          variantId:"" },
+  { id:86,  name:"Speed Hunters Black Jap",   price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SPEED-HUNTERS-BLACK-JAP.jpg/:/rs=w:1280,h:192",   variantId:"" },
+  { id:87,  name:"Speed Hunters Pink",        price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SPEED-HUNTERS-PINK.jpg/:/rs=w:1280,h:192",        variantId:"" },
+  { id:88,  name:"Speed Hunters Purple",      price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SPEED-HUNTERS-PURPLE.jpg/:/rs=w:1280,h:192",      variantId:"" },
+  { id:89,  name:"Speed Hunters Red Jap",     price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SPEED-HUNTERS-RED-JAP.jpg/:/rs=w:1280,h:192",     variantId:"" },
+  { id:90,  name:"Spoon",                     price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SPOON.jpg/:/rs=w:1280,h:192",                     variantId:"" },
+  { id:91,  name:"Squid Games",               price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SQUID-GAMES.jpg/:/rs=w:1280,h:192",               variantId:"" },
+  { id:92,  name:"Subaru WRX",                price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SUBARU-WRX.jpg/:/rs=w:1280,h:192",                variantId:"" },
+  { id:93,  name:"Subieflow",                 price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SUBIEFLOW.jpg/:/rs=w:1280,h:192",                 variantId:"" },
+  { id:94,  name:"Supreme Grey",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SUPREME-GREY.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:95,  name:"Turbo Gray",                price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/TURBO-GRAY.jpg/:/rs=w:1280,h:192",                variantId:"" },
+  { id:96,  name:"Turbo Pink",                price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/TURBO-PINK.jpg/:/rs=w:1280,h:192",                variantId:"" },
+  { id:97,  name:"Turbo Purple",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/TURBO-PURPLE.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:98,  name:"Versace Black",             price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/VERSACE-BLACK.jpg/:/rs=w:1280,h:192",             variantId:"" },
+  { id:99,  name:"Versace Gold",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/VERSACE-GOLD.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:100, name:"Wolf Lion",                 price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/WOLF-LION.jpg/:/rs=w:1280,h:192",                 variantId:"" }
 ];
 
 function cartURL(variantId) { return SHOPIFY_BASE + variantId; }
@@ -924,11 +975,13 @@ function updateCTA(){
 
   if(both){
     // Bundle selected
-    price.innerHTML     = '$179.90 <span>AUD</span>';
+    price.innerHTML     = '$199.90 <span>AUD</span>';
     btn.textContent     = 'ADD TO CART';
     btn.onclick         = handleBothBuy;
     btn.href            = '#';
     btn.removeAttribute('target');
+    document.getElementById('savingsBubble').classList.add('visible');
+    document.getElementById('ctaBlock').style.paddingBottom = '44px';
   } else {
     const b = frontActive ? frontBanner : rearBanner;
     if(b){
@@ -940,6 +993,12 @@ function updateCTA(){
       btn.setAttribute('target','_blank');
     }
   }
+  // Show/hide savings bubble
+  var bubble2 = document.getElementById('savingsBubble');
+  var block2  = document.getElementById('ctaBlock');
+  var isBoth2 = frontActive && rearActive;
+  if(bubble2) bubble2.classList.toggle('visible', isBoth2);
+  if(block2)  block2.style.paddingBottom = isBoth2 ? '44px' : '16px';
 }
 
 function handleBothBuy(e){
