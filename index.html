@@ -885,14 +885,36 @@ function loadBannerTexture(url, callback) {
 
 function makeBannerGeoFlipped(W,H,curveDrop){
   const segsX=40,segsY=4,positions=[],uvs=[],indices=[];
-  for(let iy=0;iy<=segsY;iy++){for(let ix=0;ix<=segsX;ix++){const u=ix/segsX,v=iy/segsY,x=(u-0.5)*W,y=(v-0.5)*H,z=curveDrop*(1-4*u*(1-u)),yArc=curveDrop*0.8*(4*u*(1-u));positions.push(x,y+yArc,z);uvs.push(u,1-v);}}
+  const cornerTaper = 0.07;
+  for(let iy=0;iy<=segsY;iy++){for(let ix=0;ix<=segsX;ix++){
+    const u=ix/segsX,v=iy/segsY;
+    const topness = v;
+    const edgeness = Math.abs(u - 0.5) * 2;
+    const taper = topness * edgeness * cornerTaper;
+    const x=(u-0.5)*W*(1-taper);
+    const y=(v-0.5)*H;
+    const z=curveDrop*(1-4*u*(1-u));
+    const yArc=curveDrop*0.8*(4*u*(1-u));
+    positions.push(x,y+yArc,z);uvs.push(u,1-v);
+  }}
   for(let iy=0;iy<segsY;iy++){for(let ix=0;ix<segsX;ix++){const a=iy*(segsX+1)+ix,b=a+1,c=a+segsX+1,d=c+1;indices.push(a,c,b);indices.push(b,c,d);}}
   const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));geo.setIndex(indices);geo.computeVertexNormals();return geo;
 }
 
-function makeBannerGeo(W,H,curveDrop){
+function makeBannerGeo(W,H,curveDrop,taper){
+  taper = taper !== undefined ? taper : 0.07;
   const segsX=40,segsY=4,positions=[],uvs=[],indices=[];
-  for(let iy=0;iy<=segsY;iy++){for(let ix=0;ix<=segsX;ix++){const u=ix/segsX,v=iy/segsY,x=(u-0.5)*W,y=(v-0.5)*H,z=-curveDrop*(1-4*u*(1-u)),yArc=-curveDrop*0.8*(4*u*(1-u));positions.push(x,y+yArc,z);uvs.push(u,1-v);}}
+  for(let iy=0;iy<=segsY;iy++){for(let ix=0;ix<=segsX;ix++){
+    const u=ix/segsX,v=iy/segsY;
+    const topness = v;
+    const edgeness = Math.abs(u - 0.5) * 2;
+    const t = topness * edgeness * taper;
+    const x=(u-0.5)*W * (1 - t);
+    const y=(v-0.5)*H;
+    const z=-curveDrop*(1-4*u*(1-u));
+    const yArc=-curveDrop*0.8*(4*u*(1-u));
+    positions.push(x,y+yArc,z);uvs.push(u,1-v);
+  }}
   for(let iy=0;iy<segsY;iy++){for(let ix=0;ix<segsX;ix++){const a=iy*(segsX+1)+ix,b=a+1,c=a+segsX+1,d=c+1;indices.push(a,c,b);indices.push(b,c,d);}}
   const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));geo.setIndex(indices);geo.computeVertexNormals();return geo;
 }
@@ -901,10 +923,10 @@ function applyBannerToWindshield(texture) {
   if(bannerPlane){carGroup.remove(bannerPlane);bannerPlane.geometry.dispose();bannerPlane.material.dispose();bannerPlane=null;}
   texture.flipY=false;texture.repeat.set(1,1);texture.offset.set(0,0);
   texture.wrapS=THREE.ClampToEdgeWrapping;texture.wrapT=THREE.ClampToEdgeWrapping;texture.needsUpdate=true;
-  const mat=new THREE.MeshBasicMaterial({map:texture,transparent:true,opacity:0.92,depthWrite:false,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});
-  bannerPlane=new THREE.Mesh(makeBannerGeo(0.90,0.127,0.075),mat);
-  bannerPlane.position.set(0,1.005,0.259);
-  bannerPlane.rotation.x=THREE.MathUtils.degToRad(-64);
+  const mat=new THREE.MeshBasicMaterial({map:texture,transparent:true,opacity:0.96,depthWrite:false,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});
+  bannerPlane=new THREE.Mesh(makeBannerGeo(0.90,0.127,0.045),mat);
+  bannerPlane.position.set(0,0.987,0.257);
+  bannerPlane.rotation.x=THREE.MathUtils.degToRad(-67);
   carGroup.add(bannerPlane);
 }
 
@@ -914,9 +936,9 @@ function applyBannerToRearWindow(texture) {
   texture.flipY=false;texture.repeat.set(1,1);texture.offset.set(0,0);
   texture.wrapS=THREE.ClampToEdgeWrapping;texture.wrapT=THREE.ClampToEdgeWrapping;texture.needsUpdate=true;
   const mat=new THREE.MeshBasicMaterial({map:texture,transparent:true,opacity:0.93,side:THREE.DoubleSide,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});
-  rearBannerPlane=new THREE.Mesh(makeBannerGeo(0.90,0.127,0.075),mat);
-  rearBannerPlane.position.set(0,1.002,-0.95);
-  rearBannerPlane.rotation.x=THREE.MathUtils.degToRad(65);
+  rearBannerPlane=new THREE.Mesh(makeBannerGeo(0.8502,0.1200,0.055,0.04),mat);
+  rearBannerPlane.position.set(0,1.0054,-0.9206);
+  rearBannerPlane.rotation.x=THREE.MathUtils.degToRad(69);
   rearBannerPlane.rotation.y=THREE.MathUtils.degToRad(180);
   rearBannerPlane.renderOrder=999;
   carGroup.add(rearBannerPlane);
@@ -991,11 +1013,42 @@ function loadModel() {
         mats.forEach(mat=>{
           if(mat.envMap){mat.envMap=null;mat.needsUpdate=true;}
           if(mat.name==='Kuzov_Main_color'){mat.color=new THREE.Color(0x0d0d14);mat.roughness=0.15;mat.metalness=0.9;mat.needsUpdate=true;}
-          if(mat.name==='Glass_Windows'||mat.name==='Glass_backlights'||mat.name==='glass_light'){mat.color=new THREE.Color(0x0a1015);mat.roughness=0.05;mat.transparent=true;mat.opacity=0.6;mat.depthWrite=false;mat.needsUpdate=true;}
+// Tint all glass/transparent materials dark
+          if(mat.transparent || mat.opacity < 1.0 || 
+             mat.name.toLowerCase().indexOf('glass')!==-1 ||
+             mat.name.toLowerCase().indexOf('window')!==-1 ||
+             mat.name.toLowerCase().indexOf('wind')!==-1 ||
+             mat.name.toLowerCase().indexOf('screen')!==-1 ||
+             mat.name.toLowerCase().indexOf('crystal')!==-1) {
+            if(mat.name !== 'Kuzov_Main_color') {
+              mat.color = new THREE.Color(0x050505);
+              mat.transparent = true;
+              mat.opacity = 0.82;
+              mat.depthWrite = false;
+              mat.needsUpdate = true;
+            }
+          }
         });
       }
     });
     carGroup.add(model); carModel=model; window._paintMat=null;
+
+
+
+    // Force black tint on ALL meshes except paint and wheels
+    model.traverse(function(child){
+      if(child.isMesh){
+        var mats = Array.isArray(child.material) ? child.material : [child.material];
+        mats.forEach(function(mat){
+          if(mat.name !== 'Kuzov_Main_color' && mat.transparent){
+            mat.color = new THREE.Color(0x000000);
+            mat.opacity = 0.92;
+            mat.depthWrite = false;
+            mat.needsUpdate = true;
+          }
+        });
+      }
+    });
 
     // Reflection — flipped clone mirrored below floor (Y=0 is floor level)
     const reflClone = model.clone();
@@ -1359,10 +1412,7 @@ function startMusicAuto(){
     });
   }
 }
-// Try autoplay immediately
-startMusicAuto();
-// Also try after model loads as backup
-setTimeout(startMusicAuto, 3000);
+// Music starts on user click only — autoplay disabled
 
 // ── COLOUR WHEEL ──
 (function(){
