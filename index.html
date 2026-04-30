@@ -1049,7 +1049,7 @@ let frontBanner  = null;
 let rearBanner   = null;
 let activeTarget = 'front'; // which window clicks currently apply to
 
-function toggleWindow(which){ playClick();
+function toggleWindow(which){ playClick(); if(navigator.vibrate) navigator.vibrate(20);
   if(which==='front'){
     if(!frontActive){
       // Turn on
@@ -1166,6 +1166,7 @@ function buildGrid(){
     card.innerHTML=`<div class="swatch-preview"><img src="${banner.img}" alt="${banner.name}"/></div><div class="card-name">${banner.name}</div><div class="card-price">${banner.price}</div><div class="card-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
     card.addEventListener('click',()=>{
       playClick();
+      if(navigator.vibrate) navigator.vibrate(30);
       if(activeTarget === 'front' && frontActive){
         frontBanner = banner;
         loadBannerTexture(banner.img, tex=>applyBannerToWindshield(tex));
