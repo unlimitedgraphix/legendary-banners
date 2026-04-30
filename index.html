@@ -168,6 +168,86 @@ body {
 }
 
 /* Panel tabs */
+/* Music controls */
+.music-controls {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+.music-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,0,128,0.4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.2s;
+  box-shadow: 0 0 12px rgba(255,0,128,0.2);
+}
+.music-btn:hover {
+  border-color: var(--pink);
+  box-shadow: 0 0 20px var(--pink-glow);
+  transform: scale(1.1);
+}
+.music-btn.playing {
+  border-color: var(--pink);
+  box-shadow: 0 0 20px var(--pink-glow);
+  animation: musicPulse 1.5s ease-in-out infinite;
+}
+@keyframes musicPulse {
+  0%, 100% { box-shadow: 0 0 12px var(--pink-glow); }
+  50% { box-shadow: 0 0 28px rgba(255,0,128,0.6); }
+}
+.volume-panel {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,0,128,0.3);
+  border-radius: 20px;
+  padding: 10px 8px;
+}
+.volume-panel.visible { display: flex; }
+.volume-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  writing-mode: vertical-lr;
+  direction: rtl;
+  width: 4px;
+  height: 80px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--pink);
+  box-shadow: 0 0 8px var(--pink-glow);
+  cursor: pointer;
+}
+.volume-label {
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+}
+
 /* Savings bubble */
 .savings-bubble {
   display: none;
@@ -419,6 +499,18 @@ body {
     </div>
     <canvas id="canvas3d"></canvas>
     <div class="controls-hint">Rotate &amp; Zoom</div>
+
+    <!-- Music controls -->
+    <audio id="bgMusic" loop preload="none">
+      <source src="https://green-night-47f9.karlitojemal.workers.dev/Pachanga.mp3" type="audio/mpeg">
+    </audio>
+    <div class="music-controls">
+      <button class="music-btn" id="musicBtn" onclick="toggleMusic()" title="Toggle music">🎵</button>
+      <div class="volume-panel" id="volumePanel">
+        <span class="volume-label">VOL</span>
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="70" oninput="setVolume(this.value)">
+      </div>
+    </div>
 
     <!-- COLOUR WHEEL OVERLAY -->
     <div class="colour-wheel-overlay">
@@ -1091,6 +1183,35 @@ if(document.readyState === 'loading'){
   document.addEventListener('DOMContentLoaded', initUI);
 } else {
   initUI();
+}
+
+// ── MUSIC TOGGLE ──
+var musicPlaying = false;
+function toggleMusic(){
+  var audio  = document.getElementById('bgMusic');
+  var btn    = document.getElementById('musicBtn');
+  var panel  = document.getElementById('volumePanel');
+  if(musicPlaying){
+    audio.pause();
+    btn.textContent = '🎵';
+    btn.classList.remove('playing');
+    panel.classList.remove('visible');
+    musicPlaying = false;
+  } else {
+    audio.volume = document.getElementById('volumeSlider').value / 100;
+    audio.play().then(function(){
+      btn.textContent = '🔊';
+      btn.classList.add('playing');
+      panel.classList.add('visible');
+      musicPlaying = true;
+    }).catch(function(){
+      console.log('Autoplay blocked');
+    });
+  }
+}
+function setVolume(val){
+  var audio = document.getElementById('bgMusic');
+  audio.volume = val / 100;
 }
 
 // ── COLOUR WHEEL ──
