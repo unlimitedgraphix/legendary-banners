@@ -648,7 +648,12 @@ function setCarColour(btn) {
     if (child.isMesh) {
       const mats = Array.isArray(child.material) ? child.material : [child.material];
       mats.forEach(mat => {
-        if (mat.name === 'Kuzov_Main_color') { mat.color.set(col); mat.needsUpdate = true; }
+        if (mat.name === 'Kuzov_Main_color') {
+              mat.color.set(col);
+              mat.envMap=null; mat.map=null; mat.normalMap=null;
+              mat.aoMap=null; mat.roughnessMap=null; mat.metalnessMap=null;
+              mat.needsUpdate=true;
+            }
       });
     }
   });
@@ -863,7 +868,7 @@ function loadModel() {
         });
       }
     });
-    carGroup.add(model); carModel=model;
+    carGroup.add(model); carModel=model; window._paintMat=null;
 
     // Reflection — flipped clone mirrored below floor (Y=0 is floor level)
     const reflClone = model.clone();
@@ -882,7 +887,24 @@ function loadModel() {
       }
     });
     carGroup.add(reflClone);
-    loadBannerTexture(BANNERS[0].img,tex=>applyBannerToWindshield(tex));
+    // Set default car colour to white
+    if(carModel){
+      carModel.traverse(child=>{
+        if(child.isMesh){
+          const mats=Array.isArray(child.material)?child.material:[child.material];
+          mats.forEach(mat=>{
+            if(mat.name==='Kuzov_Main_color'){
+              mat.color.setRGB(1,1,1);
+              mat.roughness=0.4;
+              mat.needsUpdate=true;
+            }
+          });
+        }
+      });
+    }
+    // Default front banner: BMW M3
+    const bmwBanner = BANNERS.find(b=>b.id===13);
+    if(bmwBanner) loadBannerTexture(bmwBanner.img,tex=>applyBannerToWindshield(tex));
     loadBannerTexture(BANNERS[0].img,tex=>applyBannerToRearWindow(tex));
     document.getElementById('loadingScreen').classList.add('hidden');
     setTimeout(()=>document.getElementById('loadingScreen').style.display='none',600);
@@ -943,6 +965,8 @@ function toggleWindow(which){
       // Turn on
       rearActive = true;
       activeTarget = 'rear';
+      // Default rear to Aus Flag if nothing selected yet
+      if(!rearBanner) rearBanner = BANNERS.find(b=>b.id===8) || BANNERS[1];
       if(rearBanner) loadBannerTexture(rearBanner.img, tex=>applyBannerToRearWindow(tex));
     } else if(frontActive) {
       // Turn off (only if front is also on)
@@ -1058,8 +1082,8 @@ loadGLTFLoader(()=>{loadModel();animate();});
 // Ensure DOM is fully ready before building grids
 function initUI(){
   buildGrid();
-  frontBanner = BANNERS[0];
-  rearBanner  = null;  // no rear pre-selected
+  frontBanner = BANNERS.find(b=>b.id===13) || BANNERS[0];  // BMW M3
+  rearBanner  = null;
   updateToggleUI();
   updateCTA();
 }
@@ -1130,7 +1154,8 @@ if(document.readyState === 'loading'){
         mats.forEach(mat=>{
           if(mat.name==='Kuzov_Main_color'){
             mat.color.setRGB(r,g,b);
-            mat.roughness = (r > 0.85) ? 0.4 : 0.15;
+            mat.roughness=0.15;
+            mat.metalness=0.9;
             mat.needsUpdate=true;
           }
         });
@@ -1165,7 +1190,7 @@ if(document.readyState === 'loading'){
   // Set pointer to default colour (Carbon Black)
   pointer.style.left = '50%';
   pointer.style.top  = '50%';
-  selected.style.background = '#0d0d14';
+  selected.style.background = '#ffffff';
 })();
 </script>
 </body>
