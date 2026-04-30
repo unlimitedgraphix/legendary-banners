@@ -381,24 +381,20 @@ body {
     </div>
     <!-- Logo overlay on canvas -->
     <div style="position:absolute;top:20px;left:24px;z-index:10;pointer-events:none;">
-      <div style="font-family:var(--font-display);font-size:28px;letter-spacing:4px;color:#fff;text-shadow:0 0 30px var(--pink),0 0 60px rgba(255,0,128,0.4);">CHOOSE YOUR <span style='color:var(--pink)'>BANNER</span></div>
+      <div style="font-family:var(--font-display);font-size:21px;letter-spacing:4px;color:#fff;text-shadow:0 0 30px var(--pink),0 0 60px rgba(255,0,128,0.4);">CHOOSE YOUR <span style='color:var(--pink)'>BANNER</span></div>
     </div>
   </div>
 
   <!-- BOTTOM: CONFIGURATOR PANEL FULL WIDTH -->
   <div class="left-panel">
     <!-- CTA — above banner grid -->
-    <div class="cta-block" style="border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-bottom:24px;background:rgba(255,0,128,0.04);">
+    <div class="cta-block" style="border:1px solid var(--border);border-radius:10px;padding:16px 24px;margin-bottom:24px;background:rgba(255,0,128,0.04);">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
         <div>
-          <div class="cta-banner-name" id="ctaName">—</div>
-          <div class="cta-banner-sub">Front Windshield · High-Gloss Vinyl · UV Resistant · 5-Year Outdoor Rated</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
           <div class="cta-price" id="ctaPrice">$99.90 <span>AUD</span></div>
-          <div style="font-size:10px;color:var(--muted);">Free shipping AU wide</div>
-          <a class="cta-btn" id="ctaBtn" href="#" target="_blank" style="width:auto;padding:14px 32px;">ADD TO CART — $99.90</a>
+          <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:4px;">Tool Kit Included</div>
         </div>
+        <a class="cta-btn" id="ctaBtn" href="#" target="_blank" style="width:auto;padding:14px 32px;">ADD TO CART</a>
       </div>
     </div>
 
@@ -653,8 +649,8 @@ scene.add(new THREE.HemisphereLight(0x220a30, 0x111105, 0.3));
 
 // ── ORBIT CONTROLS — rotate carGroup only, camera stays fixed ──
 let isDragging=false, isRightDragging=false, prevMouse={x:0,y:0};
-let spherical={theta:0, phi:Math.PI/3.8, radius:2.2};
-let target=new THREE.Vector3(0,0.2,0);
+let spherical={theta:0, phi:Math.PI/4.2, radius:2.6};
+let target=new THREE.Vector3(0,0.4,0);
 let carGroup = new THREE.Group(); scene.add(carGroup);
 let autoRotateSpeed = 0.0015;
 
@@ -927,16 +923,16 @@ function updateCTA(){
   const both  = frontActive && rearActive;
 
   if(both){
-    name.textContent    = 'Both Windshields Bundle';
+    // Bundle selected
     price.innerHTML     = '$179.90 <span>AUD</span>';
-    btn.textContent     = 'ADD BUNDLE TO CART — $179.90';
+    btn.textContent     = 'ADD TO CART';
     btn.onclick         = handleBothBuy;
     btn.href            = '#';
     btn.removeAttribute('target');
   } else {
     const b = frontActive ? frontBanner : rearBanner;
     if(b){
-      name.textContent  = b.name;
+      // name hidden
       price.innerHTML   = b.price + ' <span>AUD</span>';
       btn.textContent   = 'ADD TO CART — ' + b.price;
       btn.href          = cartURL(b.variantId);
