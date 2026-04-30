@@ -77,13 +77,32 @@ body {
 
 .right-canvas {
   width: 100%;
-  height: 82vh;
-  min-height: 520px;
+  height: 94vh;
+  min-height: 598px;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 100;
+}
+.right-canvas::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,0,128,0.3) 15%,
+    rgba(255,0,128,1) 40%,
+    rgba(255,0,128,1) 60%,
+    rgba(255,0,128,0.3) 85%,
+    transparent 100%
+  );
+  box-shadow: 0 0 18px 3px rgba(255,0,128,0.5), 0 0 40px 6px rgba(255,0,128,0.2);
+  pointer-events: none;
+  z-index: 101;
 }
 #canvas3d {
   width: 100%; height: 100%; display: block;
@@ -467,7 +486,7 @@ body {
 
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
-  .right-canvas { height: 55vw; min-height: 280px; }
+  .right-canvas { height: 63vw; min-height: 322px; }
   .left-panel { padding: 16px; }
   .config-grid { grid-template-columns: 1fr; gap: 16px; }
   .cta-col { border-left: none; padding-left: 0; border-top: 1px solid var(--border); padding-top: 16px; }
