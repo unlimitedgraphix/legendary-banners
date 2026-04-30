@@ -934,7 +934,7 @@ function updateCTA(){
     if(b){
       // name hidden
       price.innerHTML   = b.price + ' <span>AUD</span>';
-      btn.textContent   = 'ADD TO CART — ' + b.price;
+      btn.textContent   = 'ADD TO CART';
       btn.href          = cartURL(b.variantId);
       btn.onclick       = null;
       btn.setAttribute('target','_blank');
