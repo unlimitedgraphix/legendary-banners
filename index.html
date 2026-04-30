@@ -317,6 +317,10 @@ body {
   0%, 100% { transform: scale(1); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); }
   50% { transform: scale(1.05); filter: drop-shadow(0 6px 14px rgba(0,0,0,0.7)); }
 }
+@keyframes ctaPulse {
+  0%, 100% { box-shadow: 0 0 30px var(--pink-glow), 0 4px 20px rgba(255,0,128,0.4); transform: translateY(0); }
+  50% { box-shadow: 0 0 50px var(--pink-glow), 0 8px 30px rgba(255,0,128,0.5); transform: translateY(-2px); }
+}
 
 /* CTA block — position relative so bubble can anchor to it */
 .cta-bundle-active { padding-bottom: 28px !important; transition: padding 0.3s ease; }
@@ -443,6 +447,7 @@ body {
   text-decoration: none; display: flex; align-items: center; justify-content: center;
   box-shadow: 0 0 30px var(--pink-glow), 0 4px 20px rgba(255,0,128,0.4);
 }
+.cta-btn { animation: ctaPulse 1.2s ease-in-out infinite; }
 .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 0 50px var(--pink-glow), 0 8px 30px rgba(255,0,128,0.5); }
 
 /* Features bar */
