@@ -37,7 +37,7 @@ body {
 
 .nav { display: none; }
 .nav-logo {
-  font-family: var(--font-display);
+  font-family: "Anton", sans-serif;
   font-size: 28px; letter-spacing: 4px;
   color: #fff;
   text-shadow: 0 0 30px var(--pink), 0 0 60px rgba(255,0,128,0.4);
@@ -152,7 +152,7 @@ body {
   border-radius: 50%; animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-.loading-pct { font-family: var(--font-display); font-size: 36px; color: #fff; text-shadow: 0 0 20px var(--pink); }
+.loading-pct { font-family: "Anton", sans-serif; font-size: 36px; color: #fff; text-shadow: 0 0 20px var(--pink); }
 .loading-label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); }
 
 .controls-hint {
@@ -165,7 +165,7 @@ body {
 
 /* ── LEFT PANEL CONTENT ── */
 .configurator-title {
-  font-family: var(--font-display);
+  font-family: "Anton", sans-serif;
   font-size: 28px; letter-spacing: 2px; color: #fff;
   margin-bottom: 4px;
 }
@@ -276,54 +276,73 @@ body {
 }
 .volume-panel.fade-out { opacity: 0; pointer-events: none; }
 
-/* Savings bubble */
-.savings-bubble {
+/* Ticket price style */
+.price-ticket {
   display: none;
-  position: absolute;
-  bottom: -10px;
-  right: 24px;
-  z-index: 10;
-  text-align: center;
-}
-.savings-bubble.visible { display: block; }
-.savings-tag {
-  display: inline-flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
-  background: #FFD700;
-  clip-path: polygon(12px 0%, calc(100% - 12px) 0%, 100% 50%, calc(100% - 12px) 100%, 12px 100%, 0% 50%);
-  padding: 6px 28px;
-  box-shadow: 4px 4px 0px rgba(0,0,0,0.9), 6px 6px 12px rgba(0,0,0,0.6);
-  animation: savingsPulse 1.2s ease-in-out infinite;
+  gap: 2px;
 }
-.savings-tag-main {
-  font-family: var(--font-display);
-  font-size: 20px;
+.price-ticket.visible { display: flex; }
+.price-normal { transition: opacity 0.3s; }
+.price-normal.hidden { display: none; }
+.price-single-ticket {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.ticket-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: none;
+  box-shadow: none;
+  padding: 0;
+}
+.ticket-label {
+  font-family: "Anton", sans-serif;
+  font-size: 13px;
   letter-spacing: 2px;
-  color: #cc0000;
+  color: var(--muted);
+}
+.ticket-was {
+  font-family: "Anton", sans-serif;
+  font-size: 15px;
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}
+.ticket-mid {
+  background: none;
+  box-shadow: none;
+  padding: 0;
+  text-align: center;
+}
+.ticket-price {
+  font-family: "Anton", sans-serif;
+  font-size: 42px;
+  color: #FFD700;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
   line-height: 1;
 }
-.savings-tag-sub {
+.ticket-bottom {
+  background: none;
+  box-shadow: none;
+  padding: 0;
+  text-align: center;
+}
+.ticket-saving {
   font-family: var(--font-body);
-  font-size: 9px;
-  letter-spacing: 1px;
-  color: #000;
+  font-size: 10px;
   font-weight: 700;
-  margin-top: 1px;
+  letter-spacing: 1px;
+  color: var(--pink);
   text-transform: uppercase;
 }
-@keyframes savingsPulse {
-  0%, 100% { transform: scale(1); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); }
-  50% { transform: scale(1.05); filter: drop-shadow(0 6px 14px rgba(0,0,0,0.7)); }
-}
-@keyframes ctaPulse {
-  0%, 100% { box-shadow: 0 0 30px var(--pink-glow), 0 4px 20px rgba(255,0,128,0.4); transform: translateY(0); }
-  50% { box-shadow: 0 0 50px var(--pink-glow), 0 8px 30px rgba(255,0,128,0.5); transform: translateY(-2px); }
-}
 
-/* CTA block — position relative so bubble can anchor to it */
-.cta-bundle-active { padding-bottom: 28px !important; transition: padding 0.3s ease; }
+/* Savings bubble removed */
 
 /* Window toggle buttons handled inline */
 .banner-card.rear-active {
@@ -422,7 +441,7 @@ body {
   border-top: 1px solid var(--border);
 }
 .cta-banner-name {
-  font-family: var(--font-display);
+  font-family: "Anton", sans-serif;
   font-size: 26px; letter-spacing: 2px; text-transform: uppercase; color: #fff;
   margin-bottom: 2px;
 }
@@ -434,7 +453,7 @@ body {
   display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
 }
 .cta-price {
-  font-family: var(--font-display); font-size: 36px; letter-spacing: 1px; color: #fff;
+  font-family: "Anton", sans-serif; font-size: 36px; letter-spacing: 1px; color: #fff;
 }
 .cta-price span { font-size: 14px; color: var(--muted); }
 .cta-btn {
@@ -463,7 +482,7 @@ body {
 .feature-item:last-child { border-right: none; }
 .feature-icon { font-size: 24px; margin-bottom: 8px; }
 .feature-title {
-  font-family: var(--font-display); font-size: 15px; letter-spacing: 2px; margin-bottom: 4px;
+  font-family: "Anton", sans-serif; font-size: 15px; letter-spacing: 2px; margin-bottom: 4px;
   color: #fff;
 }
 .feature-text { font-size: 11px; color: var(--muted); line-height: 1.5; font-family: var(--font-text); }
@@ -475,7 +494,7 @@ body {
   background: #000;
 }
 .footer-logo {
-  font-family: var(--font-display); font-size: 18px; letter-spacing: 4px;
+  font-family: "Anton", sans-serif; font-size: 18px; letter-spacing: 4px;
   color: var(--pink); margin-bottom: 6px;
   text-shadow: 0 0 20px var(--pink-glow);
 }
@@ -562,7 +581,7 @@ body {
     </div>
     <!-- Logo overlay on canvas -->
     <div style="position:absolute;top:20px;left:24px;z-index:10;pointer-events:none;">
-      <div style="font-family:var(--font-display);font-size:21px;letter-spacing:4px;color:#fff;text-shadow:0 0 30px var(--pink),0 0 60px rgba(255,0,128,0.4);">CHOOSE YOUR <span style='color:var(--pink)'>BANNER</span></div>
+      <div style="font-family:"Anton", sans-serif;font-size:21px;letter-spacing:4px;color:#fff;text-shadow:0 0 30px var(--pink),0 0 60px rgba(255,0,128,0.4);">CHOOSE YOUR <span style='color:var(--pink)'>BANNER</span></div>
     </div>
   </div>
 
@@ -575,17 +594,32 @@ body {
     <div class="cta-block" id="ctaBlock" style="border:1px solid var(--border);border-radius:10px;padding:16px 24px;margin-bottom:16px;background:rgba(255,0,128,0.04);position:relative;transition:padding 0.3s ease;">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:nowrap;">
         <div style="flex-shrink:0;">
-          <div class="cta-price" id="ctaPrice">$119.90 <span>AUD</span></div>
-          <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:4px;">Tool Kit Included</div>
+          <!-- Single price — ticket style -->
+          <div class="price-normal price-single-ticket" id="priceNormal">
+            <div class="ticket-mid">
+              <div class="ticket-price" id="ctaPrice">$119.90</div>
+            </div>
+            <div class="ticket-bottom">
+              <span class="ticket-saving">Tool Kit Included</span>
+            </div>
+          </div>
+          <!-- Bundle ticket price -->
+          <div class="price-ticket" id="priceTicket">
+            <div class="ticket-top">
+              <span class="ticket-label">Was</span>
+              <span class="ticket-was">$239.80</span>
+            </div>
+            <div class="ticket-mid">
+              <span class="ticket-price">$199.90</span>
+            </div>
+            <div class="ticket-bottom">
+              <span class="ticket-saving">16% OFF — 2 BANNER DEAL</span>
+            </div>
+          </div>
         </div>
         <a class="cta-btn" id="ctaBtn" href="#" target="_blank" style="width:auto;padding:14px 24px;flex-shrink:0;white-space:nowrap;">ADD TO CART</a>
       </div>
-      <div class="savings-bubble" id="savingsBubble">
-        <div class="savings-tag">
-          <span class="savings-tag-main">SAVE $39.90</span>
-          <span class="savings-tag-sub">16% OFF — 2 BANNER DEAL</span>
-        </div>
-      </div>
+</div>
     </div>
 
     <div class="config-grid" style="grid-template-columns:1fr;">
@@ -816,8 +850,8 @@ new THREE.TextureLoader().load(BG_URL, tex => {
     new THREE.MeshBasicMaterial({ map: tex, depthWrite: false, depthTest: true, side: THREE.FrontSide })
   );
   bgPlane.name = 'bgPlane';
-  bgPlane.position.set(-2.13, 4.74, -28);
-  bgPlane.material.opacity = 0.7;
+  bgPlane.position.set(-2.13, 3.034, -28);
+  bgPlane.material.opacity = 0.525;
   bgPlane.material.transparent = true;
   bgPlane.renderOrder = -999;
   scene.add(bgPlane);
@@ -1032,6 +1066,7 @@ function loadModel() {
       }
     });
     carGroup.add(model); carModel=model; window._paintMat=null;
+    carGroup.position.z = -1.3;  // push car toward background
 
 
 
@@ -1159,6 +1194,12 @@ function toggleWindow(which){ playClick(); if(navigator.vibrate) navigator.vibra
   }
   updateToggleUI();
   updateCTA();
+  // Show/hide ticket price
+  var _isBoth = frontActive && rearActive;
+  var _pn = document.getElementById('priceNormal');
+  var _pt = document.getElementById('priceTicket');
+  if(_pn) { if(_isBoth) { _pn.classList.add('hidden'); } else { _pn.classList.remove('hidden'); } }
+  if(_pt) { if(_isBoth) { _pt.classList.add('visible'); } else { _pt.classList.remove('visible'); } }
 }
 
 function updateToggleUI(){
@@ -1199,13 +1240,16 @@ function updateCTA(){
 
   if(both){
     // Bundle selected
-    price.innerHTML     = '$199.90 <span>AUD</span>';
+    if(price) price.innerHTML = '$199.90 <span>AUD</span>';
     btn.textContent     = 'ADD TO CART';
     btn.onclick         = handleBothBuy;
     btn.href            = '#';
     btn.removeAttribute('target');
-    document.getElementById('savingsBubble').classList.add('visible');
-    document.getElementById('ctaBlock').style.paddingBottom = '30px';
+    var _pn = document.getElementById('priceNormal');
+    var _pt = document.getElementById('priceTicket');
+    if(_pn) _pn.classList.add('hidden');
+    if(_pt) _pt.classList.add('visible');
+    document.getElementById('ctaBlock').style.paddingBottom = '16px';
   } else {
     const b = frontActive ? frontBanner : rearBanner;
     if(b){
@@ -1218,11 +1262,7 @@ function updateCTA(){
     }
   }
   // Show/hide savings bubble
-  var bubble2 = document.getElementById('savingsBubble');
-  var block2  = document.getElementById('ctaBlock');
-  var isBoth2 = frontActive && rearActive;
-  if(bubble2) bubble2.classList.toggle('visible', isBoth2);
-  if(block2)  block2.style.paddingBottom = isBoth2 ? '44px' : '16px';
+  
 }
 
 function handleBothBuy(e){
