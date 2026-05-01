@@ -37,7 +37,7 @@ body {
 
 .nav { display: none; }
 .nav-logo {
-  font-family: "Anton", sans-serif;
+  font-family: "Bebas Neue", cursive;
   font-size: 28px; letter-spacing: 4px;
   color: #fff;
   text-shadow: 0 0 30px var(--pink), 0 0 60px rgba(255,0,128,0.4);
@@ -152,7 +152,7 @@ body {
   border-radius: 50%; animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-.loading-pct { font-family: "Anton", sans-serif; font-size: 36px; color: #fff; text-shadow: 0 0 20px var(--pink); }
+.loading-pct { font-family: "Bebas Neue", cursive; font-size: 36px; color: #fff; text-shadow: 0 0 20px var(--pink); }
 .loading-label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); }
 
 .controls-hint {
@@ -165,7 +165,7 @@ body {
 
 /* ── LEFT PANEL CONTENT ── */
 .configurator-title {
-  font-family: "Anton", sans-serif;
+  font-family: "Bebas Neue", cursive;
   font-size: 28px; letter-spacing: 2px; color: #fff;
   margin-bottom: 4px;
 }
@@ -302,13 +302,13 @@ body {
   padding: 0;
 }
 .ticket-label {
-  font-family: "Anton", sans-serif;
+  font-family: "Bebas Neue", cursive;
   font-size: 13px;
   letter-spacing: 2px;
   color: var(--muted);
 }
 .ticket-was {
-  font-family: "Anton", sans-serif;
+  font-family: "Bebas Neue", cursive;
   font-size: 15px;
   color: var(--muted);
   text-decoration: line-through;
@@ -321,7 +321,7 @@ body {
   text-align: center;
 }
 .ticket-price {
-  font-family: "Anton", sans-serif;
+  font-family: "Bebas Neue", cursive;
   font-size: 42px;
   color: #FFD700;
   text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
@@ -441,7 +441,7 @@ body {
   border-top: 1px solid var(--border);
 }
 .cta-banner-name {
-  font-family: "Anton", sans-serif;
+  font-family: "Bebas Neue", cursive;
   font-size: 26px; letter-spacing: 2px; text-transform: uppercase; color: #fff;
   margin-bottom: 2px;
 }
@@ -453,7 +453,7 @@ body {
   display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
 }
 .cta-price {
-  font-family: "Anton", sans-serif; font-size: 36px; letter-spacing: 1px; color: #fff;
+  font-family: "Bebas Neue", cursive; font-size: 36px; letter-spacing: 1px; color: #fff;
 }
 .cta-price span { font-size: 14px; color: var(--muted); }
 .cta-btn {
@@ -482,7 +482,7 @@ body {
 .feature-item:last-child { border-right: none; }
 .feature-icon { font-size: 24px; margin-bottom: 8px; }
 .feature-title {
-  font-family: "Anton", sans-serif; font-size: 15px; letter-spacing: 2px; margin-bottom: 4px;
+  font-family: "Bebas Neue", cursive; font-size: 15px; letter-spacing: 2px; margin-bottom: 4px;
   color: #fff;
 }
 .feature-text { font-size: 11px; color: var(--muted); line-height: 1.5; font-family: var(--font-text); }
@@ -494,7 +494,7 @@ body {
   background: #000;
 }
 .footer-logo {
-  font-family: "Anton", sans-serif; font-size: 18px; letter-spacing: 4px;
+  font-family: "Bebas Neue", cursive; font-size: 18px; letter-spacing: 4px;
   color: var(--pink); margin-bottom: 6px;
   text-shadow: 0 0 20px var(--pink-glow);
 }
@@ -581,7 +581,7 @@ body {
     </div>
     <!-- Logo overlay on canvas -->
     <div style="position:absolute;top:20px;left:24px;z-index:10;pointer-events:none;">
-      <div style="font-family:"Anton", sans-serif;font-size:21px;letter-spacing:4px;color:#fff;text-shadow:0 0 30px var(--pink),0 0 60px rgba(255,0,128,0.4);">CHOOSE YOUR <span style='color:var(--pink)'>BANNER</span></div>
+      <div style="font-family:'Bebas Neue', cursive;font-size:21px;letter-spacing:4px;color:#fff;text-shadow:0 0 30px var(--pink),0 0 60px rgba(255,0,128,0.4);">CHOOSE YOUR <span style='color:var(--pink)'>BANNER</span></div>
     </div>
   </div>
 
@@ -596,25 +596,14 @@ body {
         <div style="flex-shrink:0;">
           <!-- Single price — ticket style -->
           <div class="price-normal price-single-ticket" id="priceNormal">
-            <div class="ticket-mid">
-              <div class="ticket-price" id="ctaPrice">$119.90</div>
-            </div>
-            <div class="ticket-bottom">
-              <span class="ticket-saving">Tool Kit Included</span>
-            </div>
+            <div class="cta-price" id="ctaPrice">$119.90</div>
+            <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:4px;">Tool Kit Included</div>
           </div>
           <!-- Bundle ticket price -->
           <div class="price-ticket" id="priceTicket">
-            <div class="ticket-top">
-              <span class="ticket-label">Was</span>
-              <span class="ticket-was">$239.80</span>
-            </div>
-            <div class="ticket-mid">
-              <span class="ticket-price">$199.90</span>
-            </div>
-            <div class="ticket-bottom">
-              <span class="ticket-saving">16% OFF — 2 BANNER DEAL</span>
-            </div>
+            <div style="font-size:11px;color:var(--muted);letter-spacing:1px;text-decoration:line-through;">$239.80</div>
+            <div class="cta-price">$199.90</div>
+            <div style="font-size:10px;color:var(--pink);letter-spacing:1px;margin-top:4px;">16% OFF — 2 BANNER DEAL</div>
           </div>
         </div>
         <a class="cta-btn" id="ctaBtn" href="#" target="_blank" style="width:auto;padding:14px 24px;flex-shrink:0;white-space:nowrap;">ADD TO CART</a>
