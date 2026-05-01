@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Legendary Banners — Custom Windshield Vinyl</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black: #000000;
+  --surface: rgba(10,5,20,0.85);
+  --surface2: rgba(15,8,30,0.9);
+  --border: rgba(255,0,160,0.2);
+  --border2: rgba(255,0,160,0.4);
+  --text: #f0f0f0;
+  --muted: #aaa;
+  --faint: #555;
+  --pink: #ff0080;
+  --pink-glow: rgba(255,0,128,0.3);
+  --cyan: #00eeff;
+  --orange: #ff6600;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'Barlow Condensed', sans-serif;
+  --font-text: 'Barlow', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: #0a0010;
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.nav { display: none; }
+.nav-logo {
+  font-family: "Bebas Neue", cursive;
+  font-size: 28px; letter-spacing: 4px;
+  color: #fff;
+  text-shadow: 0 0 30px var(--pink), 0 0 60px rgba(255,0,128,0.4);
+}
+.nav-logo-sub {
+  font-family: var(--font-body);
+  font-size: 11px; letter-spacing: 6px; color: var(--pink);
+  margin-top: -4px; display: block;
+  text-shadow: 0 0 15px var(--pink);
+}
+.nav-links { display: flex; align-items: center; gap: 32px; }
+.nav-link {
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.2s;
+}
+.nav-link:hover { color: #fff; text-shadow: 0 0 10px var(--pink); }
+.nav-cta {
+  background: var(--pink); color: #fff;
+  padding: 8px 22px; border-radius: 4px;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  text-decoration: none; transition: all 0.2s;
+  box-shadow: 0 0 20px var(--pink-glow);
+}
+.nav-cta:hover { box-shadow: 0 0 35px var(--pink-glow); transform: translateY(-1px); }
+
+/* ── MAIN LAYOUT — canvas top, configurator below ── */
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.scroll-content {
+  position: relative;
+  z-index: 50;
+  background: #0a0010;
+}
+
+.right-canvas {
+  width: 100%;
+  height: 94vh;
+  min-height: 598px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+.right-canvas::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,0,128,0.3) 15%,
+    rgba(255,0,128,1) 40%,
+    rgba(255,0,128,1) 60%,
+    rgba(255,0,128,0.3) 85%,
+    transparent 100%
+  );
+  box-shadow: 0 0 18px 3px rgba(255,0,128,0.5), 0 0 40px 6px rgba(255,0,128,0.2);
+  pointer-events: none;
+  z-index: 101;
+}
+#canvas3d {
+  width: 100%; height: 100%; display: block;
+  cursor: grab; outline: none;
+}
+#canvas3d:active { cursor: grabbing; }
+
+/* Configurator panel — full width below canvas */
+.left-panel {
+  width: 100%;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  padding: 24px 32px;
+  position: relative;
+}
+.left-panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--pink), transparent);
+}
+
+/* Three column grid inside configurator */
+.config-grid {
+  display: grid;
+  grid-template-columns: 1fr 180px 280px;
+  gap: 32px;
+  align-items: start;
+  margin-top: 16px;
+}
+.config-col {}
+.cta-col { border-left: 1px solid var(--border); padding-left: 32px; }
+
+/* Loading */
+.loading-screen {
+  position: absolute; inset: 0;
+  background: #050010;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+  z-index: 10; transition: opacity 0.6s;
+}
+.loading-screen.hidden { opacity: 0; pointer-events: none; }
+.spinner {
+  width: 44px; height: 44px;
+  border: 2px solid rgba(255,0,128,0.2); border-top-color: var(--pink);
+  border-radius: 50%; animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-pct { font-family: "Bebas Neue", cursive; font-size: 36px; color: #fff; text-shadow: 0 0 20px var(--pink); }
+.loading-label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); }
+
+.controls-hint {
+  position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(12px);
+  border: 1px solid var(--border); border-radius: 20px;
+  padding: 6px 18px; font-size: 10px; color: #888;
+  letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; pointer-events: none;
+}
+
+/* ── LEFT PANEL CONTENT ── */
+.configurator-title {
+  font-family: "Bebas Neue", cursive;
+  font-size: 28px; letter-spacing: 2px; color: #fff;
+  margin-bottom: 4px;
+}
+.configurator-title span { color: var(--pink); }
+.configurator-sub {
+  font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 28px;
+}
+
+/* Section label */
+.section-label {
+  font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--pink); margin-bottom: 12px; margin-top: 0;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-label::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, var(--border), transparent);
+}
+
+/* Panel tabs */
+/* Music controls */
+.music-controls {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+.music-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,0,128,0.4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.2s;
+  box-shadow: 0 0 12px rgba(255,0,128,0.2);
+}
+.music-btn:hover {
+  border-color: var(--pink);
+  box-shadow: 0 0 20px var(--pink-glow);
+  transform: scale(1.1);
+}
+.music-btn.playing {
+  border-color: var(--pink);
+  box-shadow: 0 0 20px var(--pink-glow);
+  animation: musicPulse 1.5s ease-in-out infinite;
+}
+@keyframes musicPulse {
+  0%, 100% { box-shadow: 0 0 12px var(--pink-glow); }
+  50% { box-shadow: 0 0 28px rgba(255,0,128,0.6); }
+}
+.volume-panel {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,0,128,0.3);
+  border-radius: 20px;
+  padding: 10px 8px;
+}
+.volume-panel.visible { display: flex; }
+.volume-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  writing-mode: vertical-lr;
+  direction: rtl;
+  width: 4px;
+  height: 80px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--pink);
+  box-shadow: 0 0 8px var(--pink-glow);
+  cursor: pointer;
+}
+.volume-label {
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+}
+/* Fade transitions */
+.controls-hint {
+  transition: opacity 1s ease;
+}
+.controls-hint.hidden { opacity: 0; pointer-events: none; }
+.volume-panel {
+  transition: opacity 0.5s ease;
+}
+.volume-panel.fade-out { opacity: 0; pointer-events: none; }
+
+/* Ticket price style */
+.price-ticket {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.price-ticket.visible { display: flex; }
+.price-normal { transition: opacity 0.3s; }
+.price-normal.hidden { display: none; }
+.price-single-ticket {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.ticket-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: none;
+  box-shadow: none;
+  padding: 0;
+}
+.ticket-label {
+  font-family: "Bebas Neue", cursive;
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: var(--muted);
+}
+.ticket-was {
+  font-family: "Bebas Neue", cursive;
+  font-size: 15px;
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}
+.ticket-mid {
+  background: none;
+  box-shadow: none;
+  padding: 0;
+  text-align: center;
+}
+.ticket-price {
+  font-family: "Bebas Neue", cursive;
+  font-size: 42px;
+  color: #FFD700;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+  line-height: 1;
+}
+.ticket-bottom {
+  background: none;
+  box-shadow: none;
+  padding: 0;
+  text-align: center;
+}
+.ticket-saving {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--pink);
+  text-transform: uppercase;
+}
+
+/* Savings bubble removed */
+
+/* Window toggle buttons handled inline */
+.banner-card.rear-active {
+  border-color: var(--cyan) !important;
+  background: rgba(0,238,255,0.08) !important;
+  box-shadow: 0 0 16px rgba(0,238,255,0.25) !important;
+}
+.banner-card.rear-active .card-name { color: var(--cyan) !important; }
+.banner-card.rear-active .card-price { color: var(--cyan) !important; }
+.banner-card.rear-active .card-check { background: var(--cyan) !important; opacity:1 !important; }
+
+/* Banner grid */
+.banner-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px;
+}
+.banner-card {
+  cursor: pointer; border-radius: 8px; border: 1.5px solid var(--border);
+  background: rgba(255,255,255,0.03); padding: 10px; position: relative;
+  transition: all 0.2s;
+}
+.banner-card:hover { border-color: rgba(255,0,128,0.4); }
+.banner-card.active {
+  border-color: var(--pink);
+  background: rgba(255,0,128,0.08);
+  box-shadow: 0 0 16px var(--pink-glow);
+}
+.swatch-preview {
+  height: 32px; border-radius: 4px; overflow: hidden;
+  margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.1); background: #111;
+}
+.swatch-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card-name { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); transition: color 0.2s; margin-bottom: 1px; }
+.banner-card.active .card-name { color: #fff; }
+.card-price { font-size: 10px; color: var(--faint); transition: color 0.2s; }
+.banner-card.active .card-price { color: var(--pink); }
+.card-check {
+  position: absolute; top: 8px; right: 8px;
+  width: 16px; height: 16px; border-radius: 50%; background: var(--pink);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.2s;
+}
+.banner-card.active .card-check { opacity: 1; }
+
+
+/* Car colour — legacy swatches hidden, replaced by wheel */
+.colour-swatches { display: none; }
+.colour-name { display: none; }
+.swatch { display: none; }
+
+/* COLOUR WHEEL OVERLAY */
+.colour-wheel-overlay {
+  position: absolute;
+  bottom: 16px;
+  left: 20px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+  .colour-wheel-wrap {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  cursor: crosshair;
+}
+.colour-wheel-wrap canvas {
+  border-radius: 50%;
+  box-shadow: 0 0 20px rgba(0,0,0,0.8), 0 0 0 2px rgba(255,255,255,0.1);
+  display: block;
+}
+.colour-wheel-pointer {
+  position: absolute;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  border: 1.5px solid #fff;
+  box-shadow: 0 0 4px rgba(0,0,0,0.8);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.colour-wheel-label {
+  font-size: 7px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  text-align: center;
+  white-space: nowrap;
+}
+.colour-wheel-selected {
+  display: none;
+}
+
+/* CTA */
+.cta-block {
+  margin-top: auto; padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.cta-banner-name {
+  font-family: "Bebas Neue", cursive;
+  font-size: 26px; letter-spacing: 2px; text-transform: uppercase; color: #fff;
+  margin-bottom: 2px;
+}
+.cta-banner-sub {
+  font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-bottom: 16px;
+  font-family: var(--font-text);
+}
+.cta-price-row {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+}
+.cta-price {
+  font-family: "Bebas Neue", cursive; font-size: 36px; letter-spacing: 1px; color: #fff;
+}
+.cta-price span { font-size: 14px; color: var(--muted); }
+.cta-btn {
+  width: 100%; background: var(--pink); color: #fff;
+  border: none; border-radius: 8px;
+  padding: 16px; font-size: 13px; font-weight: 800;
+  letter-spacing: 4px; text-transform: uppercase;
+  cursor: pointer; transition: all 0.2s;
+  font-family: var(--font-body);
+  text-decoration: none; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 30px var(--pink-glow), 0 4px 20px rgba(255,0,128,0.4);
+}
+.cta-btn { animation: ctaPulse 1.2s ease-in-out infinite; }
+.cta-btn:hover { transform: translateY(-2px); box-shadow: 0 0 50px var(--pink-glow), 0 8px 30px rgba(255,0,128,0.5); }
+
+/* Features bar */
+.features-bar {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid rgba(255,0,128,0.15);
+  background: rgba(0,0,10,0.95);
+}
+.feature-item {
+  padding: 28px 20px; text-align: center;
+  border-right: 1px solid rgba(255,0,128,0.1);
+}
+.feature-item:last-child { border-right: none; }
+.feature-icon { font-size: 24px; margin-bottom: 8px; }
+.feature-title {
+  font-family: "Bebas Neue", cursive; font-size: 15px; letter-spacing: 2px; margin-bottom: 4px;
+  color: #fff;
+}
+.feature-text { font-size: 11px; color: var(--muted); line-height: 1.5; font-family: var(--font-text); }
+
+/* Footer */
+.footer {
+  padding: 28px 40px; text-align: center;
+  border-top: 1px solid rgba(255,0,128,0.1);
+  background: #000;
+}
+.footer-logo {
+  font-family: "Bebas Neue", cursive; font-size: 18px; letter-spacing: 4px;
+  color: var(--pink); margin-bottom: 6px;
+  text-shadow: 0 0 20px var(--pink-glow);
+}
+.footer-text { font-size: 10px; color: var(--faint); letter-spacing: 2px; }
+.footer-links { display: flex; gap: 24px; justify-content: center; margin-top: 12px; }
+.footer-link { font-size: 10px; color: var(--faint); letter-spacing: 2px; text-transform: uppercase; text-decoration: none; }
+.footer-link:hover { color: var(--pink); }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--pink); box-shadow: 0 0 8px var(--pink); animation: pulse 2s ease infinite; display: inline-block; margin-left: 6px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .right-canvas { height: 63vw; min-height: 322px; }
+  .left-panel { padding: 16px; }
+  .config-grid { grid-template-columns: 1fr; gap: 16px; }
+  .cta-col { border-left: none; padding-left: 0; border-top: 1px solid var(--border); padding-top: 16px; }
+  .nav { padding: 12px 16px; }
+  .nav-links { display: none; }
+  .features-bar { grid-template-columns: repeat(2, 1fr); }
+  .banner-grid { grid-template-columns: repeat(3, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div>
+    <div class="nav-logo">LEGENDARY</div>
+    <span class="nav-logo-sub">BANNERS</span>
+  </div>
+  <div class="nav-links">
+    <a href="#" class="nav-link">Shop</a>
+    <a href="#" class="nav-link">Custom Design</a>
+    <a href="#" class="nav-link">Gallery</a>
+    <a href="#" class="nav-link">Install Guide</a>
+    <a href="https://unlimitedgraphix.com.au" class="nav-link" target="_blank">About</a>
+    <a href="#" class="nav-cta">SHOP NOW</a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main-layout">
+
+  <!-- TOP: FULL WIDTH 3D CANVAS -->
+  <div class="right-canvas">
+    <div class="loading-screen" id="loadingScreen">
+      <div class="spinner"></div>
+      <div class="loading-pct" id="loadingPct">0%</div>
+      <div class="loading-label">Loading 3D Model</div>
+    </div>
+    <canvas id="canvas3d"></canvas>
+    <div class="controls-hint">Rotate &amp; Zoom</div>
+
+    <!-- Music controls -->
+    <audio id="bgMusic" loop preload="none">
+      <source src="https://green-night-47f9.karlitojemal.workers.dev/Pachanga.mp3" type="audio/mpeg">
+    </audio>
+    <div class="music-controls">
+      <button class="music-btn" id="musicBtn" onclick="toggleMusic()" title="Toggle music">🎵</button>
+      <div class="volume-panel" id="volumePanel"
+        onmouseenter="clearTimeout(volumeFadeTimer);document.getElementById('volumePanel').classList.remove('fade-out');"
+        onmouseleave="volumeFadeTimer=setTimeout(function(){document.getElementById('volumePanel').classList.add('fade-out');},1500);">
+        <span class="volume-label">VOL</span>
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="5" oninput="setVolume(this.value)">
+      </div>
+    </div>
+
+    <!-- COLOUR WHEEL OVERLAY -->
+    <div class="colour-wheel-overlay">
+      <div class="colour-wheel-wrap" id="colourWheelWrap">
+        <canvas id="colourWheelCanvas" width="48" height="48"></canvas>
+        <div class="colour-wheel-pointer" id="colourWheelPointer" style="left:50%;top:50%;"></div>
+      </div>
+      <!-- Black & White quick picks -->
+      <div style="display:flex;gap:4px;justify-content:center;">
+        <button onclick="applyWheelColour('#050505')" title="Black" style="width:11px;height:11px;border-radius:50%;background:#050505;border:1.5px solid rgba(255,255,255,0.25);cursor:pointer;outline:none;transition:transform 0.15s;" onmouseover="this.style.transform='scale(1.3)'" onmouseout="this.style.transform='scale(1)'"></button>
+        <button onclick="applyWheelColour('#ffffff')" title="White" style="width:11px;height:11px;border-radius:50%;background:#ffffff;border:1.5px solid rgba(200,200,200,0.5);cursor:pointer;outline:none;transition:transform 0.15s;" onmouseover="this.style.transform='scale(1.3)'" onmouseout="this.style.transform='scale(1)'"></button>
+      </div>
+      <div class="colour-wheel-label">Car Colour</div>
+    </div>
+    <!-- Logo overlay on canvas -->
+    <div style="position:absolute;top:20px;left:24px;z-index:10;pointer-events:none;">
+      <div style="font-family:'Bebas Neue', cursive;font-size:21px;letter-spacing:4px;color:#fff;text-shadow:0 0 30px var(--pink),0 0 60px rgba(255,0,128,0.4);">CHOOSE YOUR <span style='color:var(--pink)'>BANNER</span></div>
+    </div>
+  </div>
+
+</div><!-- close main-layout -->
+
+<div class="scroll-content">
+  <!-- BOTTOM: CONFIGURATOR PANEL FULL WIDTH -->
+  <div class="left-panel">
+    <!-- CTA — above banner grid -->
+    <div class="cta-block" id="ctaBlock" style="border:1px solid var(--border);border-radius:10px;padding:16px 24px;margin-bottom:16px;background:rgba(255,0,128,0.04);position:relative;transition:padding 0.3s ease;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:nowrap;">
+        <div style="flex-shrink:0;">
+          <!-- Single price — ticket style -->
+          <div class="price-normal price-single-ticket" id="priceNormal">
+            <div class="cta-price" id="ctaPrice">$119.90</div>
+            <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:4px;">Tool Kit Included</div>
+          </div>
+          <!-- Bundle ticket price -->
+          <div class="price-ticket" id="priceTicket">
+            <div style="font-size:11px;color:var(--muted);letter-spacing:1px;text-decoration:line-through;">$239.80</div>
+            <div class="cta-price">$199.90</div>
+            <div style="font-size:10px;color:var(--pink);letter-spacing:1px;margin-top:4px;">16% OFF — 2 BANNER DEAL</div>
+          </div>
+        </div>
+        <a class="cta-btn" id="ctaBtn" href="#" target="_blank" style="width:auto;padding:14px 24px;flex-shrink:0;white-space:nowrap;">ADD TO CART</a>
+      </div>
+</div>
+    </div>
+
+    <div class="config-grid" style="grid-template-columns:1fr;">
+
+      <!-- Banner Selection only — car colour section removed (wheel is on canvas) -->
+      <div class="config-col">
+        <div class="section-label">Select Banner Design</div>
+        <!-- Window toggles -->
+        <div style="display:flex;gap:8px;margin-bottom:14px;">
+          <button id="toggleFront" onclick="toggleWindow('front')"
+            style="flex:1;padding:10px 8px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+                   border-radius:6px;cursor:pointer;font-family:var(--font-body);transition:all 0.2s;
+                   border:1px solid var(--pink);background:rgba(255,0,128,0.15);color:#fff;
+                   box-shadow:0 0 12px var(--pink-glow);">
+            ◆ FRONT
+          </button>
+          <button id="toggleRear" onclick="toggleWindow('rear')"
+            style="flex:1;padding:10px 8px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+                   border-radius:6px;cursor:pointer;font-family:var(--font-body);transition:all 0.2s;
+                   border:1px solid rgba(0,238,255,0.2);background:transparent;color:var(--muted);">
+            ◆ REAR
+          </button>
+        </div>
+        <!-- Single shared banner grid -->
+        <div class="banner-grid" id="bannerGrid"></div>
+      </div>
+
+    </div>
+  </div>
+
+
+<!-- FEATURES -->
+<div class="features-bar">
+  <div class="feature-item">
+    <div class="feature-icon">🏆</div>
+    <div class="feature-title">Perth Made</div>
+    <div class="feature-text">Proudly designed & made in WA</div>
+  </div>
+  <div class="feature-item">
+    <div class="feature-icon">🚀</div>
+    <div class="feature-title">Fast Shipping</div>
+    <div class="feature-text">Same day dispatch before 2PM</div>
+  </div>
+  <div class="feature-item">
+    <div class="feature-icon">🛡️</div>
+    <div class="feature-title">5-7 Year Durability</div>
+    <div class="feature-text">Built to last the distance</div>
+  </div>
+  <div class="feature-item">
+    <div class="feature-icon">⭐</div>
+    <div class="feature-title">1000+ Customers</div>
+    <div class="feature-text">Trusted by car enthusiasts</div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-logo">LEGENDARY BANNERS</div>
+  <div class="footer-text">By Unlimited Graphix · Perth, Western Australia</div>
+  <div class="footer-links">
+    <a href="https://unlimitedgraphix.com.au/privacy-policy" class="footer-link" target="_blank">Privacy Policy</a>
+    <a href="https://unlimitedgraphix.com.au/terms-and-conditions" class="footer-link" target="_blank">Terms & Conditions</a>
+    <a href="https://unlimitedgraphix.com.au" class="footer-link" target="_blank">UG Studio</a>
+  </div>
+  <div style="margin-top:12px;font-size:10px;color:#222;letter-spacing:1px;">© 2026 Legendary Banners · All Rights Reserved</div>
+</footer>
+</div><!-- close scroll-content -->
+
+<!-- THREE.JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const SHOPIFY_BASE = 'https://legendary-banners.myshopify.com/products/legendary-banners-windshield-banner?variant=';
+const BANNERS = [
+  { id:1,   name:"4X4",                      price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/4X4.jpg/:/rs=w:1280,h:192",                        variantId:"" },
+  { id:2,   name:"Aboriginal Flag",           price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/ABORIGINAL-FLAG.jpg/:/rs=w:1280,h:192",           variantId:"" },
+  { id:3,   name:"Akatsuki",                  price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/AKATSUKI.jpg/:/rs=w:1280,h:192",                   variantId:"52125011378459" },
+  { id:4,   name:"AMG",                       price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/AMG.jpg/:/rs=w:1280,h:192",                        variantId:"52125011411227" },
+  { id:5,   name:"Anime",                     price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/ANIME.jpg/:/rs=w:1280,h:192",                      variantId:"" },
+  { id:6,   name:"Anti Social",               price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/ANTI-SOCIAL.jpg/:/rs=w:1280,h:192",               variantId:"" },
+  { id:7,   name:"Audi",                      price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/AUDI.jpg/:/rs=w:1280,h:192",                       variantId:"" },
+  { id:8,   name:"Aus Flag",                  price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/AUSFLAG.jpg/:/rs=w:1280,h:192",                    variantId:"" },
+  { id:9,   name:"Bandana Black",             price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/BANDANA-BLVCK.jpg/:/rs=w:1280,h:192",             variantId:"" },
+  { id:10,  name:"Bandana White",             price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/BANDANA-WHITE.jpg/:/rs=w:1280,h:192",             variantId:"" },
+  { id:11,  name:"Bingtang",                  price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/BINGTANG.jpg/:/rs=w:1280,h:192",                   variantId:"" },
+  { id:12,  name:"Blessed",                   price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/BLESSED.jpg/:/rs=w:1280,h:192",                    variantId:"52125011443995" },
+  { id:13,  name:"BMW M3",                    price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/BMW-M3.jpg/:/rs=w:1280,h:192",                     variantId:"" },
+  { id:14,  name:"Bush Chook",                price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/BUSH-CHOOK.jpg/:/rs=w:1280,h:192",                variantId:"" },
+  { id:15,  name:"Camo Army",                 price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CAMO-ARMY.jpg/:/rs=w:1280,h:192",                 variantId:"" },
+  { id:16,  name:"Camo Pink Purple",          price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CAMO-PINK-PURP.jpg/:/rs=w:1280,h:192",           variantId:"" },
+  { id:17,  name:"Camo Snow",                 price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CAMO-SNOW.jpg/:/rs=w:1280,h:192",                 variantId:"" },
+  { id:18,  name:"Camo Urban",                price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CAMO-URBAN.jpg/:/rs=w:1280,h:192",                variantId:"" },
+  { id:19,  name:"Carbon Fibre",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CARBON-FIBRE.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:20,  name:"Cash Bling",                price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CASH-BLING.jpg/:/rs=w:1280,h:192",                variantId:"" },
+  { id:21,  name:"Centrelink",                price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CENTRELINK.jpg/:/rs=w:1280,h:192",                variantId:"" },
+  { id:22,  name:"Chicano Bliss",             price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CHICANO-BLISS.jpg/:/rs=w:1280,h:192",             variantId:"" },
+  { id:23,  name:"Chicano Dark",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/CHICANO-DARK.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:24,  name:"Dinan",                     price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/DINAN.jpg/:/rs=w:1280,h:192",                     variantId:"" },
+  { id:25,  name:"Doodles B&W",               price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/DOODLES-B%26W.jpg/:/rs=w:1280,h:192",            variantId:"" },
+  { id:26,  name:"Doodles W&B",               price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/DOODLES-W%26B.jpg/:/rs=w:1280,h:192",            variantId:"" },
+  { id:27,  name:"Eagles",                    price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/EAGLES.jpg/:/rs=w:1280,h:192",                    variantId:"" },
+  { id:28,  name:"F Can",                     price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/F-CAN.jpg/:/rs=w:1280,h:192",                     variantId:"" },
+  { id:29,  name:"Focal",                     price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/FOCAL.jpg/:/rs=w:1280,h:192",                     variantId:"" },
+  { id:30,  name:"Ford",                      price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/FORD.jpg/:/rs=w:1280,h:192",                      variantId:"" },
+  { id:31,  name:"Freo Dockers",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/FREO-DOCKERS.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:32,  name:"Gangsta Edition",           price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/GANGSTA-EDITION.jpg/:/rs=w:1280,h:192",           variantId:"" },
+  { id:33,  name:"Geedup Black",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/GEEDUP-BLACK.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:34,  name:"Geedup White",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/GEEDUP-WHITE.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:35,  name:"Graffiti Black",            price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/GRAFFITI-BLACK.jpg/:/rs=w:1280,h:192",            variantId:"" },
+  { id:36,  name:"Gran Turismo",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/GRAN-TURISMO.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:37,  name:"Ground Zero",               price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/GROUND-ZERO.jpg/:/rs=w:1280,h:192",               variantId:"" },
+  { id:38,  name:"Hard Tuned",                price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HARD-TUNED.jpg/:/rs=w:1280,h:192",                variantId:"" },
+  { id:39,  name:"Hello Bad Kitty",           price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HELLO-BAD-KITTY.jpg/:/rs=w:1280,h:192",           variantId:"" },
+  { id:40,  name:"Hello Kitty",               price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HELLO-KITTY.jpg/:/rs=w:1280,h:192",               variantId:"" },
+  { id:41,  name:"Hip Hop Gray",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HIP-HOP-GRAYpdf.jpg/:/rs=w:1280,h:192",          variantId:"" },
+  { id:42,  name:"Hip Hop R&B Gray",          price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HIP-HOP-R%26B-GRAY.jpg/:/rs=w:1280,h:192",       variantId:"" },
+  { id:43,  name:"Hip Hop",                   price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HIP-HOP.jpg/:/rs=w:1280,h:192",                   variantId:"" },
+  { id:44,  name:"Holden Commodore",          price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HOLDEN-COMMODORE.jpg/:/rs=w:1280,h:192",          variantId:"" },
+  { id:45,  name:"Holden",                    price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HOLDEN.jpg/:/rs=w:1280,h:192",                    variantId:"" },
+  { id:46,  name:"Honda Accord",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HONDA-ACCORD.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:47,  name:"Honda Civic",               price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HONDA-CIVIC.jpg/:/rs=w:1280,h:192",               variantId:"" },
+  { id:48,  name:"Honda Racing",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HONDA-RACING.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:49,  name:"Honda Type R Black",        price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HONDA-TYPE-R-BLACK.jpg/:/rs=w:1280,h:192",        variantId:"" },
+  { id:50,  name:"Honda Type R Red Black",    price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HONDA-TYPE-R-RED-BLACK.jpg/:/rs=w:1280,h:192",    variantId:"" },
+  { id:51,  name:"Honda Type R Red",          price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HONDA-TYPE-R-RED.jpg/:/rs=w:1280,h:192",          variantId:"" },
+  { id:52,  name:"Honda Type R White",        price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HONDA-TYPE-R-WHITE.jpg/:/rs=w:1280,h:192",        variantId:"" },
+  { id:53,  name:"Honda VTEC",                price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/HONDA-VTEC.jpg/:/rs=w:1280,h:192",                variantId:"" },
+  { id:54,  name:"Jap Clouds Asuki",          price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/JAP-CLOUDS-ASUKI.jpg/:/rs=w:1280,h:192",          variantId:"" },
+  { id:55,  name:"JDM B&W",                   price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/JDM-B%26W.jpg/:/rs=w:1280,h:192",                 variantId:"" },
+  { id:56,  name:"JDM Original",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/JDM-ORIGINAL.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:57,  name:"JDM Osaka",                 price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/JDM-OSAKA.jpg/:/rs=w:1280,h:192",                 variantId:"" },
+  { id:58,  name:"JDM Purple Blue",           price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/JDM-PURP-BLUE.jpg/:/rs=w:1280,h:192",             variantId:"" },
+  { id:59,  name:"Jimmys Gonna Send It",      price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/JIMMYS-GONNA-SEND-IT.jpg/:/rs=w:1280,h:192",      variantId:"" },
+  { id:60,  name:"JL Audio",                  price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/JL-AUDIO.jpg/:/rs=w:1280,h:192",                  variantId:"" },
+  { id:61,  name:"Krusty",                    price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/KRUSTY.jpg/:/rs=w:1280,h:192",                    variantId:"" },
+  { id:62,  name:"Lexus",                     price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LEXUS.jpg/:/rs=w:1280,h:192",                     variantId:"" },
+  { id:63,  name:"LV B&W",                    price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-B%26W.jpg/:/rs=w:1280,h:192",                  variantId:"" },
+  { id:64,  name:"LV Bling",                  price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-BLING.jpg/:/rs=w:1280,h:192",                  variantId:"" },
+  { id:65,  name:"LV Gray Black",             price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-GRAY-BLACK.jpg/:/rs=w:1280,h:192",             variantId:"" },
+  { id:66,  name:"LV Original",               price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-ORIGINAL.jpg/:/rs=w:1280,h:192",               variantId:"" },
+  { id:67,  name:"LV Pink Pin",               price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-PINK-PIN.jpg/:/rs=w:1280,h:192",               variantId:"" },
+  { id:68,  name:"LV Pink",                   price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-PINK.jpg/:/rs=w:1280,h:192",                   variantId:"" },
+  { id:69,  name:"LV Purple Pin",             price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-PURPlE-PIN.jpg/:/rs=w:1280,h:192",             variantId:"" },
+  { id:70,  name:"LV Purple",                 price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-PURPLE.jpg/:/rs=w:1280,h:192",                 variantId:"" },
+  { id:71,  name:"LV Red",                    price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/LV-RED.jpg/:/rs=w:1280,h:192",                    variantId:"" },
+  { id:72,  name:"Mario",                     price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/MARIO.jpg/:/rs=w:1280,h:192",                     variantId:"" },
+  { id:73,  name:"Metal Mulisha",             price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/METAL-MULISHA.jpg/:/rs=w:1280,h:192",             variantId:"" },
+  { id:74,  name:"Mugen Power",               price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/MUGEN-POWER.jpg/:/rs=w:1280,h:192",               variantId:"" },
+  { id:75,  name:"N Performance",             price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/N-PERFORMANCE.jpg/:/rs=w:1280,h:192",             variantId:"" },
+  { id:76,  name:"Nismo",                     price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/NISMO.jpg/:/rs=w:1280,h:192",                     variantId:"" },
+  { id:77,  name:"Not Like Us Black",         price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/NOT-LIKE-US-BLACK.jpg/:/rs=w:1280,h:192",         variantId:"" },
+  { id:78,  name:"Not Like Us Pink",          price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/NOT-LIKE-US-PINK.jpg/:/rs=w:1280,h:192",          variantId:"" },
+  { id:79,  name:"Not Like Us Purple",        price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/NOT-LIKE-US-PURPLE.jpg/:/rs=w:1280,h:192",        variantId:"" },
+  { id:80,  name:"Not Like Us W&B",           price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/NOT-LIKE-US-W%26B.jpg/:/rs=w:1280,h:192",         variantId:"" },
+  { id:81,  name:"Notorious",                 price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/NOTORIOUS.jpg/:/rs=w:1280,h:192",                 variantId:"" },
+  { id:82,  name:"Pink Skulls",               price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/PINK-SKULLS.jpg/:/rs=w:1280,h:192",               variantId:"" },
+  { id:83,  name:"Playboy Pink",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/PLAYBOY-PINK.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:84,  name:"Playboy Teal",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/PLAYBOY-TEAL.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:85,  name:"Rockford Fosgate",          price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/ROCKFORD-FOSGATE.jpg/:/rs=w:1280,h:192",          variantId:"" },
+  { id:86,  name:"Speed Hunters Black Jap",   price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SPEED-HUNTERS-BLACK-JAP.jpg/:/rs=w:1280,h:192",   variantId:"" },
+  { id:87,  name:"Speed Hunters Pink",        price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SPEED-HUNTERS-PINK.jpg/:/rs=w:1280,h:192",        variantId:"" },
+  { id:88,  name:"Speed Hunters Purple",      price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SPEED-HUNTERS-PURPLE.jpg/:/rs=w:1280,h:192",      variantId:"" },
+  { id:89,  name:"Speed Hunters Red Jap",     price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SPEED-HUNTERS-RED-JAP.jpg/:/rs=w:1280,h:192",     variantId:"" },
+  { id:90,  name:"Spoon",                     price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SPOON.jpg/:/rs=w:1280,h:192",                     variantId:"" },
+  { id:91,  name:"Squid Games",               price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SQUID-GAMES.jpg/:/rs=w:1280,h:192",               variantId:"" },
+  { id:92,  name:"Subaru WRX",                price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SUBARU-WRX.jpg/:/rs=w:1280,h:192",                variantId:"" },
+  { id:93,  name:"Subieflow",                 price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SUBIEFLOW.jpg/:/rs=w:1280,h:192",                 variantId:"" },
+  { id:94,  name:"Supreme Grey",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/SUPREME-GREY.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:95,  name:"Turbo Gray",                price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/TURBO-GRAY.jpg/:/rs=w:1280,h:192",                variantId:"" },
+  { id:96,  name:"Turbo Pink",                price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/TURBO-PINK.jpg/:/rs=w:1280,h:192",                variantId:"" },
+  { id:97,  name:"Turbo Purple",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/TURBO-PURPLE.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:98,  name:"Versace Black",             price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/VERSACE-BLACK.jpg/:/rs=w:1280,h:192",             variantId:"" },
+  { id:99,  name:"Versace Gold",              price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/VERSACE-GOLD.jpg/:/rs=w:1280,h:192",              variantId:"" },
+  { id:100, name:"Wolf Lion",                 price:"$119.90", img:"https://img1.wsimg.com/isteam/ip/d3789113-c255-44a2-9a0d-8d5345932e5a/WOLF-LION.jpg/:/rs=w:1280,h:192",                 variantId:"" }
+];
+
+function cartURL(variantId) { return SHOPIFY_BASE + variantId; }
+
+// ── CAR COLOUR ──
+let carModel = null;
+function setCarColour(btn) {
+  document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('colourName').textContent = btn.dataset.name;
+  if (!carModel) return;
+  const col = new THREE.Color(btn.dataset.colour);
+  carModel.traverse(child => {
+    if (child.isMesh) {
+      const mats = Array.isArray(child.material) ? child.material : [child.material];
+      mats.forEach(mat => {
+        if (mat.name === 'Kuzov_Main_color') {
+              mat.color.set(col);
+              mat.envMap=null; mat.map=null; mat.normalMap=null;
+              mat.aoMap=null; mat.roughnessMap=null; mat.metalnessMap=null;
+              mat.needsUpdate=true;
+            }
+      });
+    }
+  });
+}
+
+// ── THREE SETUP ──
+const canvas = document.getElementById('canvas3d');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+renderer.shadowMap.enabled = true;
+renderer.setClearColor(0x050010, 1);
+
+const scene = new THREE.Scene();
+
+// ── BACKGROUND — PNG as scene.background + backup plane ──
+const BG_URL = 'https://green-night-47f9.karlitojemal.workers.dev/miami-bg.png';
+renderer.setClearColor(0x050010, 1);
+new THREE.TextureLoader().load(BG_URL, tex => {
+  tex.encoding = THREE.sRGBEncoding;
+  tex.needsUpdate = true;
+  // Remove background plane approach — just use scene.background
+  scene.background = tex;
+  // Remove old background plane if exists
+  const old = scene.getObjectByName('bgPlane');
+  if(old) scene.remove(old);
+  // Add a properly sized background plane
+  const aspect = 16/9; // miami image is landscape 16:9
+  const bgPlane = new THREE.Mesh(
+    new THREE.PlaneGeometry(aspect * 23.76, 23.76),
+    new THREE.MeshBasicMaterial({ map: tex, depthWrite: false, depthTest: true, side: THREE.FrontSide })
+  );
+  bgPlane.name = 'bgPlane';
+  bgPlane.position.set(-2.13, 3.034, -28);
+  bgPlane.material.opacity = 0.525;
+  bgPlane.material.transparent = true;
+  bgPlane.renderOrder = -999;
+  scene.add(bgPlane);
+  // Remove scene.background so only the plane shows (avoids double/zoom)
+  scene.background = null;
+  renderer.setClearColor(0x000000, 1);
+});
+
+const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.01, 100);
+
+// ── LIGHTING ──
+scene.add(new THREE.AmbientLight(0x220a30, 0.4));
+const keyLight = new THREE.DirectionalLight(0xffffff, 1.5);
+keyLight.position.set(3, 8, 4); keyLight.castShadow = true; scene.add(keyLight);
+const fillLight = new THREE.DirectionalLight(0xff4488, 0.3);
+fillLight.position.set(-5, 4, 2); scene.add(fillLight);
+const fillLight2 = new THREE.DirectionalLight(0x4488ff, 0.2);
+fillLight2.position.set(5, 4, 2); scene.add(fillLight2);
+const rimLight = new THREE.DirectionalLight(0xff8800, 0.5);
+rimLight.position.set(0, 3, -8); scene.add(rimLight);
+const spot1 = new THREE.PointLight(0xffffff, 2.0, 6);
+spot1.position.set(0, 5, 0); scene.add(spot1);
+scene.add(new THREE.HemisphereLight(0x220a30, 0x111105, 0.3));
+
+// ── ORBIT CONTROLS — rotate carGroup only, camera stays fixed ──
+let isDragging=false, isRightDragging=false, prevMouse={x:0,y:0};
+let spherical={theta:0, phi:Math.PI/5.0, radius:2.08};
+let target=new THREE.Vector3(0,0.48,0);
+let carGroup = new THREE.Group(); scene.add(carGroup);
+let autoRotateSpeed = 0.0015;
+
+function updateCamera() {
+  camera.position.x=target.x+spherical.radius*Math.sin(spherical.phi)*Math.sin(spherical.theta);
+  camera.position.y=target.y+spherical.radius*Math.cos(spherical.phi);
+  camera.position.z=target.z+spherical.radius*Math.sin(spherical.phi)*Math.cos(spherical.theta);
+  camera.lookAt(target);
+}
+
+canvas.addEventListener('mousedown', e => {
+  if(e.button===2) isRightDragging=true; else isDragging=true;
+  autoRotateSpeed=0;
+  prevMouse={x:e.clientX,y:e.clientY};
+});
+canvas.addEventListener('mousemove', e => {
+  if(!isDragging) return;
+  const dx=e.clientX-prevMouse.x, dy=e.clientY-prevMouse.y;
+  if(isDragging){ carGroup.rotation.y -= dx*0.008; spherical.phi=Math.max(0.25,Math.min(Math.PI*0.48,spherical.phi-dy*0.006)); updateCamera(); }
+  prevMouse={x:e.clientX,y:e.clientY};
+});
+window.addEventListener('mouseup',()=>{ isDragging=false; isRightDragging=false; setTimeout(()=>{autoRotateSpeed=0.0015;},3000); });
+canvas.addEventListener('wheel',e=>{ spherical.radius=Math.max(0.8,Math.min(8,spherical.radius+e.deltaY*0.005)); updateCamera(); e.preventDefault(); },{passive:false});
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
+let lastTouch=null, lastPinchDist=null;
+canvas.addEventListener('touchstart',e=>{ autoRotateSpeed=0; if(e.touches.length===1) lastTouch={x:e.touches[0].clientX,y:e.touches[0].clientY}; if(e.touches.length===2) lastPinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); e.preventDefault(); },{passive:false});
+canvas.addEventListener('touchmove',e=>{ if(e.touches.length===1&&lastTouch){ const dx=e.touches[0].clientX-lastTouch.x,dy=e.touches[0].clientY-lastTouch.y; carGroup.rotation.y-=dx*0.01; spherical.phi=Math.max(0.25,Math.min(Math.PI*0.48,spherical.phi-dy*0.008)); lastTouch={x:e.touches[0].clientX,y:e.touches[0].clientY}; updateCamera(); } if(e.touches.length===2){ const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); if(lastPinchDist) spherical.radius=Math.max(0.8,Math.min(8,spherical.radius-(d-lastPinchDist)*0.015)); lastPinchDist=d; updateCamera(); } e.preventDefault(); },{passive:false});
+canvas.addEventListener('touchend',()=>{ lastTouch=null; lastPinchDist=null; setTimeout(()=>{autoRotateSpeed=0.0015;},3000); });
+
+// ── BANNER TEXTURES ──
+let bannerPlane=null, rearBannerPlane=null, currentRearBanner=null;
+
+function loadBannerTexture(url, callback) {
+  const loader=new THREE.TextureLoader(); loader.crossOrigin='anonymous';
+  loader.load(url, tex=>{ tex.encoding=THREE.sRGBEncoding; callback(tex); });
+}
+
+function makeBannerGeoFlipped(W,H,curveDrop){
+  const segsX=40,segsY=4,positions=[],uvs=[],indices=[];
+  const cornerTaper = 0.07;
+  for(let iy=0;iy<=segsY;iy++){for(let ix=0;ix<=segsX;ix++){
+    const u=ix/segsX,v=iy/segsY;
+    const topness = v;
+    const edgeness = Math.abs(u - 0.5) * 2;
+    const taper = topness * edgeness * cornerTaper;
+    const x=(u-0.5)*W*(1-taper);
+    const y=(v-0.5)*H;
+    const z=curveDrop*(1-4*u*(1-u));
+    const yArc=curveDrop*0.8*(4*u*(1-u));
+    positions.push(x,y+yArc,z);uvs.push(u,1-v);
+  }}
+  for(let iy=0;iy<segsY;iy++){for(let ix=0;ix<segsX;ix++){const a=iy*(segsX+1)+ix,b=a+1,c=a+segsX+1,d=c+1;indices.push(a,c,b);indices.push(b,c,d);}}
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));geo.setIndex(indices);geo.computeVertexNormals();return geo;
+}
+
+function makeBannerGeo(W,H,curveDrop,taper){
+  taper = taper !== undefined ? taper : 0.07;
+  const segsX=40,segsY=4,positions=[],uvs=[],indices=[];
+  for(let iy=0;iy<=segsY;iy++){for(let ix=0;ix<=segsX;ix++){
+    const u=ix/segsX,v=iy/segsY;
+    const topness = v;
+    const edgeness = Math.abs(u - 0.5) * 2;
+    const t = topness * edgeness * taper;
+    const x=(u-0.5)*W * (1 - t);
+    const y=(v-0.5)*H;
+    const z=-curveDrop*(1-4*u*(1-u));
+    const yArc=-curveDrop*0.8*(4*u*(1-u));
+    positions.push(x,y+yArc,z);uvs.push(u,1-v);
+  }}
+  for(let iy=0;iy<segsY;iy++){for(let ix=0;ix<segsX;ix++){const a=iy*(segsX+1)+ix,b=a+1,c=a+segsX+1,d=c+1;indices.push(a,c,b);indices.push(b,c,d);}}
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));geo.setIndex(indices);geo.computeVertexNormals();return geo;
+}
+
+function applyBannerToWindshield(texture) {
+  if(bannerPlane){carGroup.remove(bannerPlane);bannerPlane.geometry.dispose();bannerPlane.material.dispose();bannerPlane=null;}
+  texture.flipY=false;texture.repeat.set(1,1);texture.offset.set(0,0);
+  texture.wrapS=THREE.ClampToEdgeWrapping;texture.wrapT=THREE.ClampToEdgeWrapping;texture.needsUpdate=true;
+  const mat=new THREE.MeshBasicMaterial({map:texture,transparent:true,opacity:0.96,depthWrite:false,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});
+  bannerPlane=new THREE.Mesh(makeBannerGeo(0.90,0.127,0.045),mat);
+  bannerPlane.position.set(0,0.987,0.257);
+  bannerPlane.rotation.x=THREE.MathUtils.degToRad(-67);
+  carGroup.add(bannerPlane);
+}
+
+function applyBannerToRearWindow(texture) {
+  if(rearBannerPlane){carGroup.remove(rearBannerPlane);rearBannerPlane.geometry.dispose();rearBannerPlane.material.dispose();rearBannerPlane=null;}
+  if(!texture) return;
+  texture.flipY=false;texture.repeat.set(1,1);texture.offset.set(0,0);
+  texture.wrapS=THREE.ClampToEdgeWrapping;texture.wrapT=THREE.ClampToEdgeWrapping;texture.needsUpdate=true;
+  const mat=new THREE.MeshBasicMaterial({map:texture,transparent:true,opacity:0.93,side:THREE.DoubleSide,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});
+  rearBannerPlane=new THREE.Mesh(makeBannerGeo(0.8502,0.1200,0.055,0.04),mat);
+  rearBannerPlane.position.set(0,1.0054,-0.9206);
+  rearBannerPlane.rotation.x=THREE.MathUtils.degToRad(69);
+  rearBannerPlane.rotation.y=THREE.MathUtils.degToRad(180);
+  rearBannerPlane.renderOrder=999;
+  carGroup.add(rearBannerPlane);
+}
+
+// ── MIAMI SCENE OBJECTS ──
+function buildMiamiScene() {
+  // ── DARK GREY STONE FLOOR ──
+  const floorC = document.createElement('canvas'); floorC.width=1024; floorC.height=1024;
+  const fCtx = floorC.getContext('2d');
+  // Dark base
+  fCtx.fillStyle = '#1e1e1e'; fCtx.fillRect(0,0,1024,1024);
+  // Stone texture — noise grain
+  for(let i=0;i<80000;i++){
+    const x=Math.random()*1024, y=Math.random()*1024;
+    const v=Math.floor(Math.random()*30);
+    fCtx.fillStyle=`rgba(${v+20},${v+20},${v+20},0.15)`;
+    fCtx.fillRect(x,y,2,2);
+  }
+  // Stone tile lines
+  fCtx.strokeStyle='rgba(10,10,10,0.8)'; fCtx.lineWidth=3;
+  [0,512,1024].forEach(x=>{ fCtx.beginPath(); fCtx.moveTo(x,0); fCtx.lineTo(x,1024); fCtx.stroke(); });
+  [0,512,1024].forEach(y=>{ fCtx.beginPath(); fCtx.moveTo(0,y); fCtx.lineTo(1024,y); fCtx.stroke(); });
+  // Subtle highlights on tile edges
+  fCtx.strokeStyle='rgba(60,60,60,0.3)'; fCtx.lineWidth=1;
+  [514,516].forEach(x=>{ fCtx.beginPath(); fCtx.moveTo(x,0); fCtx.lineTo(x,1024); fCtx.stroke(); });
+  [514,516].forEach(y=>{ fCtx.beginPath(); fCtx.moveTo(0,y); fCtx.lineTo(1024,y); fCtx.stroke(); });
+  const floorTex = new THREE.CanvasTexture(floorC);
+  floorTex.repeat.set(4,4); floorTex.wrapS=floorTex.wrapT=THREE.RepeatWrapping;
+
+  // Floor mesh
+  const floorMesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(30,20),
+    new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.9, metalness: 0.0, color: new THREE.Color(0x333333) })
+  );
+  floorMesh.rotation.x=-Math.PI/2;
+  floorMesh.position.set(0,0,0);
+  floorMesh.receiveShadow=true;
+  scene.add(floorMesh);
+
+  // Car reflection — flipped ghost of car under the floor
+  window._floorY = 0;
+}
+buildMiamiScene();
+
+// ── LOAD MODEL ──
+function loadGLTFLoader(callback) {
+  const s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
+  s.onload=callback; document.head.appendChild(s);
+}
+
+function loadModel() {
+  const MODEL_URL='https://green-night-47f9.karlitojemal.workers.dev/2020_bmw_m340i_xdrive.glb';
+  const loader=new THREE.GLTFLoader();
+  loader.load(MODEL_URL, gltf=>{
+    const model=gltf.scene;
+    const box=new THREE.Box3().setFromObject(model);
+    const centre=box.getCenter(new THREE.Vector3());
+    const size=box.getSize(new THREE.Vector3());
+    const scale=3.5/Math.max(size.x,size.y,size.z);
+    model.scale.setScalar(scale);
+    model.position.sub(centre.multiplyScalar(scale));
+    // Sit car exactly on floor (y=0)
+    const box2=new THREE.Box3().setFromObject(model);
+    model.position.y -= box2.min.y;
+    // Keep scene.background (PNG texture loaded earlier)
+    model.traverse(child=>{
+      if(child.isMesh){
+        child.castShadow=true; child.receiveShadow=true;
+        const mats=Array.isArray(child.material)?child.material:[child.material];
+        mats.forEach(mat=>{
+          if(mat.envMap){mat.envMap=null;mat.needsUpdate=true;}
+          if(mat.name==='Kuzov_Main_color'){mat.color=new THREE.Color(0x0d0d14);mat.roughness=0.15;mat.metalness=0.9;mat.needsUpdate=true;}
+// Tint all glass/transparent materials dark
+          if(mat.transparent || mat.opacity < 1.0 || 
+             mat.name.toLowerCase().indexOf('glass')!==-1 ||
+             mat.name.toLowerCase().indexOf('window')!==-1 ||
+             mat.name.toLowerCase().indexOf('wind')!==-1 ||
+             mat.name.toLowerCase().indexOf('screen')!==-1 ||
+             mat.name.toLowerCase().indexOf('crystal')!==-1) {
+            if(mat.name !== 'Kuzov_Main_color') {
+              mat.color = new THREE.Color(0x050505);
+              mat.transparent = true;
+              mat.opacity = 0.82;
+              mat.depthWrite = false;
+              mat.needsUpdate = true;
+            }
+          }
+        });
+      }
+    });
+    carGroup.add(model); carModel=model; window._paintMat=null;
+    carGroup.position.z = -1.3;  // push car toward background
+
+
+
+    // Force black tint on ALL meshes except paint and wheels
+    model.traverse(function(child){
+      if(child.isMesh){
+        var mats = Array.isArray(child.material) ? child.material : [child.material];
+        mats.forEach(function(mat){
+          if(mat.name !== 'Kuzov_Main_color' && mat.transparent){
+            mat.color = new THREE.Color(0x000000);
+            mat.opacity = 0.92;
+            mat.depthWrite = false;
+            mat.needsUpdate = true;
+          }
+        });
+      }
+    });
+
+    // Reflection — flipped clone mirrored below floor (Y=0 is floor level)
+    const reflClone = model.clone();
+    reflClone.scale.set(scale, -scale, scale);
+    // Mirror position: if car top of wheels is at model.position.y above floor,
+    // reflection bottom should start at floor going down
+    reflClone.position.copy(model.position);
+    reflClone.position.y = 0; // reflection starts at floor
+    reflClone.traverse(child=>{
+      if(child.isMesh){
+        const mats=Array.isArray(child.material)?child.material.map(m=>m.clone()):[child.material.clone()];
+        (Array.isArray(mats)?mats:[mats]).forEach(mat=>{
+          mat.transparent=true; mat.opacity=0.15; mat.depthWrite=false;
+        });
+        child.material=Array.isArray(child.material)?mats:mats[0];
+      }
+    });
+    carGroup.add(reflClone);
+    // Set default car colour to white
+    if(carModel){
+      carModel.traverse(child=>{
+        if(child.isMesh){
+          const mats=Array.isArray(child.material)?child.material:[child.material];
+          mats.forEach(mat=>{
+            if(mat.name==='Kuzov_Main_color'){
+              mat.color.setRGB(1,1,1);
+              mat.roughness=0.4;
+              mat.needsUpdate=true;
+            }
+          });
+        }
+      });
+    }
+    // Default front banner: BMW M3
+    const bmwBanner = BANNERS.find(b=>b.id===13);
+    if(bmwBanner) loadBannerTexture(bmwBanner.img,tex=>applyBannerToWindshield(tex));
+    loadBannerTexture(BANNERS[0].img,tex=>applyBannerToRearWindow(tex));
+    document.getElementById('loadingScreen').classList.add('hidden');
+    setTimeout(()=>document.getElementById('loadingScreen').style.display='none',600);
+  },
+  progress=>{if(progress.total>0) document.getElementById('loadingPct').textContent=Math.round(progress.loaded/progress.total*100)+'%';},
+  err=>{console.error(err);document.getElementById('loadingPct').textContent='⚠';});
+}
+
+// ── RESIZE ──
+function onResize(){
+  const w=canvas.clientWidth,h=canvas.clientHeight;
+  renderer.setSize(w,h,false);
+  camera.aspect=w/h;
+  camera.updateProjectionMatrix();
+  // Match scroll-content top to actual canvas height
+  const sc = document.querySelector('.scroll-content');
+  if(sc) sc.style.marginTop = document.querySelector('.right-canvas').offsetHeight + 'px';
+}
+window.addEventListener('resize',onResize); onResize(); updateCamera();
+
+// ── RENDER LOOP ──
+function animate(){requestAnimationFrame(animate); carGroup.rotation.y+=autoRotateSpeed; renderer.render(scene,camera);}
+
+// ── UI ──
+function updateVisuals(banner) {
+  if(!banner) return;
+  if(frontActive) {
+    frontBanner = banner;
+    loadBannerTexture(banner.img, tex=>applyBannerToWindshield(tex));
+  }
+  updateToggleUI();
+  updateCTA();
+}
+
+// Track which windows are active and which banner each has selected
+let frontActive  = true;
+let rearActive   = false;
+let frontBanner  = null;
+let rearBanner   = null;
+let activeTarget = 'front'; // which window clicks currently apply to
+
+function toggleWindow(which){ playClick(); if(navigator.vibrate) navigator.vibrate(30);
+  if(which==='front'){
+    if(!frontActive){
+      // Turn on
+      frontActive = true;
+      activeTarget = 'front';
+      if(frontBanner) loadBannerTexture(frontBanner.img, tex=>applyBannerToWindshield(tex));
+    } else if(rearActive) {
+      // Turn off (only if rear is also on)
+      frontActive = false;
+      activeTarget = 'rear';
+      applyBannerToWindshield(null);
+    }
+    // Can't turn off if it's the only one active
+  } else {
+    if(!rearActive){
+      // Turn on
+      rearActive = true;
+      activeTarget = 'rear';
+      // Default rear to Aus Flag if nothing selected yet
+      if(!rearBanner) rearBanner = BANNERS.find(b=>b.id===8) || BANNERS[1];
+      if(rearBanner) loadBannerTexture(rearBanner.img, tex=>applyBannerToRearWindow(tex));
+    } else if(frontActive) {
+      // Turn off (only if front is also on)
+      rearActive = false;
+      activeTarget = 'front';
+      applyBannerToRearWindow(null);
+      rearBanner = null;
+    }
+    // Can't turn off if it's the only one active
+  }
+  updateToggleUI();
+  updateCTA();
+  // Show/hide ticket price
+  var _isBoth = frontActive && rearActive;
+  var _pn = document.getElementById('priceNormal');
+  var _pt = document.getElementById('priceTicket');
+  if(_pn) { if(_isBoth) { _pn.classList.add('hidden'); } else { _pn.classList.remove('hidden'); } }
+  if(_pt) { if(_isBoth) { _pt.classList.add('visible'); } else { _pt.classList.remove('visible'); } }
+}
+
+function updateToggleUI(){
+  const fb = document.getElementById('toggleFront');
+  const rb = document.getElementById('toggleRear');
+  const frontTarget = activeTarget === 'front';
+  const rearTarget  = activeTarget === 'rear';
+
+  fb.style.border     = frontActive ? '1px solid var(--pink)'         : '1px solid rgba(255,0,128,0.2)';
+  fb.style.background = frontActive ? 'rgba(255,0,128,0.15)'          : 'transparent';
+  fb.style.color      = frontActive ? '#fff'                           : 'var(--muted)';
+  fb.style.boxShadow  = frontTarget && frontActive ? '0 0 18px var(--pink-glow), inset 0 0 8px rgba(255,0,128,0.2)' : frontActive ? '0 0 8px var(--pink-glow)' : 'none';
+  fb.style.outline    = frontTarget && frontActive ? '2px solid var(--pink)' : 'none';
+  fb.textContent      = frontTarget && frontActive && rearActive ? '◆ FRONT  ✦' : '◆ FRONT';
+
+  rb.style.border     = rearActive  ? '1px solid var(--cyan)'         : '1px solid rgba(0,238,255,0.2)';
+  rb.style.background = rearActive  ? 'rgba(0,238,255,0.1)'           : 'transparent';
+  rb.style.color      = rearActive  ? 'var(--cyan)'                   : 'var(--muted)';
+  rb.style.boxShadow  = rearTarget  && rearActive  ? '0 0 18px rgba(0,238,255,0.4), inset 0 0 8px rgba(0,238,255,0.15)' : rearActive ? '0 0 8px rgba(0,238,255,0.25)' : 'none';
+  rb.style.outline    = rearTarget  && rearActive  ? '2px solid var(--cyan)'  : 'none';
+  rb.textContent      = rearTarget  && rearActive  && frontActive ? '◆ REAR  ✦' : '◆ REAR';
+
+  // Update card highlights — pink for front, cyan for rear, both if both active
+  document.querySelectorAll('#bannerGrid .banner-card').forEach(card => {
+    const bid = parseInt(card.dataset.id);
+    const isFrontSel = frontActive && frontBanner && frontBanner.id === bid;
+    const isRearSel  = rearActive  && rearBanner  && rearBanner.id  === bid;
+    card.classList.toggle('active',      isFrontSel);
+    card.classList.toggle('rear-active', isRearSel && !isFrontSel);
+  });
+}
+
+function updateCTA(){
+  const btn   = document.getElementById('ctaBtn');
+  const name  = document.getElementById('ctaName');
+  const price = document.getElementById('ctaPrice');
+  const both  = frontActive && rearActive;
+
+  if(both){
+    // Bundle selected
+    if(price) price.innerHTML = '$199.90 <span>AUD</span>';
+    btn.textContent     = 'ADD TO CART';
+    btn.onclick         = handleBothBuy;
+    btn.href            = '#';
+    btn.removeAttribute('target');
+    var _pn = document.getElementById('priceNormal');
+    var _pt = document.getElementById('priceTicket');
+    if(_pn) _pn.classList.add('hidden');
+    if(_pt) _pt.classList.add('visible');
+    document.getElementById('ctaBlock').style.paddingBottom = '16px';
+  } else {
+    const b = frontActive ? frontBanner : rearBanner;
+    if(b){
+      // name hidden
+      price.innerHTML   = b.price + ' <span>AUD</span>';
+      btn.textContent   = 'ADD TO CART';
+      btn.href          = cartURL(b.variantId);
+      btn.onclick       = null;
+      btn.setAttribute('target','_blank');
+    }
+  }
+  // Show/hide savings bubble
+  
+}
+
+function handleBothBuy(e){
+  e.preventDefault();
+  const BUNDLE_VARIANT_ID = 'PLACEHOLDER_BUNDLE_VARIANT_ID';
+  if(BUNDLE_VARIANT_ID === 'PLACEHOLDER_BUNDLE_VARIANT_ID'){
+    alert('Bundle coming soon! Please add each item separately for now.');
+    return;
+  }
+  window.open(cartURL(BUNDLE_VARIANT_ID),'_blank');
+}
+
+function buildGrid(){
+  const grid=document.getElementById('bannerGrid');
+  BANNERS.forEach(banner=>{
+    const card=document.createElement('div');
+    card.className='banner-card'; card.dataset.id=banner.id;
+    card.innerHTML=`<div class="swatch-preview"><img src="${banner.img}" alt="${banner.name}"/></div><div class="card-name">${banner.name}</div><div class="card-price">${banner.price}</div><div class="card-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
+    card.addEventListener('click',()=>{
+      playClick();
+      if(navigator.vibrate) navigator.vibrate(15);
+      if(activeTarget === 'front' && frontActive){
+        frontBanner = banner;
+        loadBannerTexture(banner.img, tex=>applyBannerToWindshield(tex));
+      } else if(activeTarget === 'rear' && rearActive){
+        rearBanner = banner;
+        loadBannerTexture(banner.img, tex=>applyBannerToRearWindow(tex));
+      }
+      updateToggleUI();
+      updateCTA();
+    });
+    grid.appendChild(card);
+  });
+}
+
+
+loadGLTFLoader(()=>{loadModel();animate();});
+
+// Ensure DOM is fully ready before building grids
+function initUI(){
+  buildGrid();
+  frontBanner = BANNERS.find(b=>b.id===13) || BANNERS[0];  // BMW M3
+  rearBanner  = null;
+  updateToggleUI();
+  updateCTA();
+}
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', initUI);
+} else {
+  initUI();
+}
+
+// ── MUSIC TOGGLE ──
+var musicPlaying = false;
+function toggleMusic(){ playClick();
+  var audio  = document.getElementById('bgMusic');
+  var btn    = document.getElementById('musicBtn');
+  var panel  = document.getElementById('volumePanel');
+  if(musicPlaying){
+    audio.pause();
+    btn.textContent = '🎵';
+    btn.classList.remove('playing');
+    panel.classList.remove('visible');
+    musicPlaying = false;
+  } else {
+    audio.volume = document.getElementById('volumeSlider').value / 100;
+    audio.play().then(function(){
+      btn.textContent = '🔊';
+      btn.classList.add('playing');
+      panel.classList.add('visible');
+      panel.classList.remove('fade-out');
+      musicPlaying = true;
+      // Auto fade volume panel after 1.5s
+      clearTimeout(volumeFadeTimer);
+      volumeFadeTimer = setTimeout(function(){
+        panel.classList.add('fade-out');
+      }, 1000);
+    }).catch(function(){
+      console.log('Autoplay blocked');
+    });
+  }
+}
+var volumeFadeTimer = null;
+function setVolume(val){
+  var audio = document.getElementById('bgMusic');
+  audio.volume = val / 100;
+  // Reset fade timer on every interaction
+  var panel = document.getElementById('volumePanel');
+  if(panel) {
+    panel.classList.remove('fade-out');
+    clearTimeout(volumeFadeTimer);
+    volumeFadeTimer = setTimeout(function(){
+      panel.classList.add('fade-out');
+    }, 1000);
+  }
+}
+
+// ── CLICK SOUND — soft mouse click, muted when music is off ──
+var audioCtx = null;
+function playClick(){
+  if(!musicPlaying) return;  // muted when music is off
+  try {
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    var t = audioCtx.currentTime;
+
+    // Click down — soft noise burst
+    var bufSize = audioCtx.sampleRate * 0.004;
+    var buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+    var data = buf.getChannelData(0);
+    for(var i = 0; i < bufSize; i++){
+      data[i] = (Math.random() * 2 - 1) * (1 - i / bufSize);
+    }
+    var noise = audioCtx.createBufferSource();
+    noise.buffer = buf;
+
+    var filter = audioCtx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 2000;
+    filter.Q.value = 0.8;
+
+    var gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(0.138, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.02);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioCtx.destination);
+    noise.start(t);
+    noise.stop(t + 0.02);
+
+    // Click up — softer second pop
+    var buf2 = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+    var data2 = buf2.getChannelData(0);
+    for(var j = 0; j < bufSize; j++){
+      data2[j] = (Math.random() * 2 - 1) * (1 - j / bufSize);
+    }
+    var noise2 = audioCtx.createBufferSource();
+    noise2.buffer = buf2;
+
+    var filter2 = audioCtx.createBiquadFilter();
+    filter2.type = 'bandpass';
+    filter2.frequency.value = 1800;
+    filter2.Q.value = 0.8;
+
+    var gain2 = audioCtx.createGain();
+    gain2.gain.setValueAtTime(0.08, t + 0.025);
+    gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.045);
+
+    noise2.connect(filter2);
+    filter2.connect(gain2);
+    gain2.connect(audioCtx.destination);
+    noise2.start(t + 0.025);
+    noise2.stop(t + 0.045);
+
+  } catch(e){}
+}
+
+// ── FADE ROTATE HINT after 5s ──
+setTimeout(function(){
+  var hint = document.querySelector('.controls-hint');
+  if(hint) hint.classList.add('hidden');
+}, 5000);
+
+// ── AUTOPLAY MUSIC ──
+function startMusicAuto(){
+  var audio = document.getElementById('bgMusic');
+  var btn   = document.getElementById('musicBtn');
+  var panel = document.getElementById('volumePanel');
+  if(!musicPlaying){
+    audio.volume = 0.05;
+    audio.play().then(function(){
+      btn.textContent = '🔊';
+      btn.classList.add('playing');
+      panel.classList.add('visible');
+      panel.classList.remove('fade-out');
+      musicPlaying = true;
+      clearTimeout(volumeFadeTimer);
+      volumeFadeTimer = setTimeout(function(){
+        panel.classList.add('fade-out');
+      }, 1000);
+    }).catch(function(){
+      // Autoplay blocked — try on first interaction
+      document.addEventListener('click', function onFirstClick(){
+        startMusicAuto();
+        document.removeEventListener('click', onFirstClick);
+      }, { once: true });
+    });
+  }
+}
+// Music starts on user click only — autoplay disabled
+
+// ── COLOUR WHEEL ──
+(function(){
+  const wrap    = document.getElementById('colourWheelWrap');
+  const cvs     = document.getElementById('colourWheelCanvas');
+  const ctx     = cvs.getContext('2d');
+  const pointer = document.getElementById('colourWheelPointer');
+  const selected= document.getElementById('wheelSelected');
+  const W = cvs.width, H = cvs.height, cx = W/2, cy = H/2, r = W/2;
+
+  // Draw hue wheel — full spectrum ring with white/black gradient overlay
+  function drawWheel(){
+    // Draw full hue spectrum as pie slices
+    for(let angle=0; angle<360; angle++){
+      const start = (angle - 1) * Math.PI / 180;
+      const end   = (angle + 1) * Math.PI / 180;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, r, start, end);
+      ctx.closePath();
+      ctx.fillStyle = `hsl(${angle}, 100%, 50%)`;
+      ctx.fill();
+    }
+    // White radial overlay — centre is white, fades out to transparent
+    const white = ctx.createRadialGradient(cx,cy,0, cx,cy,r);
+    white.addColorStop(0,   'rgba(255,255,255,1)');
+    white.addColorStop(0.5, 'rgba(255,255,255,0.3)');
+    white.addColorStop(1,   'rgba(255,255,255,0)');
+    ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2);
+    ctx.fillStyle = white; ctx.fill();
+    // Black outer edge overlay — darkens the rim
+    const black = ctx.createRadialGradient(cx,cy,r*0.6, cx,cy,r);
+    black.addColorStop(0, 'rgba(0,0,0,0)');
+    black.addColorStop(1, 'rgba(0,0,0,0.65)');
+    ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2);
+    ctx.fillStyle = black; ctx.fill();
+  }
+  drawWheel();
+
+  function getColourAt(x,y){
+    const pixel = ctx.getImageData(x,y,1,1).data;
+    return { r:pixel[0], g:pixel[1], b:pixel[2] };
+  }
+
+  function toHex(r,g,b){
+    return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
+  }
+
+  window.applyWheelColour = applyColour;
+  function applyColour(hex){
+    if(selected) { selected.style.background = hex; }
+    if(!carModel) return;
+    // Parse hex manually to avoid THREE.Color gamma issues with near-white
+    const r = parseInt(hex.slice(1,3),16)/255;
+    const g = parseInt(hex.slice(3,5),16)/255;
+    const b = parseInt(hex.slice(5,7),16)/255;
+    carModel.traverse(child=>{
+      if(child.isMesh){
+        const mats=Array.isArray(child.material)?child.material:[child.material];
+        mats.forEach(mat=>{
+          if(mat.name==='Kuzov_Main_color'){
+            mat.color.setRGB(r,g,b);
+            mat.roughness=0.15;
+            mat.metalness=0.9;
+            mat.needsUpdate=true;
+          }
+        });
+      }
+    });
+  }
+
+  function pickAt(e){
+    const rect = cvs.getBoundingClientRect();
+    const scaleX = cvs.width  / rect.width;
+    const scaleY = cvs.height / rect.height;
+    const x = Math.round((e.clientX - rect.left) * scaleX);
+    const y = Math.round((e.clientY - rect.top)  * scaleY);
+    // Keep inside circle
+    const dx=x-cx, dy=y-cy;
+    if(Math.sqrt(dx*dx+dy*dy) > r) return;
+    pointer.style.left = (x/W*100)+'%';
+    pointer.style.top  = (y/H*100)+'%';
+    const {r:pr,g:pg,b:pb} = getColourAt(x,y);
+    applyColour(toHex(pr,pg,pb));
+  }
+
+  let dragging = false;
+  wrap.addEventListener('mousedown', e=>{ dragging=true; playClick(); pickAt(e); });
+  window.addEventListener('mousemove', e=>{ if(dragging) pickAt(e); });
+  window.addEventListener('mouseup',   ()=>{ dragging=false; });
+
+  // Touch support
+  wrap.addEventListener('touchstart', e=>{ e.preventDefault(); pickAt(e.touches[0]); }, {passive:false});
+  wrap.addEventListener('touchmove',  e=>{ e.preventDefault(); pickAt(e.touches[0]); }, {passive:false});
+
+  // Set pointer to default colour (Carbon Black)
+  pointer.style.left = '50%';
+  pointer.style.top  = '50%';
+  selected.style.background = '#ffffff';
+})();
+</script>
+</body>
+</html>
