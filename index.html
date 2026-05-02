@@ -621,7 +621,7 @@ body {
     </div>
 
     <!-- COLOUR WHEEL OVERLAY -->
-    <div class="colour-wheel-overlay">
+    <div class="colour-wheel-overlay" id="colourWheelOverlay">
       <!-- Black & White quick picks — now above wheel -->
       <div style="display:flex;gap:4px;justify-content:center;">
         <button onclick="applyWheelColour('#050505')" title="Black" style="width:11px;height:11px;border-radius:50%;background:#050505;border:1.5px solid rgba(255,255,255,0.25);cursor:pointer;outline:none;transition:transform 0.15s;" onmouseover="this.style.transform='scale(1.3)'" onmouseout="this.style.transform='scale(1)'"></button>
@@ -1460,6 +1460,27 @@ setTimeout(function(){
   // Fade music button to 50%
   var mb = document.getElementById('musicBtn');
   if(mb) mb.style.opacity = '0.5';
+
+  // Fade colour wheel overlay to 50%
+  var cwo = document.getElementById('colourWheelOverlay');
+  if(cwo){
+    cwo.style.transition = 'opacity 1.5s ease';
+    cwo.style.opacity = '0.5';
+
+    // Reactive on touch/hover — restore to 100% then fade back
+    var wheelFadeTimer = null;
+    function wheelActivate(){
+      cwo.style.transition = 'opacity 0.2s ease';
+      cwo.style.opacity = '1';
+      clearTimeout(wheelFadeTimer);
+      wheelFadeTimer = setTimeout(function(){
+        cwo.style.transition = 'opacity 1.5s ease';
+        cwo.style.opacity = '0.5';
+      }, 2000);
+    }
+    cwo.addEventListener('mouseenter', wheelActivate);
+    cwo.addEventListener('touchstart', wheelActivate, {passive:true});
+  }
 }, 30000);
 
 // ── AUTOPLAY MUSIC ──
