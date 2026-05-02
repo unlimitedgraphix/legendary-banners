@@ -178,7 +178,7 @@ body {
 /* Section label */
 .section-label {
   font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
-  color: var(--pink); margin-bottom: 12px; margin-top: 0;
+  color: var(--pink); margin-bottom: 12px; margin-top: 8px;
   display: flex; align-items: center; gap: 8px;
 }
 .section-label::after {
@@ -646,7 +646,7 @@ body {
   <!-- BOTTOM: CONFIGURATOR PANEL FULL WIDTH -->
   <div class="left-panel">
     <!-- CTA — above banner grid -->
-    <div class="cta-block" id="ctaBlock" style="border:1px solid var(--border);border-radius:10px;padding:16px 24px;margin-bottom:16px;background:rgba(255,0,128,0.04);position:relative;transition:padding 0.3s ease;">
+    <div class="cta-block" id="ctaBlock" style="border:1px solid var(--border);border-radius:10px;padding:16px 24px;margin-bottom:0;background:rgba(255,0,128,0.04);position:relative;transition:padding 0.3s ease;">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:nowrap;">
         <div style="flex-shrink:0;">
           <!-- Single price — ticket style -->
@@ -669,7 +669,7 @@ body {
 </div>
     </div>
 
-    <div class="config-grid" style="grid-template-columns:1fr;">
+    <div class="config-grid" style="grid-template-columns:1fr;margin-top:0;">
 
       <!-- Banner Selection only — car colour section removed (wheel is on canvas) -->
       <div class="config-col">
@@ -1465,7 +1465,7 @@ setTimeout(function(){
   var cwo = document.getElementById('colourWheelOverlay');
   if(cwo){
     cwo.style.transition = 'opacity 1.5s ease';
-    cwo.style.opacity = '0.5';
+    cwo.style.opacity = '0.25';
 
     // Reactive on touch/hover — restore to 100% then fade back
     var wheelFadeTimer = null;
@@ -1475,7 +1475,7 @@ setTimeout(function(){
       clearTimeout(wheelFadeTimer);
       wheelFadeTimer = setTimeout(function(){
         cwo.style.transition = 'opacity 1.5s ease';
-        cwo.style.opacity = '0.5';
+        cwo.style.opacity = '0.25';
       }, 2000);
     }
     cwo.addEventListener('mouseenter', wheelActivate);
