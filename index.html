@@ -204,10 +204,12 @@ body {
   max-width: 280px;
   box-shadow: 0 0 20px rgba(255,0,128,0.15), 0 4px 20px rgba(0,0,0,0.5);
   transform: translateX(-120%);
-  transition: transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275), opacity 0.4s ease;
   backdrop-filter: blur(10px);
 }
-.social-proof.show { transform: translateX(0); }
+.social-proof.show { transform: translateX(0); opacity: 1; }
+.social-proof.dissolve { opacity: 0; transition: opacity 2s ease; transform: translateX(0); }
 .social-proof-icon { font-size: 24px; flex-shrink: 0; }
 .social-proof-text { flex: 1; }
 .social-proof-name {
@@ -1477,26 +1479,26 @@ function startMusicAuto(){
 // ── SOCIAL PROOF NOTIFICATIONS ──
 (function(){
   var notifications = [
-    { name: "Jake", location: "Perth", item: "JDM Original", time: "2 mins ago" },
-    { name: "Mia", location: "Melbourne", item: "Akatsuki", time: "5 mins ago" },
-    { name: "Tyler", location: "Brisbane", item: "Both Windshields Bundle", time: "just now" },
-    { name: "Ash", location: "Sydney", item: "Aus Flag", time: "8 mins ago" },
-    { name: "Brodie", location: "Adelaide", item: "BMW M3", time: "3 mins ago" },
-    { name: "Kayla", location: "Gold Coast", item: "LV Pink", time: "just now" },
-    { name: "Liam", location: "Perth", item: "Akatsuki", time: "12 mins ago" },
-    { name: "Zoe", location: "Canberra", item: "Both Windshields Bundle", time: "4 mins ago" },
-    { name: "Nathan", location: "Darwin", item: "Speed Hunters Black", time: "7 mins ago" },
-    { name: "Jess", location: "Hobart", item: "Anime", time: "just now" },
-    { name: "Dylan", location: "Newcastle", item: "Anti Social", time: "15 mins ago" },
-    { name: "Taya", location: "Wollongong", item: "Playboy Pink", time: "6 mins ago" },
-    { name: "Brayden", location: "Townsville", item: "JDM Osaka", time: "2 mins ago" },
-    { name: "Ellie", location: "Cairns", item: "Chicano Bliss", time: "11 mins ago" },
-    { name: "Marcus", location: "Perth", item: "Honda Type R Red", time: "just now" },
-    { name: "Steph", location: "Melbourne", item: "LV Original", time: "9 mins ago" },
-    { name: "Coby", location: "Brisbane", item: "Graffiti Black", time: "3 mins ago" },
-    { name: "Tash", location: "Sydney", item: "Hello Kitty", time: "just now" },
-    { name: "Riley", location: "Geelong", item: "Nismo", time: "14 mins ago" },
-    { name: "Jayden", location: "Mandurah", item: "Both Windshields Bundle", time: "5 mins ago" },
+    { name: "Jake", location: "Perth", item: "JDM Original", time: "2 hrs ago" },
+    { name: "Mia", location: "Melbourne", item: "Akatsuki", time: "25 mins ago" },
+    { name: "Tyler", location: "Brisbane", item: "Both Windshields Bundle", time: "1 hr ago" },
+    { name: "Ash", location: "Sydney", item: "Aus Flag", time: "3 hrs ago" },
+    { name: "Brodie", location: "Adelaide", item: "BMW M3", time: "45 mins ago" },
+    { name: "Kayla", location: "Gold Coast", item: "LV Pink", time: "18 mins ago" },
+    { name: "Liam", location: "Perth", item: "Akatsuki", time: "2.5 hrs ago" },
+    { name: "Zoe", location: "Canberra", item: "Both Windshields Bundle", time: "1.5 hrs ago" },
+    { name: "Nathan", location: "Darwin", item: "Speed Hunters Black", time: "55 mins ago" },
+    { name: "Jess", location: "Hobart", item: "Anime", time: "35 mins ago" },
+    { name: "Dylan", location: "Newcastle", item: "Anti Social", time: "2 hrs ago" },
+    { name: "Taya", location: "Wollongong", item: "Playboy Pink", time: "1 hr ago" },
+    { name: "Brayden", location: "Townsville", item: "JDM Osaka", time: "40 mins ago" },
+    { name: "Ellie", location: "Cairns", item: "Chicano Bliss", time: "3 hrs ago" },
+    { name: "Marcus", location: "Perth", item: "Honda Type R Red", time: "22 mins ago" },
+    { name: "Steph", location: "Melbourne", item: "LV Original", time: "1.5 hrs ago" },
+    { name: "Coby", location: "Brisbane", item: "Graffiti Black", time: "50 mins ago" },
+    { name: "Tash", location: "Sydney", item: "Hello Kitty", time: "2.5 hrs ago" },
+    { name: "Riley", location: "Geelong", item: "Nismo", time: "1 hr ago" },
+    { name: "Jayden", location: "Mandurah", item: "Both Windshields Bundle", time: "30 mins ago" },
   ];
 
   var icons = ["🔥","⚡","🏎️","💥","🎉","🛒"];
@@ -1504,6 +1506,12 @@ function startMusicAuto(){
   popup.className = 'social-proof';
   popup.innerHTML = '<div class="social-proof-icon" id="spIcon">🔥</div><div class="social-proof-text"><div class="social-proof-name" id="spName"></div><div class="social-proof-item" id="spItem"></div><div class="social-proof-time" id="spTime"></div></div>';
   document.body.appendChild(popup);
+
+  // Shuffle array so order is different every page load
+  for(var i = notifications.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = notifications[i]; notifications[i] = notifications[j]; notifications[j] = tmp;
+  }
 
   var idx = 0;
   function showNext(){
@@ -1513,8 +1521,16 @@ function startMusicAuto(){
     document.getElementById('spName').innerHTML = '<span>' + n.name + '</span> from ' + n.location;
     document.getElementById('spItem').textContent = 'Just ordered: ' + n.item;
     document.getElementById('spTime').textContent = n.time;
+    popup.classList.remove('dissolve');
     popup.classList.add('show');
-    setTimeout(function(){ popup.classList.remove('show'); }, 4000);
+    // Start dissolve after 3 seconds, takes 2 seconds to fade
+    setTimeout(function(){
+      popup.classList.add('dissolve');
+      setTimeout(function(){
+        popup.classList.remove('show');
+        popup.classList.remove('dissolve');
+      }, 2000);
+    }, 3000);
     // Schedule next between 18-35 seconds
     setTimeout(showNext, 18000 + Math.random() * 17000);
   }
