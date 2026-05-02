@@ -622,19 +622,20 @@ body {
 
     <!-- COLOUR WHEEL OVERLAY -->
     <div class="colour-wheel-overlay">
-      <div class="colour-wheel-wrap" id="colourWheelWrap">
-        <canvas id="colourWheelCanvas" width="48" height="48"></canvas>
-        <div class="colour-wheel-pointer" id="colourWheelPointer" style="left:50%;top:50%;"></div>
-      </div>
-      <!-- Black & White quick picks -->
+      <!-- Black & White quick picks — now above wheel -->
       <div style="display:flex;gap:4px;justify-content:center;">
         <button onclick="applyWheelColour('#050505')" title="Black" style="width:11px;height:11px;border-radius:50%;background:#050505;border:1.5px solid rgba(255,255,255,0.25);cursor:pointer;outline:none;transition:transform 0.15s;" onmouseover="this.style.transform='scale(1.3)'" onmouseout="this.style.transform='scale(1)'"></button>
         <button onclick="applyWheelColour('#ffffff')" title="White" style="width:11px;height:11px;border-radius:50%;background:#ffffff;border:1.5px solid rgba(200,200,200,0.5);cursor:pointer;outline:none;transition:transform 0.15s;" onmouseover="this.style.transform='scale(1.3)'" onmouseout="this.style.transform='scale(1)'"></button>
       </div>
+      <!-- Colour wheel below the dots -->
+      <div class="colour-wheel-wrap" id="colourWheelWrap">
+        <canvas id="colourWheelCanvas" width="48" height="48"></canvas>
+        <div class="colour-wheel-pointer" id="colourWheelPointer" style="left:50%;top:50%;"></div>
+      </div>
       <div class="colour-wheel-label">Car Colour</div>
     </div>
     <!-- Logo overlay on canvas -->
-    <div style="position:absolute;top:20px;left:24px;z-index:10;pointer-events:none;">
+    <div id="chooseHeading" style="position:absolute;top:20px;left:24px;right:auto;z-index:10;pointer-events:none;transition:left 1.5s ease,right 1.5s ease,opacity 1.5s ease,transform 1.5s ease;transform:none;">
       <div style="font-family:'Bebas Neue', cursive;font-size:21px;letter-spacing:4px;color:#fff;text-shadow:0 0 30px var(--pink),0 0 60px rgba(255,0,128,0.4);">CHOOSE YOUR <span style='color:var(--pink)'>BANNER</span></div>
     </div>
   </div>
@@ -1447,6 +1448,19 @@ setTimeout(function(){
   var hint = document.querySelector('.controls-hint');
   if(hint) hint.classList.add('hidden');
 }, 5000);
+
+// ── FADE & CENTRE HEADING after 30s ──
+setTimeout(function(){
+  var h = document.getElementById('chooseHeading');
+  if(h){
+    h.style.opacity = '0.3';
+    h.style.left = '50%';
+    h.style.transform = 'translateX(-50%)';
+  }
+  // Fade music button to 50%
+  var mb = document.getElementById('musicBtn');
+  if(mb) mb.style.opacity = '0.5';
+}, 30000);
 
 // ── AUTOPLAY MUSIC ──
 function startMusicAuto(){
