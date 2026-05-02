@@ -187,6 +187,50 @@ body {
 }
 
 /* Panel tabs */
+/* Social proof popup */
+.social-proof {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 9999;
+  background: rgba(10,0,20,0.95);
+  border: 1px solid rgba(255,0,128,0.3);
+  border-left: 3px solid var(--pink);
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 280px;
+  box-shadow: 0 0 20px rgba(255,0,128,0.15), 0 4px 20px rgba(0,0,0,0.5);
+  transform: translateX(-120%);
+  transition: transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+  backdrop-filter: blur(10px);
+}
+.social-proof.show { transform: translateX(0); }
+.social-proof-icon { font-size: 24px; flex-shrink: 0; }
+.social-proof-text { flex: 1; }
+.social-proof-name {
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: #fff;
+  line-height: 1.2;
+}
+.social-proof-name span { color: var(--pink); }
+.social-proof-item {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+.social-proof-time {
+  font-size: 9px;
+  color: rgba(255,0,128,0.6);
+  margin-top: 3px;
+  letter-spacing: 1px;
+}
+
 /* Music controls */
 .music-controls {
   position: absolute;
@@ -466,6 +510,14 @@ body {
   text-decoration: none; display: flex; align-items: center; justify-content: center;
   box-shadow: 0 0 30px var(--pink-glow), 0 4px 20px rgba(255,0,128,0.4);
 }
+@keyframes ctaPulse {
+  0%, 100% { box-shadow: 0 0 30px var(--pink-glow), 0 4px 20px rgba(255,0,128,0.4); transform: translateY(0); }
+  50% { box-shadow: 0 0 50px var(--pink-glow), 0 8px 30px rgba(255,0,128,0.5); transform: translateY(-2px); }
+}
+@keyframes pricePulse {
+  0%, 100% { opacity: 1; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
+  50% { opacity: 0.75; text-shadow: 0 0 20px rgba(255,255,255,0.6); }
+}
 .cta-btn { animation: ctaPulse 1.2s ease-in-out infinite; }
 .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 0 50px var(--pink-glow), 0 8px 30px rgba(255,0,128,0.5); }
 
@@ -596,17 +648,20 @@ body {
         <div style="flex-shrink:0;">
           <!-- Single price — ticket style -->
           <div class="price-normal price-single-ticket" id="priceNormal">
-            <div class="cta-price" id="ctaPrice">$119.90</div>
+            <div class="cta-price" id="ctaPrice" style="animation:pricePulse 1.2s ease-in-out infinite;">$119.90</div>
             <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:4px;">Tool Kit Included</div>
           </div>
           <!-- Bundle ticket price -->
           <div class="price-ticket" id="priceTicket">
             <div style="font-size:11px;color:var(--muted);letter-spacing:1px;text-decoration:line-through;">$239.80</div>
             <div class="cta-price">$199.90</div>
-            <div style="font-size:10px;color:var(--pink);letter-spacing:1px;margin-top:4px;">16% OFF — 2 BANNER DEAL</div>
+            <div style="font-size:10px;color:var(--pink);letter-spacing:1px;margin-top:0px;">16% OFF — 2 BANNER DEAL</div>
           </div>
         </div>
-        <a class="cta-btn" id="ctaBtn" href="#" target="_blank" style="width:auto;padding:14px 24px;flex-shrink:0;white-space:nowrap;">ADD TO CART</a>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <a class="cta-btn" id="ctaBtn" href="#" target="_blank" style="width:auto;padding:14px 24px;flex-shrink:0;white-space:nowrap;">ADD TO CART</a>
+          <div style="font-size:10px;color:var(--muted);letter-spacing:1px;">Continue to Express Shipping</div>
+        </div>
       </div>
 </div>
     </div>
@@ -844,7 +899,7 @@ scene.add(new THREE.HemisphereLight(0x220a30, 0x111105, 0.3));
 // ── ORBIT CONTROLS — rotate carGroup only, camera stays fixed ──
 let isDragging=false, isRightDragging=false, prevMouse={x:0,y:0};
 let spherical={theta:0, phi:0.00, radius:3.04};
-let target=new THREE.Vector3(0,0.2,0);
+let target=new THREE.Vector3(0,0.3,0);
 let carGroup = new THREE.Group(); scene.add(carGroup);
 let autoRotateSpeed = 0.0015;
 
@@ -1418,6 +1473,55 @@ function startMusicAuto(){
   }
 }
 // Music starts on user click only — autoplay disabled
+
+// ── SOCIAL PROOF NOTIFICATIONS ──
+(function(){
+  var notifications = [
+    { name: "Jake", location: "Perth", item: "JDM Original", time: "2 mins ago" },
+    { name: "Mia", location: "Melbourne", item: "Akatsuki", time: "5 mins ago" },
+    { name: "Tyler", location: "Brisbane", item: "Both Windshields Bundle", time: "just now" },
+    { name: "Ash", location: "Sydney", item: "Aus Flag", time: "8 mins ago" },
+    { name: "Brodie", location: "Adelaide", item: "BMW M3", time: "3 mins ago" },
+    { name: "Kayla", location: "Gold Coast", item: "LV Pink", time: "just now" },
+    { name: "Liam", location: "Perth", item: "Akatsuki", time: "12 mins ago" },
+    { name: "Zoe", location: "Canberra", item: "Both Windshields Bundle", time: "4 mins ago" },
+    { name: "Nathan", location: "Darwin", item: "Speed Hunters Black", time: "7 mins ago" },
+    { name: "Jess", location: "Hobart", item: "Anime", time: "just now" },
+    { name: "Dylan", location: "Newcastle", item: "Anti Social", time: "15 mins ago" },
+    { name: "Taya", location: "Wollongong", item: "Playboy Pink", time: "6 mins ago" },
+    { name: "Brayden", location: "Townsville", item: "JDM Osaka", time: "2 mins ago" },
+    { name: "Ellie", location: "Cairns", item: "Chicano Bliss", time: "11 mins ago" },
+    { name: "Marcus", location: "Perth", item: "Honda Type R Red", time: "just now" },
+    { name: "Steph", location: "Melbourne", item: "LV Original", time: "9 mins ago" },
+    { name: "Coby", location: "Brisbane", item: "Graffiti Black", time: "3 mins ago" },
+    { name: "Tash", location: "Sydney", item: "Hello Kitty", time: "just now" },
+    { name: "Riley", location: "Geelong", item: "Nismo", time: "14 mins ago" },
+    { name: "Jayden", location: "Mandurah", item: "Both Windshields Bundle", time: "5 mins ago" },
+  ];
+
+  var icons = ["🔥","⚡","🏎️","💥","🎉","🛒"];
+  var popup = document.createElement('div');
+  popup.className = 'social-proof';
+  popup.innerHTML = '<div class="social-proof-icon" id="spIcon">🔥</div><div class="social-proof-text"><div class="social-proof-name" id="spName"></div><div class="social-proof-item" id="spItem"></div><div class="social-proof-time" id="spTime"></div></div>';
+  document.body.appendChild(popup);
+
+  var idx = 0;
+  function showNext(){
+    var n = notifications[idx % notifications.length];
+    idx++;
+    document.getElementById('spIcon').textContent = icons[Math.floor(Math.random()*icons.length)];
+    document.getElementById('spName').innerHTML = '<span>' + n.name + '</span> from ' + n.location;
+    document.getElementById('spItem').textContent = 'Just ordered: ' + n.item;
+    document.getElementById('spTime').textContent = n.time;
+    popup.classList.add('show');
+    setTimeout(function(){ popup.classList.remove('show'); }, 4000);
+    // Schedule next between 18-35 seconds
+    setTimeout(showNext, 18000 + Math.random() * 17000);
+  }
+
+  // First popup after 8 seconds
+  setTimeout(showNext, 8000);
+})();
 
 // ── COLOUR WHEEL ──
 (function(){
