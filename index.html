@@ -608,7 +608,7 @@ body {
 
     <!-- Music controls -->
     <audio id="bgMusic" loop preload="none">
-      <source src="https://green-night-47f9.karlitojemal.workers.dev/Pachanga.mp3" type="audio/mpeg">
+      <source src="https://green-night-47f9.karlitojemal.workers.dev/Legendbeats.mp3" type="audio/mpeg">
     </audio>
     <div class="music-controls">
       <button class="music-btn" id="musicBtn" onclick="toggleMusic()" title="Toggle music">🎵</button>
@@ -1509,7 +1509,33 @@ function startMusicAuto(){
     });
   }
 }
-// Music starts on user click only — autoplay disabled
+// Autoplay music at 5% volume
+function startMusicAuto(){
+  var audio = document.getElementById('bgMusic');
+  var btn   = document.getElementById('musicBtn');
+  var panel = document.getElementById('volumePanel');
+  if(!musicPlaying){
+    audio.volume = 0.05;
+    audio.play().then(function(){
+      btn.textContent = '🔊';
+      btn.classList.add('playing');
+      panel.classList.add('visible');
+      panel.classList.remove('fade-out');
+      musicPlaying = true;
+      clearTimeout(volumeFadeTimer);
+      volumeFadeTimer = setTimeout(function(){
+        panel.classList.add('fade-out');
+      }, 1000);
+    }).catch(function(){
+      document.addEventListener('click', function onFirstClick(){
+        startMusicAuto();
+        document.removeEventListener('click', onFirstClick);
+      }, { once: true });
+    });
+  }
+}
+startMusicAuto();
+setTimeout(startMusicAuto, 3000);
 
 // ── SOCIAL PROOF NOTIFICATIONS ──
 (function(){
